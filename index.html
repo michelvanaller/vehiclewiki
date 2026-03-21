@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VehicleWiki</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f0f0f;--bg2:#1a1a1a;--bg3:#242424;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.15);--text:#f0f0f0;--text2:#888;--text3:#555;--accent:#e8383d;--green:#2ecc71;--blue:#3498db;--gold:#DAA520;--radius:10px;--radius-lg:16px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font-size:15px;min-height:100vh;}
+.screen{display:none;max-width:680px;margin:0 auto;padding:16px 16px 60px;}
+.screen.active{display:block;}
+.topnav{display:flex;align-items:center;justify-content:space-between;padding:12px 0 16px;border-bottom:1px solid var(--border);margin-bottom:18px;}
+.topnav-left{display:flex;align-items:center;gap:10px;}
+.topnav h2{font-size:15px;font-weight:600;}
+.back-btn{background:none;border:1px solid var(--border2);border-radius:8px;padding:5px 12px;font-size:12px;color:var(--text2);cursor:pointer;font-family:'Barlow',sans-serif;}
+.back-btn:hover{background:var(--bg3);color:var(--text);}
+.nav-action{background:none;border:1px solid var(--accent);border-radius:8px;padding:5px 12px;font-size:12px;color:var(--accent);cursor:pointer;font-family:'Barlow',sans-serif;}
+.nav-action:hover{background:var(--accent);color:#fff;}
+.home-hero{text-align:center;padding:32px 0 28px;}
+.home-logo{font-family:'Barlow Condensed',sans-serif;font-size:48px;font-weight:700;letter-spacing:-1px;}
+.home-logo span{color:var(--accent);}
+.home-sub{font-size:14px;color:var(--text2);margin-top:6px;}
+.tab-bar{display:flex;border-bottom:1px solid var(--border);margin-bottom:18px;overflow-x:auto;}
+.tab{padding:9px 16px;font-size:13px;font-weight:500;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;font-family:'Barlow',sans-serif;}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:380px;margin:0 auto;}
+.cat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px 12px;cursor:pointer;text-align:center;transition:all 0.2s;}
+.cat-card:hover{border-color:var(--accent);transform:translateY(-2px);}
+.cat-card.disabled{opacity:0.3;cursor:default;}
+.cat-card.disabled:hover{transform:none;border-color:var(--border);}
+.cat-icon{font-size:32px;margin-bottom:8px;}
+.cat-name{font-size:13px;font-weight:600;}
+.cat-count{font-size:11px;color:var(--text3);margin-top:3px;}
+.merk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;}
+.merk-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;transition:all 0.2s;}
+.merk-card:hover{border-color:var(--border2);transform:translateY(-1px);}
+.merk-logo-box{height:76px;display:flex;align-items:center;justify-content:center;}
+.merk-logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:0.06em;font-size:18px;}
+.merk-footer{padding:9px 12px;border-top:1px solid var(--border);}
+.merk-naam{font-size:12px;font-weight:600;}
+.merk-sub{font-size:11px;color:var(--text3);margin-top:1px;}
+.filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+.fb{background:none;border:1px solid var(--border2);border-radius:20px;padding:5px 13px;font-size:12px;color:var(--text2);cursor:pointer;font-family:'Barlow',sans-serif;}
+.fb.active,.fb:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
+.ducati-header{background:#CC0000;border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;text-align:center;}
+.ducati-logo{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:700;letter-spacing:0.08em;color:#fff;margin-bottom:4px;}
+.ducati-sub{font-size:12px;color:rgba(255,255,255,0.7);}
+.ducati-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px;}
+.ducati-stat{background:rgba(0,0,0,0.2);border-radius:8px;padding:8px;}
+.ducati-stat-val{font-size:18px;font-weight:700;color:#fff;}
+.ducati-stat-label{font-size:10px;color:rgba(255,255,255,0.6);margin-top:2px;}
+.section-header{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin:16px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.family-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;transition:all 0.15s;margin-bottom:8px;}
+.family-card:hover{border-color:var(--border2);}
+.family-header{display:flex;align-items:center;gap:12px;padding:13px 14px;}
+.family-icon{width:46px;height:46px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.family-name{font-size:15px;font-weight:500;}
+.family-sub{font-size:12px;color:var(--text2);margin-top:2px;}
+.family-tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;margin-top:5px;font-weight:500;}
+.limited-badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;background:linear-gradient(90deg,#B8860B,#DAA520);color:#fff;font-weight:600;margin-left:6px;vertical-align:middle;}
+.model-row{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:0;cursor:pointer;display:flex;align-items:center;margin-bottom:8px;overflow:hidden;transition:all 0.15s;}
+.model-row:hover{border-color:var(--border2);}
+.model-thumb{width:72px;height:58px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;}
+.model-info{padding:10px 12px;flex:1;}
+.model-name{font-size:14px;font-weight:600;}
+.model-meta{font-size:11px;color:var(--text2);margin-top:3px;}
+.variant-row{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px 14px;cursor:pointer;margin-bottom:8px;transition:all 0.15s;}
+.variant-row:hover{border-color:var(--border2);}
+.variant-row.limited{border-color:rgba(218,165,32,0.3);}
+.variant-row.limited:hover{border-color:var(--gold);}
+.variant-header{display:flex;justify-content:space-between;align-items:flex-start;}
+.variant-name{font-size:14px;font-weight:500;}
+.variant-prijs{font-size:13px;font-weight:500;}
+.variant-meta{font-size:11px;color:var(--text2);margin-top:3px;}
+.pill-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px;}
+.pill{font-size:10px;padding:2px 8px;border-radius:20px;background:var(--bg3);color:var(--text2);}
+.pill.red{background:rgba(204,0,0,0.15);color:#CC0000;}
+.pill.gold{background:rgba(218,165,32,0.15);color:#B8860B;}
+.pill.hl{background:rgba(232,56,61,0.15);color:var(--accent);}
+.hero-band{border-radius:var(--radius-lg);padding:16px;margin-bottom:14px;display:flex;gap:14px;align-items:center;}
+.hero-logo{width:58px;height:58px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.hero-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;color:#fff;letter-spacing:0.02em;}
+.hero-sub{font-size:12px;color:rgba(255,255,255,0.7);margin-top:4px;}
+.action-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.btn-cmp{background:none;border:1px solid var(--blue);border-radius:8px;padding:6px 13px;font-size:12px;color:var(--blue);cursor:pointer;font-family:'Barlow',sans-serif;}
+.btn-cmp:hover{background:var(--blue);color:#fff;}
+.btn-report{background:none;border:1px solid #e67e22;border-radius:8px;padding:6px 13px;font-size:12px;color:#e67e22;cursor:pointer;font-family:'Barlow',sans-serif;}
+.btn-report:hover{background:#e67e22;color:#fff;}
+.spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.spec-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;}
+.spec-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;}
+.spec-value{font-size:18px;font-weight:600;font-family:'Barlow Condensed',sans-serif;}
+.sec{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin:14px 0 7px;}
+.pro-con{display:flex;gap:8px;margin-bottom:5px;font-size:13px;align-items:flex-start;}
+.pro-dot{width:6px;height:6px;border-radius:50%;margin-top:5px;flex-shrink:0;}
+.beschrijving{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:14px;}
+.motor-badge{display:inline-block;font-size:11px;padding:3px 10px;border-radius:20px;background:rgba(204,0,0,0.15);color:#CC0000;border:0.5px solid rgba(204,0,0,0.3);margin-bottom:12px;margin-right:6px;}
+.gold-badge{display:inline-block;font-size:11px;padding:3px 10px;border-radius:20px;background:rgba(218,165,32,0.15);color:#B8860B;border:0.5px solid rgba(218,165,32,0.3);margin-bottom:12px;}
+.comment-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:11px 13px;margin-bottom:7px;}
+.comment-author{font-size:12px;font-weight:600;color:var(--text2);}
+.comment-text{font-size:13px;line-height:1.5;margin-top:4px;}
+.vote-btn{background:none;border:1px solid var(--border2);border-radius:20px;padding:2px 10px;font-size:11px;cursor:pointer;color:var(--text2);font-family:'Barlow',sans-serif;}
+.vote-btn:hover{border-color:var(--green);color:var(--green);}
+.vote-btn.voted{background:rgba(46,204,113,0.15);color:var(--green);border-color:var(--green);}
+.report-form{background:rgba(230,126,34,0.08);border:1px solid rgba(230,126,34,0.3);border-radius:var(--radius);padding:13px;margin-top:8px;display:none;}
+.report-form.open{display:block;}
+.add-form input,.add-form textarea,.add-form select{width:100%;margin-bottom:7px;padding:8px 11px;border:1px solid var(--border2);border-radius:8px;background:var(--bg3);color:var(--text);font-size:13px;font-family:'Barlow',sans-serif;}
+.add-form input:focus,.add-form textarea:focus{outline:none;border-color:var(--accent);}
+.add-form textarea{height:64px;resize:vertical;}
+.add-form .submit-btn{border:1px solid var(--accent);background:none;border-radius:8px;padding:7px 16px;font-size:13px;color:var(--accent);cursor:pointer;font-family:'Barlow',sans-serif;margin-right:6px;}
+.add-form .submit-btn:hover{background:var(--accent);color:#fff;}
+.add-form .cancel-btn{border:1px solid var(--border2);background:none;border-radius:8px;padding:7px 16px;font-size:13px;color:var(--text2);cursor:pointer;font-family:'Barlow',sans-serif;}
+.sort-row{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+.sort-label{font-size:12px;color:var(--text2);}
+select{padding:6px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--bg2);color:var(--text);font-size:12px;font-family:'Barlow',sans-serif;cursor:pointer;}
+.search-wrap{position:relative;margin-bottom:12px;}
+.search-wrap input{width:100%;padding:10px 14px 10px 38px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--bg2);color:var(--text);font-size:14px;font-family:'Barlow',sans-serif;}
+.search-wrap input:focus{outline:none;border-color:var(--accent);}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--text3);}
+.quick-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.qtag{font-size:11px;padding:4px 11px;border-radius:20px;background:var(--bg2);color:var(--text2);cursor:pointer;border:1px solid var(--border);}
+.qtag:hover,.qtag.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.filter-panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:13px;margin-bottom:14px;}
+.filter-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.filter-grid:last-child{margin-bottom:0;}
+.filter-group label{font-size:10px;color:var(--text3);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;}
+.res-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.res-count{font-size:12px;color:var(--text2);}
+.res-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:7px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;}
+.res-card:hover{border-color:var(--border2);}
+.res-name{font-size:14px;font-weight:600;}
+.res-merk{font-size:11px;color:var(--text3);margin-bottom:3px;}
+.reset-btn{background:none;border:1px solid var(--border2);border-radius:8px;padding:5px 12px;font-size:12px;color:var(--text2);cursor:pointer;font-family:'Barlow',sans-serif;}
+.cmp-panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:13px;margin-bottom:14px;}
+.cmp-slots{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;}
+.cmp-slot{background:var(--bg3);border:1px dashed var(--border2);border-radius:8px;padding:9px;text-align:center;font-size:11px;color:var(--text3);min-height:50px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.cmp-slot:hover{border-color:var(--accent);color:var(--accent);}
+.cmp-slot.filled{border-style:solid;border-color:var(--blue);color:var(--blue);font-weight:600;font-size:10px;}
+.cmp-add-row{display:flex;gap:8px;}
+.cmp-add-btn{background:none;border:1px solid var(--border2);border-radius:8px;padding:6px 14px;font-size:12px;color:var(--text2);cursor:pointer;font-family:'Barlow',sans-serif;white-space:nowrap;}
+.cmp-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:12px;margin-top:14px;}
+.cmp-table th{padding:7px 8px;text-align:center;border-bottom:1px solid var(--border);font-size:11px;font-weight:600;color:var(--text2);}
+.cmp-table th.lc{text-align:left;width:28%;}
+.cmp-table td{padding:8px;text-align:center;border-bottom:1px solid var(--border);}
+.cmp-table td.lc{text-align:left;color:var(--text3);font-size:11px;}
+.cmp-table tr:last-child td{border-bottom:none;}
+.cmp-win{font-weight:700;color:var(--green);}
+.cmp-lose{color:var(--text3);}
+.wdot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--green);margin-left:3px;vertical-align:middle;}
+.stitle{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;padding:9px 8px 5px;background:var(--bg3);}
+.bar-wrap{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.bar-track{flex:1;height:5px;border-radius:3px;background:var(--bg3);}
+.bar-fill{height:5px;border-radius:3px;}
+.verdict-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px;}
+.vc{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px;text-align:center;}
+.vn{font-size:26px;font-weight:700;font-family:'Barlow Condensed',sans-serif;}
+.winner-banner{text-align:center;padding:11px;background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.3);border-radius:var(--radius);margin-top:10px;font-size:13px;font-weight:600;color:var(--green);}
+.limited-banner{background:linear-gradient(135deg,#1a1a1a,#2a2a2a);border:1px solid rgba(218,165,32,0.3);border-radius:var(--radius-lg);padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.limited-banner-text{font-size:12px;color:var(--gold);line-height:1.5;}
+.no-results{text-align:center;padding:30px;font-size:14px;color:var(--text3);}
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<div id="s-home" class="screen active">
+  <div class="home-hero">
+    <div class="home-logo">Vehicle<span>Wiki</span></div>
+    <div class="home-sub">De encyclopedie van voertuigen</div>
+  </div>
+  <div class="tab-bar">
+    <div class="tab active" onclick="setHomeTab('browse',this)">Bladeren</div>
+    <div class="tab" onclick="setHomeTab('merken',this)">Merken</div>
+    <div class="tab" onclick="setHomeTab('zoeken',this)">Zoeken</div>
+    <div class="tab" onclick="setHomeTab('vergelijk',this)">Vergelijk</div>
+  </div>
+  <div id="ht-browse">
+    <div class="cat-grid">
+      <div class="cat-card" onclick="setHomeTab('merken',document.querySelectorAll('.tab')[1])"><div class="cat-icon">🏍</div><div class="cat-name">Motoren</div><div class="cat-count">12 merken</div></div>
+      <div class="cat-card disabled"><div class="cat-icon">🚗</div><div class="cat-name">Auto's</div><div class="cat-count">binnenkort</div></div>
+      <div class="cat-card disabled"><div class="cat-icon">✈️</div><div class="cat-name">Vliegtuigen</div><div class="cat-count">binnenkort</div></div>
+    </div>
+  </div>
+  <div id="ht-merken" style="display:none;">
+    <div class="filter-bar">
+      <button class="fb active" onclick="filterMerk('all',this)">Alle</button>
+      <button class="fb" onclick="filterMerk('italiaans',this)">Italiaans</button>
+      <button class="fb" onclick="filterMerk('japans',this)">Japans</button>
+      <button class="fb" onclick="filterMerk('amerikaans',this)">Amerikaans</button>
+      <button class="fb" onclick="filterMerk('duits',this)">Duits</button>
+    </div>
+    <div class="merk-grid" id="merk-grid-home"></div>
+  </div>
+  <div id="ht-zoeken" style="display:none;">
+    <div class="search-wrap"><span class="search-icon">🔍</span><input id="q" placeholder="Zoek op naam, merk, type..." oninput="doSearch()"></div>
+    <div class="quick-tags">
+      <div class="qtag" onclick="quickFilter('snel',this)">Snelste 0-100</div>
+      <div class="qtag" onclick="quickFilter('licht',this)">Lichtste</div>
+      <div class="qtag" onclick="quickFilter('goedkoop',this)">Goedkoopste</div>
+      <div class="qtag" onclick="quickFilter('vermogen',this)">Meest vermogen</div>
+      <div class="qtag" onclick="quickFilter('topspeed',this)">Hoogste topsnelheid</div>
+      <div class="qtag" onclick="quickFilter('japans',this)">Japanse merken</div>
+      <div class="qtag" onclick="quickFilter('italiaans',this)">Italiaanse merken</div>
+      <div class="qtag" onclick="quickFilter('budget',this)">Budget onder 12k</div>
+    </div>
+    <div class="filter-panel">
+      <div class="filter-grid">
+        <div class="filter-group"><label>Merk</label><select id="f-merk" onchange="doSearch()"><option value="">Alle merken</option><option>Ducati</option><option>Yamaha</option><option>Kawasaki</option><option>BMW</option><option>Honda</option><option>Aprilia</option><option>KTM</option><option>Suzuki</option><option>Triumph</option></select></div>
+        <div class="filter-group"><label>Type</label><select id="f-type" onchange="doSearch()"><option value="">Alle types</option><option>Supersport</option><option>Naaktmotor</option><option>Adventure</option><option>Cruiser</option><option>Tourer</option><option>Supermoto</option><option>Scrambler</option></select></div>
+      </div>
+      <div class="filter-grid">
+        <div class="filter-group"><label>Min. vermogen: <span id="pk-val">0</span> pk</label><input type="range" id="f-pk" min="0" max="240" value="0" step="10" oninput="document.getElementById('pk-val').textContent=this.value;doSearch()"></div>
+        <div class="filter-group"><label>Max. prijs: <span id="prijs-val">€100.000</span></label><input type="range" id="f-prijs" min="8000" max="100000" value="100000" step="500" oninput="document.getElementById('prijs-val').textContent='€'+parseInt(this.value).toLocaleString('nl');doSearch()"></div>
+      </div>
+      <div class="filter-grid">
+        <div class="filter-group"><label>Max. gewicht: <span id="gew-val">300</span> kg</label><input type="range" id="f-gew" min="100" max="300" value="300" step="5" oninput="document.getElementById('gew-val').textContent=this.value;doSearch()"></div>
+        <div class="filter-group"><label>Min. topsnelheid: <span id="top-val">0</span> km/h</label><input type="range" id="f-top" min="0" max="340" value="0" step="10" oninput="document.getElementById('top-val').textContent=this.value;doSearch()"></div>
+      </div>
+    </div>
+    <div class="res-header">
+      <div class="res-count" id="res-count">- resultaten</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <select id="sort-sel" onchange="doSearch()"><option value="naam">Naam A-Z</option><option value="pk">Meest vermogen</option><option value="nul100">Snelste 0-100</option><option value="topsnelheid">Hoogste topsnelheid</option><option value="gewicht">Lichtste eerst</option><option value="prijs-asc">Goedkoopste eerst</option><option value="prijs-desc">Duurste eerst</option></select>
+        <button class="reset-btn" onclick="resetFilters()">Reset</button>
+      </div>
+    </div>
+    <div id="res-list"></div>
+  </div>
+  <div id="ht-vergelijk" style="display:none;">
+    <div class="cmp-panel">
+      <div style="font-size:12px;color:var(--text2);margin-bottom:9px;">Kies tot 3 motoren. Klik op een slot om te wissen.</div>
+      <div class="cmp-slots">
+        <div class="cmp-slot" id="slot-0" onclick="clearSlot(0)">+ Motor A</div>
+        <div class="cmp-slot" id="slot-1" onclick="clearSlot(1)">+ Motor B</div>
+        <div class="cmp-slot" id="slot-2" onclick="clearSlot(2)">+ Motor C</div>
+      </div>
+      <div class="cmp-add-row">
+        <select id="cmp-pick" style="flex:1;"><option value="">Kies een motor...</option></select>
+        <button class="cmp-add-btn" onclick="addToCompare()">Toevoegen</button>
+      </div>
+    </div>
+    <div id="cmp-result"><div class="no-results">Voeg minimaal 2 motoren toe om te vergelijken</div></div>
+  </div>
+</div>
+
+<!-- DUCATI FAMILIES -->
+<div id="s-ducati" class="screen">
+  <div class="topnav"><div class="topnav-left"><button class="back-btn" onclick="goTo('s-home');setHomeTab('merken',document.querySelectorAll('.tab')[1])">← merken</button><h2>Ducati</h2></div></div>
+  <div class="ducati-header">
+    <div class="ducati-logo">DUCATI</div>
+    <div class="ducati-sub">Bologna, Italie · Opgericht 1926</div>
+    <div class="ducati-stats">
+      <div class="ducati-stat"><div class="ducati-stat-val">11</div><div class="ducati-stat-label">Families</div></div>
+      <div class="ducati-stat"><div class="ducati-stat-val">33</div><div class="ducati-stat-label">Modellen</div></div>
+      <div class="ducati-stat"><div class="ducati-stat-val">V4</div><div class="ducati-stat-label">Topmotor</div></div>
+    </div>
+  </div>
+  <div id="ducati-families"></div>
+</div>
+
+<!-- DUCATI VARIANTEN -->
+<div id="s-ducati-var" class="screen">
+  <div class="topnav"><div class="topnav-left"><button class="back-btn" onclick="goTo('s-ducati')">← Ducati</button><h2 id="dvar-title"></h2></div></div>
+  <div id="dvar-desc" style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:14px;"></div>
+  <div id="dvar-list"></div>
+</div>
+
+<!-- ANDERE MERKEN MODELLEN -->
+<div id="s-modellen" class="screen">
+  <div class="topnav"><div class="topnav-left"><button class="back-btn" onclick="goTo('s-home');setHomeTab('merken',document.querySelectorAll('.tab')[1])">← merken</button><h2 id="mod-title">Modellen</h2></div><button class="nav-action" onclick="goTo('s-home');setHomeTab('vergelijk',document.querySelectorAll('.tab')[3])">Vergelijk</button></div>
+  <div class="sort-row"><span class="sort-label">Sorteer:</span><select onchange="sortModellen(this.value)"><option value="naam">Naam</option><option value="pk">Vermogen</option><option value="nul100">0-100 km/h</option><option value="topsnelheid">Topsnelheid</option><option value="prijs">Prijs</option></select></div>
+  <div id="mod-list"></div>
+</div>
+
+<!-- DETAIL -->
+<div id="s-detail" class="screen">
+  <div class="topnav"><div class="topnav-left"><button class="back-btn" id="det-back">← terug</button><h2 id="det-title"></h2></div></div>
+  <div id="det-content"></div>
+</div>
+
+<script>
+const merken=[
+  {id:"ducati",naam:"Ducati",land:"italiaans",bg:"#CC0000",fg:"#fff",logo:"DUCATI"},
+  {id:"yamaha",naam:"Yamaha",land:"japans",bg:"#002F6C",fg:"#fff",logo:"YAMAHA"},
+  {id:"kawasaki",naam:"Kawasaki",land:"japans",bg:"#009A44",fg:"#fff",logo:"KAWASAKI"},
+  {id:"honda",naam:"Honda",land:"japans",bg:"#CC0000",fg:"#fff",logo:"HONDA"},
+  {id:"bmw",naam:"BMW",land:"duits",bg:"#1C69D4",fg:"#fff",logo:"BMW"},
+  {id:"ktm",naam:"KTM",land:"duits",bg:"#FF6600",fg:"#fff",logo:"KTM"},
+  {id:"aprilia",naam:"Aprilia",land:"italiaans",bg:"#1A1A1A",fg:"#fff",logo:"APRILIA"},
+  {id:"triumph",naam:"Triumph",land:"duits",bg:"#FFCB00",fg:"#1A1A1A",logo:"TRIUMPH"},
+  {id:"harley",naam:"Harley-Davidson",land:"amerikaans",bg:"#FF6600",fg:"#fff",logo:"H-D"},
+  {id:"suzuki",naam:"Suzuki",land:"japans",bg:"#1A1A1A",fg:"#fff",logo:"SUZUKI"},
+  {id:"mv",naam:"MV Agusta",land:"italiaans",bg:"#C41E3A",fg:"#fff",logo:"MV"},
+  {id:"indian",naam:"Indian",land:"amerikaans",bg:"#8B0000",fg:"#fff",logo:"INDIAN"},
+];
+
+const ducatiFamilies=[
+  {id:"streetfighter",naam:"Streetfighter",emoji:"⚔️",type:"Naaktmotor",kleur:"#CC0000",cat:"sport",beschrijving:"Circuit-DNA gecombineerd met alledaags rijplezier. Krachtig, rauw en zonder compromissen.",tag:"Bestseller",tagKleur:"#CC0000",modellen:[
+    {naam:"Streetfighter V4 SP2",jaar:2024,pk:214,nm:123,gew:172,nul100:2.9,top:299,cc:1103,cil:"V4",prijs:37995,lim:false,pros:["Carbon bodywork","Öhlins Electronic Suspension","Brembo Stylema R","Titaan Akrapovic uitlaat"],cons:["Extreem duur","Bijna te goed voor de straat"],beschrijving:"De ultieme Streetfighter met titanium Akrapovic en volledig carbon bodywork.",comments:[]},
+    {naam:"Streetfighter V4 S",jaar:2024,pk:208,nm:123,gew:178,nul100:3.0,top:299,cc:1103,cil:"V4",prijs:29995,lim:false,pros:["208pk Desmosedici Stradale V4","Öhlins Smart EC 2.0","Marchesini velgen","Lithium accu"],cons:["Erg warm in verkeer","Hoge prijs"],beschrijving:"De ultieme versie van de Streetfighter familie met Öhlins semi-actieve vering.",comments:[{a:"RiderNL",t:"Beste motor ooit. V4 geluid onbeschrijflijk.",s:8,g:false}]},
+    {naam:"Streetfighter V4",jaar:2024,pk:168,nm:118,gew:178,nul100:3.2,top:285,cc:1103,cil:"V4",prijs:22995,lim:false,pros:["168pk V4","Zelfde karakter als S","Compleet elektronica pakket"],cons:["Geen Öhlins vering","Minder uitrusting dan S"],beschrijving:"De toegankelijkere V4 met iets minder vermogen maar hetzelfde karakter.",comments:[]},
+    {naam:"Streetfighter V2",jaar:2024,pk:155,nm:104,gew:169,nul100:3.4,top:270,cc:955,cil:"V2",prijs:17995,lim:false,pros:["Lichter dan V4","Betaalbaarder","Minder hitte"],cons:["Minder vermogen","Minder spectaculair geluid"],beschrijving:"Lichter en toegankelijker dan de V4 maar met hetzelfde agressieve design.",comments:[]},
+  ]},
+  {id:"panigale",naam:"Panigale",emoji:"🏁",type:"Supersport",kleur:"#CC0000",cat:"sport",beschrijving:"Het hart van Ducati's raceprogramma. De snelste en meest technologisch geavanceerde Ducati's.",tag:"Race DNA",tagKleur:"#8B0000",modellen:[
+    {naam:"Panigale V4 R",jaar:2024,pk:240,nm:111,gew:172,nul100:2.6,top:310,cc:998,cil:"V4",prijs:45000,lim:false,pros:["240pk straatlegaal","WSBK homologatie","Titaan Akrapovic standaard"],cons:["Extreem duur","Nauwelijks bruikbaar op straat"],beschrijving:"De meest extreme straatlegale Ducati ooit. 240pk uit 998cc.",comments:[]},
+    {naam:"Panigale V4 S",jaar:2024,pk:214,nm:123,gew:175,nul100:2.8,top:305,cc:1103,cil:"V4",prijs:32995,lim:false,pros:["214pk","Öhlins Smart EC 2.0","Winglets","Volledige elektronica suite"],cons:["Duur","Beperkt toercomfort"],beschrijving:"De ideale balans tussen circuit prestaties en dagelijks rijgenot.",comments:[{a:"TrackdayKing",t:"Op circuit fenomenaal. Elke euro waard.",s:6,g:false}]},
+    {naam:"Panigale V4",jaar:2024,pk:214,nm:123,gew:175,nul100:2.9,top:300,cc:1103,cil:"V4",prijs:25995,lim:false,pros:["Zelfde motor als S","Betaalbaarder"],cons:["Geen Öhlins","Minder uitrusting dan S"],beschrijving:"De instap Panigale V4 met hetzelfde krachtige motorblok.",comments:[]},
+    {naam:"Panigale V2",jaar:2024,pk:155,nm:104,gew:176,nul100:3.1,top:270,cc:955,cil:"V2",prijs:17495,lim:false,pros:["Klassieke V2 motor","Toegankelijker dan V4"],cons:["Minder extreem dan V4"],beschrijving:"De Panigale met het klassieke Ducati tweecilinder hart.",comments:[]},
+  ]},
+  {id:"monster",naam:"Monster",emoji:"👾",type:"Naaktmotor",kleur:"#CC0000",cat:"sport",beschrijving:"Sinds 1993 het gezicht van Ducati. Licht, wendbaar en vol karakter.",tag:"Icoon sinds 1993",tagKleur:"#666",modellen:[
+    {naam:"Monster SP",jaar:2024,pk:111,nm:93,gew:166,nul100:3.5,top:250,cc:937,cil:"V2",prijs:16995,lim:false,pros:["Slechts 166kg","Öhlins NIX 30","Brembo Stylema"],cons:["Klein tankje","Geen windafscherming"],beschrijving:"De meest sportieve Monster ooit met Öhlins en Brembo.",comments:[{a:"MonsterFan",t:"166kg voelt als speelgoed maar rijdt als raket.",s:4,g:false}]},
+    {naam:"Monster",jaar:2024,pk:111,nm:93,gew:166,nul100:3.6,top:245,cc:937,cil:"V2",prijs:13195,lim:false,pros:["Beste prijs-kwaliteit","Licht en wendbaar"],cons:["Klein tankje"],beschrijving:"De standaard Monster in modernste vorm op het Panigale chassis.",comments:[]},
+    {naam:"Monster 30 Anniversario",jaar:2024,pk:111,nm:93,gew:163,nul100:3.5,top:250,cc:937,cil:"V2",prijs:18595,lim:true,pros:["Gelimiteerd 500 stuks","Italiaanse driekleur livery","Carbon onderdelen"],cons:["Extreem gelimiteerd","Hoge prijs"],beschrijving:"Tribute aan 30 jaar Monster. Slechts 500 genummerde exemplaren.",comments:[]},
+  ]},
+  {id:"desertx",naam:"DesertX",emoji:"🏜️",type:"Off-Road Adventure",kleur:"#B8860B",cat:"adventure",beschrijving:"Geïnspireerd op Dakar rally machines. Ducati's meest extreme adventure motor.",tag:"Dakar geïnspireerd",tagKleur:"#B8860B",modellen:[
+    {naam:"DesertX Rally",jaar:2024,pk:110,nm:92,gew:202,nul100:3.9,top:220,cc:937,cil:"V2",prijs:24995,lim:false,pros:["Öhlins 230mm slag","21 inch voorwiel","Meest off-road capable Ducati"],cons:["Hoge zadelhoogte 875mm","Duur"],beschrijving:"De meest extreme DesertX. 230mm slag en 21 inch voorwiel voor echte rally avonturen.",comments:[]},
+    {naam:"DesertX",jaar:2024,pk:110,nm:92,gew:202,nul100:4.0,top:215,cc:937,cil:"V2",prijs:17995,lim:false,pros:["21 inch voorwiel","Off-road ABS","Dakar-geïnspireerd design"],cons:["Hoge zadelhoogte","Zwaar voor off-road"],beschrijving:"Ducati's antwoord op de adventure markt. Geïnspireerd door de Cagiva Elefant.",comments:[{a:"AdventureRider",t:"In het zand fantastisch. Eindelijk een echte adventure Ducati!",s:5,g:false}]},
+    {naam:"DesertX Discovery",jaar:2024,pk:110,nm:92,gew:215,nul100:4.1,top:210,cc:937,cil:"V2",prijs:20995,lim:false,pros:["Koffers inbegrepen","Windscherm","Handkappen af fabriek"],cons:["Zwaarder dan standaard"],beschrijving:"De DesertX klaar voor lange toerritten met koffers en windscherm af fabriek.",comments:[]},
+  ]},
+  {id:"multistrada",naam:"Multistrada",emoji:"🌍",type:"Adventure Tourer",kleur:"#8B0000",cat:"adventure",beschrijving:"Ducati's premium toermotor. Krachtig, comfortabel en technologisch het meest geavanceerd.",tag:"Adventure Tourer",tagKleur:"#8B4513",modellen:[
+    {naam:"Multistrada V4 RS",jaar:2024,pk:180,nm:145,gew:220,nul100:3.2,top:260,cc:1158,cil:"V4",prijs:35995,lim:false,pros:["Radar cruise control","Blind spot detectie","Skyhook vering","Titanium Akrapovic"],cons:["Zwaar","Extreem duur"],beschrijving:"De ultieme Multistrada met radarassistentie en titanium uitlaat.",comments:[]},
+    {naam:"Multistrada V4 S",jaar:2024,pk:170,nm:127,gew:228,nul100:3.4,top:250,cc:1158,cil:"V4",prijs:25995,lim:false,pros:["Skyhook vering","Radar cruise control","Groot tankbereik"],cons:["Zwaar","Duur"],beschrijving:"De populairste Multistrada met semi-actieve vering en radar.",comments:[{a:"TourRider",t:"Amsterdam naar Zuid-Spanje in één dag. Fantastisch.",s:5,g:false}]},
+    {naam:"Multistrada V4 Rally",jaar:2024,pk:170,nm:127,gew:242,nul100:3.5,top:240,cc:1158,cil:"V4",prijs:29995,lim:false,pros:["30 liter tank","Lange vering slag","Off-road capable"],cons:["Zwaarst van de reeks"],beschrijving:"De Multistrada voor echte avonturen met 30 liter tank.",comments:[]},
+    {naam:"Multistrada V2 S",jaar:2024,pk:113,nm:96,gew:213,nul100:3.8,top:230,cc:937,cil:"V2",prijs:18995,lim:false,pros:["Lichter dan V4","Betaalbaarder","V2 karakter"],cons:["Minder vermogen"],beschrijving:"De toegankelijke Multistrada met V2 motor.",comments:[]},
+  ]},
+  {id:"diavel",naam:"Diavel",emoji:"😈",type:"Power Cruiser",kleur:"#1A1A1A",cat:"sport",beschrijving:"Supersport kracht in een cruiser jasje. Een unieke categorie die Ducati zelf gecreëerd heeft.",tag:"Power Cruiser",tagKleur:"#333",modellen:[
+    {naam:"Diavel V4",jaar:2024,pk:168,nm:128,gew:218,nul100:3.1,top:270,cc:1158,cil:"V4",prijs:26995,lim:false,pros:["168pk V4","Laag zitpunt","Unieke rijervaring"],cons:["Zwaar","Nichemarkt"],beschrijving:"168pk V4 motor in cruiser design. Volledig uniek concept.",comments:[]},
+    {naam:"Diavel for Bentley",jaar:2024,pk:168,nm:128,gew:218,nul100:3.1,top:270,cc:1158,cil:"V4",prijs:75000,lim:true,pros:["Ducati x Bentley","Ultra exclusief","Bentley materialen"],cons:["Absurd duur","Gelimiteerd"],beschrijving:"Samenwerking Ducati en Bentley. Rijdend kunstwerk.",comments:[]},
+  ]},
+  {id:"scrambler",naam:"Scrambler",emoji:"🤠",type:"Scrambler / Retro",kleur:"#FF6B35",cat:"accessible",beschrijving:"Ducati's meest toegankelijke en speelse familie. Retro design, moderne technologie.",tag:"Meest toegankelijk",tagKleur:"#FF6B35",modellen:[
+    {naam:"Scrambler Icon",jaar:2024,pk:73,nm:65,gew:186,nul100:4.8,top:195,cc:803,cil:"V2",prijs:10995,lim:false,pros:["Toegankelijkste Ducati","Retro design","A2 versie beschikbaar"],cons:["Beperkt vermogen","Niet voor snelwegen"],beschrijving:"De instap in de Ducati wereld. Meest verkochte Ducati wereldwijd.",comments:[{a:"BeginnerRider",t:"Perfect eerste motor. Makkelijk, leuk en ziet er geweldig uit.",s:7,g:false}]},
+    {naam:"Scrambler Full Throttle",jaar:2024,pk:73,nm:65,gew:186,nul100:4.8,top:195,cc:803,cil:"V2",prijs:12495,lim:false,pros:["Flat track design","Scrambler stuur"],cons:["Zelfde specs als Icon","Duurder"],beschrijving:"Flat track-geïnspireerde Scrambler voor de sportieve rijder.",comments:[]},
+    {naam:"Scrambler Nightshift",jaar:2024,pk:73,nm:65,gew:186,nul100:4.8,top:195,cc:803,cil:"V2",prijs:11995,lim:false,pros:["Donker urban design","Bobber-geïnspireerd"],cons:["Zelfde specs als Icon"],beschrijving:"Urban versie met donkere bobber-geïnspireerde uitstraling.",comments:[]},
+  ]},
+  {id:"hypermotard",naam:"Hypermotard",emoji:"🔥",type:"Supermoto",kleur:"#CC0000",cat:"sport",beschrijving:"De meest extreme en speelse Ducati. Hoog, smal, agressief — een straatlegale supermoto.",tag:"Supermoto",tagKleur:"#CC0000",modellen:[
+    {naam:"Hypermotard 698 Mono",jaar:2024,pk:77,nm:59,gew:151,nul100:4.2,top:220,cc:659,cil:"1 cil.",prijs:13495,lim:false,pros:["Lichtste Ducati 151kg","Single karakter","Uitzonderlijke wendbaarheid"],cons:["Eencilinder vibraties","Beperkt toervermogen"],beschrijving:"Terugkeer van de eencilinder na 25 jaar. Meest speelse Ducati in productie.",comments:[]},
+    {naam:"Hypermotard 950 SP",jaar:2024,pk:114,nm:96,gew:175,nul100:3.5,top:240,cc:937,cil:"V2",prijs:18495,lim:false,pros:["Öhlins vering","Brembo remmen","Circuit klaarstelling"],cons:["Extreem hard onderstel"],beschrijving:"Meest extreme straatlegale Hypermotard met Öhlins en Brembo.",comments:[]},
+    {naam:"Hypermotard 950",jaar:2024,pk:114,nm:96,gew:178,nul100:3.6,top:240,cc:937,cil:"V2",prijs:14995,lim:false,pros:["Extreem wendbaar","V2 karakter","Fun factor"],cons:["Beperkt comfort","Hoog zadel"],beschrijving:"V2 Hypermotard. Extreme rijervaring met karaktervolle motor.",comments:[]},
+  ]},
+  {id:"supersport",naam:"SuperSport",emoji:"🏍",type:"Sport Tourer",kleur:"#CC0000",cat:"sport",beschrijving:"Sportieve prestaties gecombineerd met dagelijks comfort.",tag:"Sport Tourer",tagKleur:"#555",modellen:[
+    {naam:"SuperSport 950 S",jaar:2024,pk:110,nm:96,gew:201,nul100:3.7,top:245,cc:937,cil:"V2",prijs:20995,lim:false,pros:["Comfortabele zithouding","Volledige windafscherming","TFT dashboard"],cons:["Zwaarder dan Monster"],beschrijving:"De meest complete alledaagse Ducati — sport en comfort in één.",comments:[]},
+    {naam:"SuperSport 950",jaar:2024,pk:110,nm:96,gew:201,nul100:3.8,top:240,cc:937,cil:"V2",prijs:18395,lim:false,pros:["Betaalbaarder dan S","Zelfde motor"],cons:["Minder uitrusting dan S"],beschrijving:"Instap SuperSport met hetzelfde karakter als de S.",comments:[]},
+  ]},
+  {id:"heritage",naam:"Heritage",emoji:"🏛️",type:"Retro / Café Racer",kleur:"#8B4513",cat:"heritage",beschrijving:"Eert de rijke geschiedenis van Ducati. Klassiek design met moderne technologie.",tag:"Retro klassiek",tagKleur:"#8B4513",modellen:[
+    {naam:"Scrambler 1100 Tribute Pro",jaar:2024,pk:86,nm:88,gew:199,nul100:4.2,top:205,cc:1079,cil:"V2",prijs:17495,lim:false,pros:["Grote 1100cc V2","Öhlins vering","Meest krachtige Scrambler"],cons:["Zwaarder dan 803cc"],beschrijving:"De kroon op de Scrambler familie met 1100cc V2 en Öhlins vering.",comments:[]},
+    {naam:"Scrambler 1100 Sport Pro",jaar:2024,pk:86,nm:88,gew:199,nul100:4.3,top:200,cc:1079,cil:"V2",prijs:16495,lim:false,pros:["1100cc grote V2","Sport georiënteerd","Öhlins vering"],cons:["Zwaarder dan kleinere Scrambler"],beschrijving:"Sportieve 1100cc Scrambler met klassiek design.",comments:[]},
+    {naam:"Monster 30 Anniversario Heritage",jaar:2024,pk:111,nm:93,gew:166,nul100:3.5,top:250,cc:937,cil:"V2",prijs:16995,lim:true,pros:["Tribute aan originele 1993 Monster","Retro kleurstelling","Genummerd certificaat"],cons:["Gelimiteerd"],beschrijving:"Eerbetoon aan de originele Monster uit 1993 met retro kleurstelling.",comments:[]},
+  ]},
+  {id:"limited",naam:"Limited Editions",emoji:"✨",type:"Exclusief / Gelimiteerd",kleur:"#B8860B",cat:"limited",beschrijving:"Ducati's meest exclusieve modellen. Collectors items met bijzondere verhalen.",tag:"Ultra exclusief",tagKleur:"#B8860B",modellen:[
+    {naam:"Panigale V4 R Superleggera",jaar:2023,pk:234,nm:112,gew:152,nul100:2.5,top:320,cc:998,cil:"V4",prijs:100000,lim:true,pros:["Lichtste straatlegale Ducati 152kg","Carbon frame","Carbon wielen","500 stuks wereldwijd"],cons:["Onbetaalbaar","Bijna onmogelijk te verkrijgen"],beschrijving:"Het absolute hoogtepunt van Ducati engineering. 152kg en 234pk.",comments:[]},
+    {naam:"Streetfighter V4 Lamborghini",jaar:2023,pk:208,nm:123,gew:178,nul100:3.0,top:299,cc:1103,cil:"V4",prijs:65000,lim:true,pros:["Ducati x Lamborghini","Huracan STO kleurstelling","630 stuks wereldwijd"],cons:["Extreem duur","Bijna onverkrijgbaar"],beschrijving:"Twee Italiaanse iconen samen. Slechts 630 exemplaren wereldwijd.",comments:[{a:"CollectorPro",t:"Een van de meest bijzondere motoren van dit decennium.",s:9,g:false}]},
+    {naam:"Panigale V4 SP2 25 Anniversario 916",jaar:2024,pk:214,nm:123,gew:172,nul100:2.8,top:305,cc:1103,cil:"V4",prijs:52000,lim:true,pros:["Tribute aan iconische 916","Speciale livery","Genummerd","Carbon onderdelen"],cons:["Extreem duur","Gelimiteerde beschikbaarheid"],beschrijving:"Eerbetoon aan de Ducati 916 — één van de mooiste motorfietsen ooit gemaakt.",comments:[]},
+    {naam:"Diavel for Bentley",jaar:2024,pk:168,nm:128,gew:218,nul100:3.1,top:270,cc:1158,cil:"V4",prijs:75000,lim:true,pros:["Ducati x Bentley","Ultra exclusief","Bentley materialen"],cons:["Absurd duur","Gelimiteerd"],beschrijving:"Samenwerking Ducati en Bentley. Rijdend kunstwerk van de fijnste materialen.",comments:[]},
+  ]},
+];
+
+const db=[
+  {merk:"ducati",mn:"Ducati",naam:"Streetfighter V4 S",type:"Naaktmotor",pk:208,nm:123,gew:178,nul100:3.0,top:299,prijs:29995,jaar:2024,emoji:"🏍",land:"italiaans",pros:["208pk V4","Öhlins vering","Topremmen"],cons:["Warm in verkeer","Hoge prijs"],desc:"De ultieme naaktmotor van Ducati.",comments:[]},
+  {merk:"ducati",mn:"Ducati",naam:"Panigale V4 S",type:"Supersport",pk:214,nm:123,gew:175,nul100:2.8,top:305,prijs:32995,jaar:2024,emoji:"🏁",land:"italiaans",pros:["Circuit koningin","Öhlins Smart EC"],cons:["Duur","Weinig comfort"],desc:"Ideale balans circuit en straat.",comments:[]},
+  {merk:"ducati",mn:"Ducati",naam:"Monster SP",type:"Naaktmotor",pk:111,nm:93,gew:166,nul100:3.5,top:250,prijs:16995,jaar:2024,emoji:"👾",land:"italiaans",pros:["Extreem licht","Öhlins vering"],cons:["Klein tankje"],desc:"De meest sportieve Monster ooit.",comments:[]},
+  {merk:"yamaha",mn:"Yamaha",naam:"MT-09",type:"Naaktmotor",pk:119,nm:93,gew:193,nul100:3.3,top:240,prijs:11499,jaar:2023,emoji:"⚡",land:"japans",pros:["Geweldige waarde","Veelzijdig"],cons:["Minder premium gevoel"],desc:"De meest veelzijdige naaktmotor.",comments:[]},
+  {merk:"yamaha",mn:"Yamaha",naam:"R1",type:"Supersport",pk:200,nm:113,gew:199,nul100:2.9,top:299,prijs:24999,jaar:2023,emoji:"🏎",land:"japans",pros:["Circuit bewezen","Crossplane motor"],cons:["Minder voor stad"],desc:"Yamaha's vlaggenschip supersport.",comments:[]},
+  {merk:"kawasaki",mn:"Kawasaki",naam:"Ninja ZX-10R",type:"Supersport",pk:203,nm:114,gew:207,nul100:2.9,top:299,prijs:21999,jaar:2023,emoji:"🟢",land:"japans",pros:["Bewezen circuit motor","Goede elektronica"],cons:["Zwaarst in klasse"],desc:"Kawasaki's meest succesvolle superbike.",comments:[]},
+  {merk:"kawasaki",mn:"Kawasaki",naam:"H2",type:"Supersport",pk:231,nm:141,gew:238,nul100:2.5,top:340,prijs:29999,jaar:2023,emoji:"💨",land:"japans",pros:["Supercharged!","Meeste vermogen"],cons:["Heel zwaar","Extreme prijs"],desc:"De enige superbike met compressor.",comments:[]},
+  {merk:"bmw",mn:"BMW",naam:"S 1000 RR",type:"Supersport",pk:210,nm:113,gew:197,nul100:2.8,top:303,prijs:24900,jaar:2023,emoji:"⚪",land:"duits",pros:["Topelektronica","Zeer stabiel"],cons:["Zwaarder","Minder emotioneel"],desc:"Meest geavanceerde superbike van BMW.",comments:[]},
+  {merk:"aprilia",mn:"Aprilia",naam:"RSV4",type:"Supersport",pk:217,nm:125,gew:175,nul100:2.7,top:305,prijs:24500,jaar:2023,emoji:"🏁",land:"italiaans",pros:["Lichtste in klasse","V4 karakter"],cons:["Minder dealers","Hoog onderhoud"],desc:"Meest technisch geavanceerde Aprilia.",comments:[]},
+  {merk:"ktm",mn:"KTM",naam:"Super Duke R",type:"Naaktmotor",pk:180,nm:140,gew:189,nul100:3.1,top:285,prijs:19995,jaar:2023,emoji:"🟠",land:"duits",pros:["Agressief karakter","Licht"],cons:["Hard onderstel","Laag comfort"],desc:"De Beast - KTM's meest extreme straatmotor.",comments:[]},
+  {merk:"suzuki",mn:"Suzuki",naam:"Hayabusa",type:"Tourer",pk:190,nm:150,gew:264,nul100:2.7,top:299,prijs:19999,jaar:2023,emoji:"🦅",land:"japans",pros:["Legendarische naam","Enorm koppel"],cons:["Zwaarst van allemaal"],desc:"De iconische Hayabusa in modernste vorm.",comments:[]},
+  {merk:"triumph",mn:"Triumph",naam:"Speed Triple RS",type:"Naaktmotor",pk:180,nm:125,gew:198,nul100:3.1,top:280,prijs:20500,jaar:2023,emoji:"🇬🇧",land:"duits",pros:["Brits karakter","Driecilinder geluid"],cons:["Minder dealers NL"],desc:"Triumph's ultieme streetfighter.",comments:[]},
+];
+
+let huidigMerk=null,huidigMerkModellen=[],cmpSlots=[null,null,null],activeQuick=null;
+const catLabels={sport:"Sport & Naked",adventure:"Adventure",accessible:"Toegankelijk",heritage:"Heritage",limited:"Limited Editions"};
+const catOrder=["sport","adventure","accessible","heritage","limited"];
+
+function goTo(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+
+function setHomeTab(tab,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');
+  ['browse','merken','zoeken','vergelijk'].forEach(t=>{const e=document.getElementById('ht-'+t);if(e)e.style.display='none';});
+  document.getElementById('ht-'+tab).style.display='block';
+  if(tab==='merken')renderMerkGrid('all');
+  if(tab==='zoeken')doSearch();
+  if(tab==='vergelijk')initCmpPicker();
+}
+
+function filterMerk(land,btn){document.querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderMerkGrid(land);}
+
+function renderMerkGrid(filter){
+  const el=document.getElementById('merk-grid-home');if(!el)return;
+  const filtered=filter==='all'?merken:merken.filter(m=>m.land===filter);
+  el.innerHTML=filtered.map(m=>`<div class="merk-card" onclick="openMerk('${m.id}')"><div class="merk-logo-box" style="background:${m.bg};"><span class="merk-logo-text" style="color:${m.fg};">${m.logo}</span></div><div class="merk-footer"><div class="merk-naam">${m.naam}</div><div class="merk-sub">${m.id==='ducati'?'33':db.filter(x=>x.merk===m.id).length} modellen</div></div></div>`).join('');
+}
+
+function openMerk(id){
+  if(id==='ducati'){renderDucatiFamilies();goTo('s-ducati');return;}
+  huidigMerk=merken.find(m=>m.id===id);huidigMerkModellen=db.filter(m=>m.merk===id);
+  document.getElementById('mod-title').textContent=huidigMerk.naam;renderModellen(huidigMerkModellen);goTo('s-modellen');
+}
+
+function renderDucatiFamilies(){
+  const grouped={};catOrder.forEach(c=>grouped[c]=[]);ducatiFamilies.forEach(f=>grouped[f.cat].push(f));
+  let html='';
+  catOrder.forEach(cat=>{
+    if(!grouped[cat].length)return;
+    html+=`<div class="section-header">${catLabels[cat]}</div>`;
+    grouped[cat].forEach(f=>{html+=`<div class="family-card" onclick="openDucatiFamily('${f.id}')"><div class="family-header"><div class="family-icon" style="background:${f.kleur}22;">${f.emoji}</div><div style="flex:1;"><div class="family-name">${f.naam}${f.cat==='limited'?'<span class="limited-badge">✨ Exclusief</span>':''}</div><div class="family-sub">${f.modellen.length} modellen · ${f.type}</div><span class="family-tag" style="background:${f.tagKleur}20;color:${f.tagKleur};">${f.tag}</span></div><div style="font-size:14px;color:var(--text3);">›</div></div></div>`;});
+  });
+  document.getElementById('ducati-families').innerHTML=html;
+}
+
+function openDucatiFamily(id){
+  const f=ducatiFamilies.find(x=>x.id===id);
+  document.getElementById('dvar-title').textContent=f.naam;document.getElementById('dvar-desc').textContent=f.beschrijving;
+  let html='';
+  if(f.cat==='limited')html+=`<div class="limited-banner"><div style="font-size:20px;">✨</div><div class="limited-banner-text">Gelimiteerde edities. Beschikbaarheid zeer beperkt. Controleer bij een Ducati dealer voor actuele prijzen.</div></div>`;
+  html+=f.modellen.map(m=>`<div class="variant-row${m.lim?' limited':''}" onclick="openDucatiDetail('${f.id}','${m.naam.replace(/'/g,"\\'")}')"><div class="variant-header"><div><div class="variant-name">${m.naam}${m.lim?'<span class="limited-badge">Gelimiteerd</span>':''}</div><div class="variant-meta">${m.jaar} · ${m.cil} · ${m.cc}cc</div></div><div class="variant-prijs">€ ${m.prijs.toLocaleString('nl')}</div></div><div class="pill-row"><span class="pill red">${m.pk} pk</span><span class="pill">${m.nm} Nm</span><span class="pill">${m.top} km/h</span><span class="pill">${m.gew} kg</span><span class="pill">0-100 in ${m.nul100}s</span>${m.lim?'<span class="pill gold">Gelimiteerd</span>':''}</div></div>`).join('');
+  document.getElementById('dvar-list').innerHTML=html;goTo('s-ducati-var');
+}
+
+function openDucatiDetail(fid,naam){
+  const f=ducatiFamilies.find(x=>x.id===fid),m=f.modellen.find(x=>x.naam===naam);
+  document.getElementById('det-title').textContent=m.naam;document.getElementById('det-back').onclick=()=>goTo('s-ducati-var');
+  const heroBg=f.cat==='limited'?'linear-gradient(135deg,#1a1a1a,#2a2a2a)':f.cat==='heritage'?'#8B4513':'#CC0000';
+  document.getElementById('det-content').innerHTML=detailHTML(m,f.emoji,`Ducati ${f.naam}`,heroBg,m.cc,m.cil,m.lim)+addFormHTML(fid,naam,true);
+  goTo('s-detail');
+}
+
+function detailHTML(m,icon,subtitle,bg,cc,cil,lim){
+  return `<div class="hero-band" style="background:${bg};"><div style="font-size:36px;width:64px;height:64px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.15);border-radius:var(--radius);flex-shrink:0;">${icon}</div><div><div class="hero-title">${m.naam}</div><div class="hero-sub">${subtitle} · ${m.jaar} · € ${m.prijs.toLocaleString('nl')}</div></div></div>
+${lim?`<div class="limited-banner"><div style="font-size:18px;">✨</div><div class="limited-banner-text">Gelimiteerde editie — extreem zeldzaam en exclusief.</div></div>`:''}
+<div style="margin-bottom:12px;"><span class="motor-badge">${cil} · ${cc}cc</span>${lim?'<span class="gold-badge">Gelimiteerde editie</span>':''}</div>
+<div class="action-row"><button class="btn-report" onclick="document.getElementById('rf').classList.toggle('open')">Fout melden</button></div>
+<div class="report-form" id="rf"><div style="font-size:12px;font-weight:600;color:#e67e22;margin-bottom:8px;">Fout melden voor ${m.naam}</div><div class="add-form"><select id="r-type"><option>Verkeerde spec</option><option>Ontbrekende info</option><option>Verkeerde foto</option><option>Anders</option></select><textarea id="r-tekst" placeholder="Beschrijf wat er niet klopt..."></textarea><button class="submit-btn" onclick="submitReport()">Versturen</button><button class="cancel-btn" onclick="document.getElementById('rf').classList.remove('open')">Annuleren</button></div></div>
+<div class="spec-grid"><div class="spec-card"><div class="spec-label">Vermogen</div><div class="spec-value">${m.pk} pk</div></div><div class="spec-card"><div class="spec-label">Koppel</div><div class="spec-value">${m.nm} Nm</div></div><div class="spec-card"><div class="spec-label">Topsnelheid</div><div class="spec-value">${m.top||m.topsnelheid} km/h</div></div><div class="spec-card"><div class="spec-label">0-100 km/h</div><div class="spec-value">${m.nul100}s</div></div><div class="spec-card"><div class="spec-label">Gewicht</div><div class="spec-value">${m.gew||m.gewicht} kg</div></div><div class="spec-card"><div class="spec-label">Prijs</div><div class="spec-value">€ ${m.prijs.toLocaleString('nl')}</div></div></div>
+<p class="beschrijving">${m.beschrijving||m.desc}</p>
+<div class="sec">Voordelen</div>${m.pros.map(p=>`<div class="pro-con"><div class="pro-dot" style="background:var(--green);"></div><span>${p}</span></div>`).join('')}
+<div class="sec">Nadelen</div>${m.cons.map(c=>`<div class="pro-con"><div class="pro-dot" style="background:#e67e22;"></div><span>${c}</span></div>`).join('')}
+<div class="sec">Ervaringen (${m.comments.length})</div><div id="clist">${renderComments(m.comments)}</div>`;
+}
+
+function addFormHTML(id1,naam,isDucati){
+  return `<div class="add-form" style="margin-top:12px;"><div class="sec">Voeg jouw ervaring toe</div><input id="c-naam" placeholder="Jouw naam"/><textarea id="c-tekst" placeholder="Jouw ervaring..."></textarea><button class="submit-btn" onclick="${isDucati?`addCommentD('${id1}','${naam.replace(/'/g,"\\'")}')`:` addComment('${id1}','${naam.replace(/'/g,"\\'")}')` }">Toevoegen</button></div>`;
+}
+
+function renderComments(comments){
+  if(!comments.length)return'<p style="font-size:13px;color:var(--text3);padding:8px 0;">Nog geen ervaringen — wees de eerste!</p>';
+  return comments.map((c,ci)=>`<div class="comment-box"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;"><div class="comment-author">${c.a||c.auteur}</div><div style="display:flex;align-items:center;gap:6px;"><button class="vote-btn${(c.g||c.gestemd)?' voted':''}" onclick="stemC(this,${ci})">Nuttig</button><span style="font-size:12px;font-weight:600;color:var(--text2);" id="vc-${ci}">${c.s||c.stemmen}</span></div></div><div class="comment-text">${c.t||c.tekst}</div></div>`).join('');
+}
+
+let currentComments=null;
+function stemC(btn,ci){
+  if(!currentComments)return;const c=currentComments[ci];
+  if(c.g||c.gestemd){(c.s!==undefined?c.s--:c.stemmen--);c.g=false;c.gestemd=false;btn.textContent='Nuttig';btn.classList.remove('voted');}
+  else{(c.s!==undefined?c.s++:c.stemmen++);c.g=true;c.gestemd=true;btn.textContent='✓ Nuttig';btn.classList.add('voted');}
+  document.getElementById('vc-'+ci).textContent=c.s!==undefined?c.s:c.stemmen;
+}
+
+function submitReport(){
+  const t=document.getElementById('r-tekst').value.trim();if(!t)return;
+  const type=document.getElementById('r-type').value;
+  alert(`Bedankt! Je melding "${type}" is ontvangen.`);
+  document.getElementById('r-tekst').value='';document.getElementById('rf').classList.remove('open');
+}
+
+function addCommentD(fid,naam){
+  const n=document.getElementById('c-naam').value.trim(),t=document.getElementById('c-tekst').value.trim();if(!n||!t)return;
+  const f=ducatiFamilies.find(x=>x.id===fid),m=f.modellen.find(x=>x.naam===naam);
+  const ci=m.comments.length;m.comments.push({a:n,t,s:0,g:false});
+  document.getElementById('clist').innerHTML+=commentBox(n,t,fid,naam,ci,true);
+  document.getElementById('c-naam').value='';document.getElementById('c-tekst').value='';
+}
+
+function addComment(merkId,naam){
+  const n=document.getElementById('c-naam').value.trim(),t=document.getElementById('c-tekst').value.trim();if(!n||!t)return;
+  const m=db.find(x=>x.merk===merkId&&x.naam===naam);
+  const ci=m.comments.length;m.comments.push({auteur:n,tekst:t,stemmen:0,gestemd:false});
+  document.getElementById('clist').innerHTML+=commentBox(n,t,merkId,naam,ci,false);
+  document.getElementById('c-naam').value='';document.getElementById('c-tekst').value='';
+}
+
+function commentBox(n,t,id1,naam,ci,isDucati){
+  return `<div class="comment-box"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;"><div class="comment-author">${n}</div><div style="display:flex;align-items:center;gap:6px;"><button class="vote-btn" onclick="stemC(this,${ci})">Nuttig</button><span style="font-size:12px;font-weight:600;color:var(--text2);" id="vc-${ci}">0</span></div></div><div class="comment-text">${t}</div></div>`;
+}
+
+function renderModellen(lijst){
+  document.getElementById('mod-list').innerHTML=lijst.map(m=>`<div class="model-row" onclick="openDetail('${m.merk}','${m.naam.replace(/'/g,"\\'")}')"><div class="model-thumb" style="background:${huidigMerk?huidigMerk.bg+'22':'#222'};">${m.emoji}</div><div class="model-info"><div class="model-name">${m.naam}</div><div class="model-meta">${m.type} · ${m.pk} pk · ${m.top} km/h · € ${m.prijs.toLocaleString('nl')}</div></div><div style="font-size:14px;color:var(--text3);padding-right:10px;">›</div></div>`).join('');
+}
+
+function sortModellen(val){
+  let s=[...huidigMerkModellen];
+  if(val==='naam')s.sort((a,b)=>a.naam.localeCompare(b.naam));
+  else if(val==='pk')s.sort((a,b)=>b.pk-a.pk);
+  else if(val==='nul100')s.sort((a,b)=>a.nul100-b.nul100);
+  else if(val==='topsnelheid')s.sort((a,b)=>b.top-a.top);
+  else if(val==='prijs')s.sort((a,b)=>a.prijs-b.prijs);
+  renderModellen(s);
+}
+
+function openDetail(merkId,naam){
+  const m=db.find(x=>x.merk===merkId&&x.naam===naam),merk=merken.find(x=>x.id===merkId);
+  currentComments=m.comments;
+  document.getElementById('det-title').textContent=m.naam;document.getElementById('det-back').onclick=()=>goTo('s-modellen');
+  document.getElementById('det-content').innerHTML=`<div class="hero-band" style="background:${merk.bg};"><div class="hero-logo" style="background:rgba(255,255,255,0.15);"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11px;color:${merk.fg};">${merk.logo}</span></div><div><div class="hero-title">${merk.naam} ${m.naam}</div><div class="hero-sub">${m.type} · ${m.jaar} · € ${m.prijs.toLocaleString('nl')}</div></div></div>
+<div class="action-row"><button class="btn-cmp" onclick="voegToeAanVergelijk('${merkId}','${naam.replace(/'/g,"\\'")}')">+ Vergelijk deze motor</button><button class="btn-report" onclick="document.getElementById('rf').classList.toggle('open')">Fout melden</button></div>
+<div class="report-form" id="rf"><div style="font-size:12px;font-weight:600;color:#e67e22;margin-bottom:8px;">Fout melden voor ${m.naam}</div><div class="add-form"><select id="r-type"><option>Verkeerde spec</option><option>Ontbrekende info</option><option>Verkeerde foto</option><option>Anders</option></select><textarea id="r-tekst" placeholder="Beschrijf wat er niet klopt..."></textarea><button class="submit-btn" onclick="submitReport()">Versturen</button><button class="cancel-btn" onclick="document.getElementById('rf').classList.remove('open')">Annuleren</button></div></div>
+<div class="spec-grid"><div class="spec-card"><div class="spec-label">Vermogen</div><div class="spec-value">${m.pk} pk</div></div><div class="spec-card"><div class="spec-label">Koppel</div><div class="spec-value">${m.nm} Nm</div></div><div class="spec-card"><div class="spec-label">Topsnelheid</div><div class="spec-value">${m.top} km/h</div></div><div class="spec-card"><div class="spec-label">0-100 km/h</div><div class="spec-value">${m.nul100}s</div></div><div class="spec-card"><div class="spec-label">Gewicht</div><div class="spec-value">${m.gew} kg</div></div><div class="spec-card"><div class="spec-label">Prijs</div><div class="spec-value">€ ${m.prijs.toLocaleString('nl')}</div></div></div>
+<p class="beschrijving">${m.desc}</p>
+<div class="sec">Voordelen</div>${m.pros.map(p=>`<div class="pro-con"><div class="pro-dot" style="background:var(--green);"></div><span>${p}</span></div>`).join('')}
+<div class="sec">Nadelen</div>${m.cons.map(c=>`<div class="pro-con"><div class="pro-dot" style="background:#e67e22;"></div><span>${c}</span></div>`).join('')}
+<div class="sec">Ervaringen (${m.comments.length})</div><div id="clist">${renderComments(m.comments)}</div>
+<div class="add-form" style="margin-top:12px;"><div class="sec">Voeg jouw ervaring toe</div><input id="c-naam" placeholder="Jouw naam"/><textarea id="c-tekst" placeholder="Jouw ervaring..."></textarea><button class="submit-btn" onclick="addComment('${merkId}','${naam.replace(/'/g,"\\'")}')">Toevoegen</button></div>`;
+  goTo('s-detail');
+}
+
+function initCmpPicker(){
+  const sel=document.getElementById('cmp-pick');if(sel.options.length>1)return;
+  db.forEach((m,i)=>sel.innerHTML+=`<option value="${i}">${m.mn} ${m.naam}</option>`);renderCmpSlots();
+}
+function addToCompare(){const idx=document.getElementById('cmp-pick').value;if(!idx)return;const slot=cmpSlots.findIndex(s=>s===null);if(slot===-1){alert('Al 3 motoren geselecteerd.');return;}cmpSlots[slot]=parseInt(idx);renderCmpSlots();renderCompare();}
+function voegToeAanVergelijk(mid,naam){const idx=db.findIndex(x=>x.merk===mid&&x.naam===naam);const slot=cmpSlots.findIndex(s=>s===null);if(slot===-1){alert('Al 3 motoren.');return;}cmpSlots[slot]=idx;setHomeTab('vergelijk',document.querySelectorAll('.tab')[3]);goTo('s-home');}
+function clearSlot(i){cmpSlots[i]=null;renderCmpSlots();renderCompare();}
+function renderCmpSlots(){['A','B','C'].forEach((l,i)=>{const sl=document.getElementById('slot-'+i);if(!sl)return;if(cmpSlots[i]!==null){sl.textContent=db[cmpSlots[i]].naam;sl.classList.add('filled');}else{sl.textContent=`+ Motor ${l}`;sl.classList.remove('filled');}});}
+function renderCompare(){
+  const filled=cmpSlots.filter(s=>s!==null);if(filled.length<2){document.getElementById('cmp-result').innerHTML='<div class="no-results">Voeg minimaal 2 motoren toe om te vergelijken</div>';return;}
+  const picked=filled.map(i=>db[i]),colors=['#3498db','#2ecc71','#f39c12'],barC=['#2980b9','#27ae60','#e67e22'];
+  const specs=[{l:"Vermogen",k:"pk",u:"pk",lager:false},{l:"Koppel",k:"nm",u:"Nm",lager:false},{l:"Topsnelheid",k:"top",u:"km/h",lager:false},{l:"0-100",k:"nul100",u:"s",lager:true},{l:"Gewicht",k:"gew",u:"kg",lager:true},{l:"Prijs",k:"prijs",u:"€",lager:true}];
+  const wins=picked.map(()=>0);
+  const rows=specs.map(s=>{const vals=picked.map(m=>m[s.k]);const best=s.lager?Math.min(...vals):Math.max(...vals);vals.forEach((v,i)=>{if(v===best)wins[i]++;});return`<tr><td class="lc">${s.l}</td>${picked.map((m,i)=>{const v=m[s.k],isBest=v===best,fmt=s.u==='€'?'€ '+v.toLocaleString('nl'):v+' '+s.u;return`<td class="${isBest?'cmp-win':'cmp-lose'}">${fmt}${isBest?'<span class="wdot"></span>':''}</td>`;}).join('')}</tr>`;}).join('');
+  const maxPk=Math.max(...picked.map(m=>m.pk)),maxTop=Math.max(...picked.map(m=>m.top));
+  const pkB=picked.map((m,i)=>`<div class="bar-wrap"><div style="font-size:11px;min-width:70px;color:${colors[i]};overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">${m.naam}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(m.pk/maxPk*100)}%;background:${barC[i]};"></div></div><div style="font-size:11px;min-width:42px;text-align:right;color:var(--text2);">${m.pk} pk</div></div>`).join('');
+  const topB=picked.map((m,i)=>`<div class="bar-wrap"><div style="font-size:11px;min-width:70px;color:${colors[i]};overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">${m.naam}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(m.top/maxTop*100)}%;background:${barC[i]};"></div></div><div style="font-size:11px;min-width:52px;text-align:right;color:var(--text2);">${m.top} km/h</div></div>`).join('');
+  const maxW=Math.max(...wins),gelijk=wins.filter(w=>w===maxW).length>1;
+  document.getElementById('cmp-result').innerHTML=`<table class="cmp-table"><thead><tr><th class="lc"></th>${picked.map((m,i)=>`<th style="color:${colors[i]};">${m.naam}</th>`).join('')}</tr></thead><tbody><tr><td colspan="${picked.length+1}" class="stitle">Specificaties</td></tr>${rows}<tr><td colspan="${picked.length+1}" class="stitle">Vermogen</td></tr><tr><td colspan="${picked.length+1}" style="padding:12px 8px;">${pkB}</td></tr><tr><td colspan="${picked.length+1}" class="stitle">Topsnelheid</td></tr><tr><td colspan="${picked.length+1}" style="padding:12px 8px;">${topB}</td></tr></tbody></table><div class="verdict-row">${picked.map((m,i)=>`<div class="vc"><div class="vn" style="color:${colors[i]};">${wins[i]}</div><div style="font-size:10px;color:var(--text3);">${m.naam}</div></div>`).join('')}</div><div class="winner-banner">${gelijk?'Gelijkspel!':picked[wins.indexOf(maxW)].naam+' wint op de meeste punten'}</div>`;
+}
+
+function quickFilter(type,el){
+  document.querySelectorAll('.qtag').forEach(t=>t.classList.remove('active'));
+  if(activeQuick===type){activeQuick=null;resetFilters();return;}
+  activeQuick=type;el.classList.add('active');resetSilent();
+  const s=document.getElementById('sort-sel');
+  if(type==='snel')s.value='nul100';else if(type==='licht')s.value='gewicht';else if(type==='goedkoop')s.value='prijs-asc';else if(type==='vermogen')s.value='pk';else if(type==='topspeed')s.value='topsnelheid';else if(type==='budget'){document.getElementById('f-prijs').value=12000;document.getElementById('prijs-val').textContent='€12.000';s.value='prijs-asc';}
+  doSearch(null,type);
+}
+function resetSilent(){document.getElementById('q').value='';document.getElementById('f-merk').value='';document.getElementById('f-type').value='';document.getElementById('f-pk').value=0;document.getElementById('pk-val').textContent='0';document.getElementById('f-prijs').value=100000;document.getElementById('prijs-val').textContent='€100.000';document.getElementById('f-gew').value=300;document.getElementById('gew-val').textContent='300';document.getElementById('f-top').value=0;document.getElementById('top-val').textContent='0';}
+function resetFilters(){activeQuick=null;document.querySelectorAll('.qtag').forEach(t=>t.classList.remove('active'));resetSilent();document.getElementById('sort-sel').value='naam';doSearch();}
+function doSearch(sortOverride,quickType){
+  const q=document.getElementById('q').value.toLowerCase(),fMerk=document.getElementById('f-merk').value,fType=document.getElementById('f-type').value,fPk=parseInt(document.getElementById('f-pk').value),fPrijs=parseInt(document.getElementById('f-prijs').value),fGew=parseInt(document.getElementById('f-gew').value),fTop=parseInt(document.getElementById('f-top').value),sort=sortOverride||document.getElementById('sort-sel').value;
+  let res=db.filter(m=>{
+    if(q&&!`${m.mn} ${m.naam} ${m.type}`.toLowerCase().includes(q))return false;
+    if(fMerk&&m.mn!==fMerk)return false;if(fType&&m.type!==fType)return false;
+    if(m.pk<fPk)return false;if(m.prijs>fPrijs)return false;if(m.gew>fGew)return false;if(m.top<fTop)return false;
+    if(quickType==='japans'&&m.land!=='japans')return false;if(quickType==='italiaans'&&m.land!=='italiaans')return false;if(quickType==='budget'&&m.prijs>12000)return false;
+    return true;
+  });
+  if(sort==='naam')res.sort((a,b)=>a.naam.localeCompare(b.naam));else if(sort==='pk')res.sort((a,b)=>b.pk-a.pk);else if(sort==='nul100')res.sort((a,b)=>a.nul100-b.nul100);else if(sort==='topsnelheid')res.sort((a,b)=>b.top-a.top);else if(sort==='gewicht')res.sort((a,b)=>a.gew-b.gew);else if(sort==='prijs-asc')res.sort((a,b)=>a.prijs-b.prijs);else if(sort==='prijs-desc')res.sort((a,b)=>b.prijs-a.prijs);
+  document.getElementById('res-count').textContent=`${res.length} resultaat${res.length!==1?'en':''}`;
+  if(!res.length){document.getElementById('res-list').innerHTML='<div class="no-results">Geen resultaten — pas de filters aan</div>';return;}
+  document.getElementById('res-list').innerHTML=res.map(m=>`<div class="res-card" onclick="openDetail('${m.merk}','${m.naam.replace(/'/g,"\\'")}')"><div style="flex:1;"><div class="res-merk">${m.mn} · ${m.type}</div><div class="res-name">${m.naam}</div><div class="pill-row"><span class="pill hl">${m.pk} pk</span><span class="pill">${m.top} km/h</span><span class="pill">0-100 in ${m.nul100}s</span><span class="pill">${m.gew} kg</span><span class="pill">€ ${m.prijs.toLocaleString('nl')}</span></div></div><div style="font-size:14px;color:var(--text3);padding-left:8px;">›</div></div>`).join('');
+}
+</script>
+</body>
+</html>
