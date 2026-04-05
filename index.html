@@ -331,15 +331,28 @@ async function openDucati(m) {
     const families = await db('families', `merk_id=eq.${m.id}&order=id`);
     document.getElementById('stat-fam').textContent = families.length;
 
-    let totMod = 0, totUitv = 0;
+    // Haal generaties en modellen per familie op
+    const famIds = families.map(f => f.id).join(',');
+    const alleGens = await db('generaties', `family_id=in.(${famIds})&select=id,family_id`);
+    const genIds = alleGens.map(g => g.id).join(',');
+    const alleMods = genIds ? await db('modellen', `generatie_id=in.(${genIds})&select=id,generatie_id`) : [];
+
     const familyHtml = families.map(f => {
+      const gens = alleGens.filter(g => g.family_id === f.id).length;
+      const famGenIds = alleGens.filter(g => g.family_id === f.id).map(g => g.id);
+      const mods = alleMods.filter(mo => famGenIds.includes(mo.generatie_id)).length;
       return `<div class="family-card" data-id="${f.id}" data-naam="${(f.naam||'').replace(/"/g,'&quot;')}" data-intro="${(f.intro||'').replace(/"/g,'&quot;')}" data-emoji="${f.emoji||''}" data-tag="${f.tag||''}" data-tagkleur="${f.tag_kleur||'#CC0000'}" onclick="openFamilyEl(this)">
         <div class="family-header">
           <div class="family-icon" style="background:#CC000018;">${f.emoji||'🏍'}</div>
           <div style="flex:1;">
             <div class="family-name">${f.naam}</div>
             <div class="family-sub">${f.type||''}</div>
-            <span class="family-tag" style="background:${f.tag_kleur||'#CC0000'}18;color:${f.tag_kleur||'#CC0000'};">${f.tag||''}</span>
+            <div style="display:flex;gap:8px;margin-top:5px;align-items:center;">
+              <span class="family-tag" style="background:${f.tag_kleur||'#CC0000'}18;color:${f.tag_kleur||'#CC0000'};">${f.tag||''}</span>
+              <span style="font-size:10px;color:var(--text3);">${gens} generatie${gens!==1?'s':''}</span>
+              <span style="font-size:10px;color:var(--text3);">·</span>
+              <span style="font-size:10px;color:var(--text3);">${mods} model${mods!==1?'len':''}</span>
+            </div>
           </div>
           <div style="font-size:13px;color:var(--text3);">›</div>
         </div>
