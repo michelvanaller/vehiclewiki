@@ -333,8 +333,21 @@ async function openDucati(m) {
     });
 
     document.getElementById('families-list').innerHTML = familyHtml.join('');
-    document.getElementById('stat-mod').textContent = '...';
-    document.getElementById('stat-uitv').textContent = '...';
+    // Tel modellen en uitvoeringen
+    try {
+      const allGens = await db('generaties', 'family_id=in.(' + families.map(f=>f.id).join(',') + ')&select=id');
+      const genIds = allGens.map(g => g.id);
+      if (genIds.length > 0) {
+        const allMods = await db('modellen', 'generatie_id=in.(' + genIds.join(',') + ')&select=id');
+        document.getElementById('stat-mod').textContent = allMods.length;
+        const modIds = allMods.map(m => m.id);
+        if (modIds.length > 0) {
+          const allUitv = await db('uitvoeringen', 'model_id=in.(' + modIds.join(',') + ')&select=id');
+          document.getElementById('stat-uitv').textContent = allUitv.length;
+        }
+      }
+    } catch(e2) { console.log('stats fout', e2); }
+
   } catch(e) {
     document.getElementById('families-list').innerHTML = error(e);
   }
