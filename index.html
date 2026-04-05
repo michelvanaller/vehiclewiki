@@ -38,7 +38,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 .filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
 .fb{background:none;border:1px solid var(--border2);border-radius:20px;padding:5px 13px;font-size:12px;color:var(--text2);cursor:pointer;font-family:'Barlow',sans-serif;}
 .fb.active,.fb:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
-.ducati-header{background:#CC0000;border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;text-align:center;}
+.ducati-header{background:#CC0000;border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px;text-align:center;}
 .ducati-logo{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:700;letter-spacing:0.08em;color:#fff;}
 .ducati-sub{font-size:12px;color:rgba(255,255,255,0.7);margin-top:3px;}
 .ducati-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px;}
@@ -313,6 +313,7 @@ async function openDucati(m) {
   document.getElementById('merk-title').textContent = m.naam;
   document.getElementById('merk-header').innerHTML = `
     <div class="ducati-header">
+      <div style="padding:20px;">
       <div class="ducati-logo">${m.logo}</div>
       <div class="ducati-sub">Bologna, Italie - Opgericht 1926</div>
       <div class="ducati-stats">
@@ -320,8 +321,9 @@ async function openDucati(m) {
         <div class="ds"><div class="ds-val" id="stat-mod">...</div><div class="ds-label">Modellen</div></div>
         <div class="ds"><div class="ds-val" id="stat-uitv">...</div><div class="ds-label">Uitvoeringen</div></div>
       </div>
-    </div>
-    <div style="display:flex;height:8px;"><div style="flex:1;background:#009246;"></div><div style="flex:1;background:#fff;"></div><div style="flex:1;background:#CE2B37;"></div></div>`;
+      </div>
+      <div style="display:flex;height:8px;"><div style="flex:1;background:#009246;"></div><div style="flex:1;background:#fff;"></div><div style="flex:1;background:#CE2B37;"></div></div>
+    </div>`;
   document.getElementById('families-list').innerHTML = loading();
   goTo('s-ducati');
 
