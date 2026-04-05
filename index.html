@@ -46,7 +46,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 .ds-val{font-size:18px;font-weight:700;color:#fff;}
 .ds-label{font-size:10px;color:rgba(255,255,255,0.6);margin-top:2px;}
 .section-header{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin:16px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--border);}
-.family-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;transition:all 0.15s;margin-bottom:8px;}
+.family-card{background:var(--bg2);border:2px solid var(--merk-accent, #DAA520);border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;transition:all 0.15s;margin-bottom:8px;}
 .family-card:hover{border-color:var(--border2);}
 .family-header{display:flex;align-items:center;gap:12px;padding:13px 14px;}
 .family-icon{width:46px;height:46px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
@@ -320,7 +320,8 @@ async function openDucati(m) {
         <div class="ds"><div class="ds-val" id="stat-mod">...</div><div class="ds-label">Modellen</div></div>
         <div class="ds"><div class="ds-val" id="stat-uitv">...</div><div class="ds-label">Uitvoeringen</div></div>
       </div>
-    </div>`;
+    </div>
+    <div style="display:flex;height:8px;"><div style="flex:1;background:#009246;"></div><div style="flex:1;background:#fff;"></div><div style="flex:1;background:#CE2B37;"></div></div>`;
   document.getElementById('families-list').innerHTML = loading();
   goTo('s-ducati');
 
