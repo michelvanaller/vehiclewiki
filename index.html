@@ -60,7 +60,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 .gen-item{position:relative;margin-bottom:12px;}
 .gen-dot{position:absolute;left:-21px;top:16px;width:11px;height:11px;border-radius:50%;background:#CC0000;border:2px solid var(--bg);box-shadow:0 0 0 2px #CC0000;}
 .gen-dot.current{background:#27AE60;box-shadow:0 0 0 2px #27AE60;}
-.gen-card{background:var(--bg2);border:2px solid var(--border);border-radius:var(--radius-lg);padding:12px 13px;cursor:pointer;transition:all 0.15s;}
+.gen-card{background:var(--bg2);border:2px solid var(--merk-accent, #DAA520);border-radius:var(--radius-lg);padding:12px 13px;cursor:pointer;transition:all 0.15s;}
 .gen-card:hover{border-color:var(--border2);}
 .gen-card.current{border:2px solid #27AE60;}
 .gen-periode{font-size:12px;font-weight:600;color:#CC0000;}
@@ -302,8 +302,14 @@ async function openDucati(m) {
   // Haal accent kleur op uit database
   try {
     const merkData = await db('merken', `id=eq.${m.id}`);
-    if (merkData[0]) m.accent = merkData[0].accent_kleur || '#DAA520';
-  } catch(e) { m.accent = '#DAA520'; }
+    if (merkData[0]) {
+      m.accent = merkData[0].accent_kleur || '#DAA520';
+      document.documentElement.style.setProperty('--merk-accent', m.accent);
+    }
+  } catch(e) { 
+    m.accent = '#DAA520';
+    document.documentElement.style.setProperty('--merk-accent', '#DAA520');
+  }
   document.getElementById('merk-title').textContent = m.naam;
   document.getElementById('merk-header').innerHTML = `
     <div class="ducati-header">
