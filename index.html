@@ -342,19 +342,19 @@ async function openDucati(m) {
       const famGenIds = alleGens.filter(g => g.family_id === f.id).map(g => g.id);
       const mods = alleMods.filter(mo => famGenIds.includes(mo.generatie_id)).length;
       return `<div class="family-card" data-id="${f.id}" data-naam="${(f.naam||'').replace(/"/g,'&quot;')}" data-intro="${(f.intro||'').replace(/"/g,'&quot;')}" data-emoji="${f.emoji||''}" data-tag="${f.tag||''}" data-tagkleur="${f.tag_kleur||'#CC0000'}" onclick="openFamilyEl(this)">
-        <div class="family-header">
-          <div class="family-icon" style="background:#CC000018;">${f.emoji||'🏍'}</div>
-          <div style="flex:1;">
-            <div class="family-name">${f.naam}</div>
-            <div class="family-sub">${f.type||''}</div>
-            <div style="display:flex;gap:8px;margin-top:5px;align-items:center;">
-              <span class="family-tag" style="background:${f.tag_kleur||'#CC0000'}18;color:${f.tag_kleur||'#CC0000'};">${f.tag||''}</span>
-              <span style="font-size:10px;color:var(--text3);">${gens} generatie${gens!==1?'s':''}</span>
-              <span style="font-size:10px;color:var(--text3);">·</span>
-              <span style="font-size:10px;color:var(--text3);">${mods} model${mods!==1?'len':''}</span>
-            </div>
+        <div style="display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:14px;padding:13px 14px;">
+          <div>
+            <div style="font-size:16px;font-weight:600;color:var(--text);">${f.naam}</div>
+            <div style="font-size:12px;color:var(--text2);margin-top:2px;">${f.type||''} · <span style="color:${f.tag_kleur||'#CC0000'};">${f.tag||''}</span></div>
           </div>
-          <div style="font-size:13px;color:var(--text3);">›</div>
+          <div style="text-align:center;padding:7px 13px;border-radius:8px;background:rgba(218,165,32,0.1);">
+            <div style="font-size:17px;font-weight:700;color:#DAA520;">${gens}</div>
+            <div style="font-size:10px;color:var(--text2);margin-top:1px;">Generaties</div>
+          </div>
+          <div style="text-align:center;padding:7px 13px;border-radius:8px;background:rgba(218,165,32,0.1);">
+            <div style="font-size:17px;font-weight:700;color:#DAA520;">${mods}</div>
+            <div style="font-size:10px;color:var(--text2);margin-top:1px;">Modellen</div>
+          </div>
         </div>
       </div>`;
     });
