@@ -333,19 +333,33 @@ async function openDucati(m) {
     });
 
     document.getElementById('families-list').innerHTML = familyHtml.join('');
-    // Tel modellen en uitvoeringen
+    // Tel modellen en uitvoeringen via SQL
     try {
-      const allGens = await db('generaties', 'family_id=in.(' + families.map(f=>f.id).join(',') + ')&select=id');
-      const genIds = allGens.map(g => g.id);
-      if (genIds.length > 0) {
-        const allMods = await db('modellen', 'generatie_id=in.(' + genIds.join(',') + ')&select=id');
-        document.getElementById('stat-mod').textContent = allMods.length;
-        const modIds = allMods.map(m => m.id);
-        if (modIds.length > 0) {
-          const allUitv = await db('uitvoeringen', 'model_id=in.(' + modIds.join(',') + ')&select=id');
-          document.getElementById('stat-uitv').textContent = allUitv.length;
+      const famIds = families.map(f=>f.id).join(',');
+      const statsRes = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_merk_stats`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_KEY,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({merk_id_input: 1})
+      });
+      // Fallback: tel via aparte queries
+      let totMod = 0, totUitv = 0;
+      for (const f of families) {
+        const gens = await db('generaties', `family_id=eq.${f.id}&select=id`);
+        for (const g of gens) {
+          const mods = await db('modellen', `generatie_id=eq.${g.id}&select=id`);
+          totMod += mods.length;
+          for (const m of mods) {
+            const uitv = await db('uitvoeringen', `model_id=eq.${m.id}&select=id`);
+            totUitv += uitv.length;
+          }
         }
       }
+      document.getElementById('stat-mod').textContent = totMod;
+      document.getElementById('stat-uitv').textContent = totUitv;
     } catch(e2) { console.log('stats fout', e2); }
 
   } catch(e) {
