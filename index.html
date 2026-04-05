@@ -1,1 +1,624 @@
-Top! Nu de app aanpassen zodat de gouden rand gebruikt wordt op de generatiekaarten:Upload naar GitHub! De generatiekaarten krijgen nu een gouden rand bij Ducati. Als we later Kawasaki toevoegen zetten we daar gewoon een groene accent kleur in de database. 🎉
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VehicleWiki</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f0f0f;--bg2:#1a1a1a;--bg3:#242424;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.15);--text:#f0f0f0;--text2:#888;--text3:#555;--accent:#e8383d;--green:#2ecc71;--blue:#3498db;--gold:#DAA520;--radius:10px;--radius-lg:16px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font-size:15px;min-height:100vh;}
+.screen{display:none;max-width:680px;margin:0 auto;padding:16px 16px 60px;}
+.screen.active{display:block;}
+.topnav{display:flex;align-items:center;justify-content:space-between;padding:12px 0 16px;border-bottom:1px solid var(--border);margin-bottom:18px;}
+.topnav-left{display:flex;align-items:center;gap:10px;}
+.topnav h2{font-size:15px;font-weight:600;}
+.back-btn{background:none;border:1px solid var(--border2);border-radius:8px;padding:5px 12px;font-size:12px;color:var(--text2);cursor:pointer;font-family:'Barlow',sans-serif;}
+.back-btn:hover{background:var(--bg3);color:var(--text);}
+.home-hero{text-align:center;padding:32px 0 28px;}
+.home-logo{font-family:'Barlow Condensed',sans-serif;font-size:48px;font-weight:700;letter-spacing:-1px;}
+.home-logo span{color:var(--accent);}
+.home-sub{font-size:14px;color:var(--text2);margin-top:6px;}
+.tab-bar{display:flex;border-bottom:1px solid var(--border);margin-bottom:18px;overflow-x:auto;}
+.tab{padding:9px 16px;font-size:13px;font-weight:500;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;font-family:'Barlow',sans-serif;}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:380px;margin:0 auto;}
+.cat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px 12px;cursor:pointer;text-align:center;transition:all 0.2s;}
+.cat-card:hover{border-color:var(--accent);transform:translateY(-2px);}
+.cat-card.disabled{opacity:0.3;cursor:default;}
+.cat-card.disabled:hover{transform:none;border-color:var(--border);}
+.merk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;}
+.merk-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;transition:all 0.2s;}
+.merk-card:hover{border-color:var(--border2);transform:translateY(-1px);}
+.merk-logo-box{height:76px;display:flex;align-items:center;justify-content:center;}
+.merk-footer{padding:9px 12px;border-top:1px solid var(--border);}
+.merk-naam{font-size:12px;font-weight:600;}
+.merk-sub{font-size:11px;color:var(--text3);margin-top:1px;}
+.filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+.fb{background:none;border:1px solid var(--border2);border-radius:20px;padding:5px 13px;font-size:12px;color:var(--text2);cursor:pointer;font-family:'Barlow',sans-serif;}
+.fb.active,.fb:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
+.ducati-header{background:#CC0000;border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;text-align:center;}
+.ducati-logo{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:700;letter-spacing:0.08em;color:#fff;}
+.ducati-sub{font-size:12px;color:rgba(255,255,255,0.7);margin-top:3px;}
+.ducati-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px;}
+.ds{background:rgba(0,0,0,0.2);border-radius:8px;padding:8px;text-align:center;}
+.ds-val{font-size:18px;font-weight:700;color:#fff;}
+.ds-label{font-size:10px;color:rgba(255,255,255,0.6);margin-top:2px;}
+.section-header{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin:16px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.family-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;transition:all 0.15s;margin-bottom:8px;}
+.family-card:hover{border-color:var(--border2);}
+.family-header{display:flex;align-items:center;gap:12px;padding:13px 14px;}
+.family-icon{width:46px;height:46px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.family-name{font-size:15px;font-weight:500;}
+.family-sub{font-size:12px;color:var(--text2);margin-top:2px;}
+.family-tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;margin-top:5px;font-weight:500;}
+.breadcrumb{font-size:11px;color:var(--text3);margin-bottom:12px;display:flex;gap:4px;flex-wrap:wrap;align-items:center;}
+.breadcrumb span{color:var(--text2);}
+.timeline{position:relative;padding-left:26px;}
+.timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:var(--border);}
+.gen-item{position:relative;margin-bottom:12px;}
+.gen-dot{position:absolute;left:-21px;top:16px;width:11px;height:11px;border-radius:50%;background:#CC0000;border:2px solid var(--bg);box-shadow:0 0 0 2px #CC0000;}
+.gen-dot.current{background:#27AE60;box-shadow:0 0 0 2px #27AE60;}
+.gen-card{background:var(--bg2);border:2px solid var(--border);border-radius:var(--radius-lg);padding:12px 13px;cursor:pointer;transition:all 0.15s;}
+.gen-card:hover{border-color:var(--border2);}
+.gen-card.current{border:2px solid #27AE60;}
+.gen-periode{font-size:12px;font-weight:600;color:#CC0000;}
+.gen-periode.current{color:#27AE60;}
+.gen-name{font-size:13px;font-weight:500;margin:3px 0;}
+.gen-preview{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px;}
+.gp{font-size:10px;padding:2px 7px;border-radius:20px;background:var(--bg3);color:var(--text2);}
+.gp.red{background:rgba(204,0,0,0.15);color:#CC0000;}
+.list-row{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px 13px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;transition:all 0.15s;}
+.list-row:hover{border-color:var(--border2);}
+.list-row-name{font-size:14px;font-weight:500;}
+.list-row-sub{font-size:11px;color:var(--text2);margin-top:2px;}
+.uitv-row{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px 13px;cursor:pointer;margin-bottom:8px;transition:all 0.15s;}
+.uitv-row:hover{border-color:var(--border2);}
+.uitv-row.special{border-color:rgba(218,165,32,0.4);}
+.uitv-header{display:flex;justify-content:space-between;align-items:flex-start;}
+.uitv-name{font-size:14px;font-weight:500;}
+.uitv-prijs{font-size:12px;color:var(--text2);}
+.uitv-meta{font-size:11px;color:var(--text2);margin-top:2px;}
+.pill-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px;}
+.pill{font-size:10px;padding:2px 8px;border-radius:20px;background:var(--bg3);color:var(--text2);}
+.pill.red{background:rgba(204,0,0,0.15);color:#CC0000;}
+.pill.gold{background:rgba(218,165,32,0.15);color:#B8860B;}
+.special-badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(39,174,96,0.15);color:#27AE60;border:0.5px solid rgba(39,174,96,0.3);margin-left:6px;vertical-align:middle;}
+.hero-band{border-radius:var(--radius-lg);padding:16px;margin-bottom:14px;display:flex;gap:14px;align-items:center;}
+.spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.spec-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;}
+.spec-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;}
+.spec-value{font-size:18px;font-weight:600;font-family:'Barlow Condensed',sans-serif;}
+.sec{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin:14px 0 7px;}
+.pro-con{display:flex;gap:8px;margin-bottom:5px;font-size:13px;align-items:flex-start;}
+.pro-dot{width:6px;height:6px;border-radius:50%;margin-top:5px;flex-shrink:0;}
+.beschrijving{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:14px;}
+.spec-badge{display:inline-block;font-size:11px;padding:3px 10px;border-radius:20px;background:rgba(204,0,0,0.15);color:#CC0000;border:0.5px solid rgba(204,0,0,0.3);margin-bottom:12px;margin-right:6px;}
+.comment-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:11px 13px;margin-bottom:7px;}
+.vote-btn{background:none;border:1px solid var(--border2);border-radius:20px;padding:2px 10px;font-size:11px;cursor:pointer;color:var(--text2);font-family:'Barlow',sans-serif;}
+.vote-btn:hover{border-color:var(--green);color:var(--green);}
+.vote-btn.voted{background:rgba(46,204,113,0.15);color:var(--green);border-color:var(--green);}
+.report-form{background:rgba(230,126,34,0.08);border:1px solid rgba(230,126,34,0.3);border-radius:var(--radius);padding:13px;margin-top:8px;display:none;}
+.report-form.open{display:block;}
+.add-form input,.add-form textarea,.add-form select{width:100%;margin-bottom:7px;padding:8px 11px;border:1px solid var(--border2);border-radius:8px;background:var(--bg3);color:var(--text);font-size:13px;font-family:'Barlow',sans-serif;}
+.add-form textarea{height:64px;resize:vertical;}
+.add-form .submit-btn{border:1px solid var(--accent);background:none;border-radius:8px;padding:7px 16px;font-size:13px;color:var(--accent);cursor:pointer;font-family:'Barlow',sans-serif;margin-right:6px;}
+.add-form .submit-btn:hover{background:var(--accent);color:#fff;}
+.add-form .cancel-btn{border:1px solid var(--border2);background:none;border-radius:8px;padding:7px 16px;font-size:13px;color:var(--text2);cursor:pointer;font-family:'Barlow',sans-serif;}
+.loading{text-align:center;padding:40px;color:var(--text2);font-size:14px;}
+.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.error-box{background:rgba(232,56,61,0.1);border:1px solid rgba(232,56,61,0.3);border-radius:var(--radius);padding:14px;text-align:center;color:var(--accent);font-size:13px;}
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<div id="s-home" class="screen active">
+  <div class="home-hero">
+    <div class="home-logo">Vehicle<span>Wiki</span></div>
+    <div class="home-sub">De encyclopedie van voertuigen</div>
+  </div>
+  <div class="tab-bar">
+    <div class="tab active" onclick="setHomeTab('browse',this)">Bladeren</div>
+    <div class="tab" onclick="setHomeTab('merken',this)">Merken</div>
+  </div>
+  <div id="ht-browse">
+    <div class="cat-grid">
+      <div class="cat-card" onclick="setHomeTab('merken',document.querySelectorAll('.tab')[1])">
+        <div style="font-size:32px;margin-bottom:8px;">🏍</div>
+        <div style="font-size:13px;font-weight:600;">Motoren</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:3px;">12 merken</div>
+      </div>
+      <div class="cat-card disabled">
+        <div style="font-size:32px;margin-bottom:8px;">🚗</div>
+        <div style="font-size:13px;font-weight:600;">Auto's</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:3px;">binnenkort</div>
+      </div>
+      <div class="cat-card disabled">
+        <div style="font-size:32px;margin-bottom:8px;">✈️</div>
+        <div style="font-size:13px;font-weight:600;">Vliegtuigen</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:3px;">binnenkort</div>
+      </div>
+    </div>
+  </div>
+  <div id="ht-merken" style="display:none;">
+    <div class="filter-bar">
+      <button class="fb active" onclick="filterMerk('all',this)">Alle</button>
+      <button class="fb" onclick="filterMerk('italiaans',this)">Italiaans</button>
+      <button class="fb" onclick="filterMerk('japans',this)">Japans</button>
+      <button class="fb" onclick="filterMerk('amerikaans',this)">Amerikaans</button>
+      <button class="fb" onclick="filterMerk('duits',this)">Duits</button>
+    </div>
+    <div class="merk-grid" id="merk-grid"></div>
+  </div>
+</div>
+
+<!-- DUCATI FAMILIES -->
+<div id="s-ducati" class="screen">
+  <div class="topnav"><div class="topnav-left"><button class="back-btn" onclick="goTo('s-home');setHomeTab('merken',document.querySelectorAll('.tab')[1])">← merken</button><h2 id="merk-title">Ducati</h2></div></div>
+  <div id="merk-header"></div>
+  <div id="families-list"></div>
+</div>
+
+<!-- GENERATIES -->
+<div id="s-generaties" class="screen">
+  <div class="topnav"><div class="topnav-left"><button class="back-btn" id="back-gen">← Ducati</button><h2 id="gen-title"></h2></div></div>
+  <div class="breadcrumb" id="bc-gen"></div>
+  <div id="gen-intro" style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:16px;"></div>
+  <div class="timeline" id="gen-list"></div>
+</div>
+
+<!-- MODELLEN IN GENERATIE -->
+<div id="s-modellen" class="screen">
+  <div class="topnav"><div class="topnav-left"><button class="back-btn" id="back-mod">← generaties</button><h2 id="mod-title"></h2></div></div>
+  <div class="breadcrumb" id="bc-mod"></div>
+  <div id="gen-uitleg" style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:13px;"></div>
+  <div id="mod-list"></div>
+</div>
+
+<!-- UITVOERINGEN -->
+<div id="s-uitvoeringen" class="screen">
+  <div class="topnav"><div class="topnav-left"><button class="back-btn" id="back-uitv">← modellen</button><h2 id="uitv-title"></h2></div></div>
+  <div class="breadcrumb" id="bc-uitv"></div>
+  <div id="uitv-list"></div>
+</div>
+
+<!-- SPECS DETAIL -->
+<div id="s-specs" class="screen">
+  <div class="topnav"><div class="topnav-left"><button class="back-btn" id="back-spec">← uitvoeringen</button><h2 id="spec-title"></h2></div></div>
+  <div class="breadcrumb" id="bc-spec"></div>
+  <div id="spec-content"></div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://adwxdumziwfqvklwjnvp.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkd3hkdW16aXdmcXZrbHdqbnZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MDA1NDUsImV4cCI6MjA5MDQ3NjU0NX0.5s2boF_P5gH7UTG9x8f9e4Lyz2l4CJ5VClNw7DHXOO4';
+
+async function db(table, params='') {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${params}`, {
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json'
+    }
+  });
+  if (!res.ok) throw new Error(`DB fout: ${res.status}`);
+  return res.json();
+}
+
+async function dbPost(table, data) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=minimal'
+    },
+    body: JSON.stringify(data)
+  });
+  return res.ok;
+}
+
+async function dbPatch(table, id, data) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
+    method: 'PATCH',
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  });
+  return res.ok;
+}
+
+const merkenData = [
+  {id:1, naam:'Ducati', land:'italiaans', bg:'#CC0000', fg:'#fff', logo:'DUCATI', db:true},
+  {id:null, naam:'Yamaha', land:'japans', bg:'#002F6C', fg:'#fff', logo:'YAMAHA', db:false},
+  {id:null, naam:'Kawasaki', land:'japans', bg:'#009A44', fg:'#fff', logo:'KAWASAKI', db:false},
+  {id:null, naam:'Honda', land:'japans', bg:'#CC0000', fg:'#fff', logo:'HONDA', db:false},
+  {id:null, naam:'BMW', land:'duits', bg:'#1C69D4', fg:'#fff', logo:'BMW', db:false},
+  {id:null, naam:'KTM', land:'duits', bg:'#FF6600', fg:'#fff', logo:'KTM', db:false},
+  {id:null, naam:'Aprilia', land:'italiaans', bg:'#1A1A1A', fg:'#fff', logo:'APRILIA', db:false},
+  {id:null, naam:'Triumph', land:'duits', bg:'#FFCB00', fg:'#1A1A1A', logo:'TRIUMPH', db:false},
+  {id:null, naam:'Harley-Davidson', land:'amerikaans', bg:'#FF6600', fg:'#fff', logo:'H-D', db:false},
+  {id:null, naam:'Suzuki', land:'japans', bg:'#1A1A1A', fg:'#fff', logo:'SUZUKI', db:false},
+  {id:null, naam:'MV Agusta', land:'italiaans', bg:'#C41E3A', fg:'#fff', logo:'MV', db:false},
+  {id:null, naam:'Indian', land:'amerikaans', bg:'#8B0000', fg:'#fff', logo:'INDIAN', db:false},
+];
+
+let huidigMerk = null;
+let huidigFamily = null;
+let huidigGen = null;
+let huidigModel = null;
+
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function setHomeTab(tab, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('ht-browse').style.display = tab==='browse' ? 'block' : 'none';
+  document.getElementById('ht-merken').style.display = tab==='merken' ? 'block' : 'none';
+  if (tab === 'merken') renderMerken('all');
+}
+
+function filterMerk(land, btn) {
+  document.querySelectorAll('.fb').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderMerken(land);
+}
+
+function renderMerken(filter) {
+  const filtered = filter === 'all' ? merkenData : merkenData.filter(m => m.land === filter);
+  document.getElementById('merk-grid').innerHTML = filtered.map(m => `
+    <div class="merk-card" onclick="openMerk(${JSON.stringify(m).replace(/"/g,'&quot;')})">
+      <div class="merk-logo-box" style="background:${m.bg};">
+        <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:0.06em;font-size:18px;color:${m.fg};">${m.logo}</span>
+      </div>
+      <div class="merk-footer">
+        <div class="merk-naam">${m.naam}</div>
+        <div class="merk-sub">${m.db ? 'Volledig uitgewerkt' : 'Binnenkort'}</div>
+      </div>
+    </div>`).join('');
+}
+
+function openMerk(m) {
+  huidigMerk = m;
+  if (m.db) {
+    openDucati(m);
+  } else {
+    alert(`${m.naam} wordt binnenkort toegevoegd!`);
+  }
+}
+
+async function openDucati(m) {
+  // Haal accent kleur op uit database
+  try {
+    const merkData = await db('merken', `id=eq.${m.id}`);
+    if (merkData[0]) m.accent = merkData[0].accent_kleur || '#DAA520';
+  } catch(e) { m.accent = '#DAA520'; }
+  document.getElementById('merk-title').textContent = m.naam;
+  document.getElementById('merk-header').innerHTML = `
+    <div class="ducati-header">
+      <div class="ducati-logo">${m.logo}</div>
+      <div class="ducati-sub">Bologna, Italie - Opgericht 1926</div>
+      <div class="ducati-stats">
+        <div class="ds"><div class="ds-val" id="stat-fam">...</div><div class="ds-label">Families</div></div>
+        <div class="ds"><div class="ds-val" id="stat-mod">...</div><div class="ds-label">Modellen</div></div>
+        <div class="ds"><div class="ds-val" id="stat-uitv">...</div><div class="ds-label">Uitvoeringen</div></div>
+      </div>
+    </div>`;
+  document.getElementById('families-list').innerHTML = loading();
+  goTo('s-ducati');
+
+  try {
+    const families = await db('families', `merk_id=eq.${m.id}&order=id`);
+    document.getElementById('stat-fam').textContent = families.length;
+
+    let totMod = 0, totUitv = 0;
+    const familyHtml = families.map(f => {
+      return `<div class="family-card" data-id="${f.id}" data-naam="${(f.naam||'').replace(/"/g,'&quot;')}" data-intro="${(f.intro||'').replace(/"/g,'&quot;')}" data-emoji="${f.emoji||''}" data-tag="${f.tag||''}" data-tagkleur="${f.tag_kleur||'#CC0000'}" onclick="openFamilyEl(this)">
+        <div class="family-header">
+          <div class="family-icon" style="background:#CC000018;">${f.emoji||'🏍'}</div>
+          <div style="flex:1;">
+            <div class="family-name">${f.naam}</div>
+            <div class="family-sub">${f.type||''}</div>
+            <span class="family-tag" style="background:${f.tag_kleur||'#CC0000'}18;color:${f.tag_kleur||'#CC0000'};">${f.tag||''}</span>
+          </div>
+          <div style="font-size:13px;color:var(--text3);">›</div>
+        </div>
+      </div>`;
+    });
+
+    document.getElementById('families-list').innerHTML = familyHtml.join('');
+    // Tel modellen en uitvoeringen via SQL
+    try {
+      const famIds = families.map(f=>f.id).join(',');
+      const statsRes = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_merk_stats`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_KEY,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({merk_id_input: 1})
+      });
+      // Fallback: tel via aparte queries
+      let totMod = 0, totUitv = 0;
+      for (const f of families) {
+        const gens = await db('generaties', `family_id=eq.${f.id}&select=id`);
+        for (const g of gens) {
+          const mods = await db('modellen', `generatie_id=eq.${g.id}&select=id`);
+          totMod += mods.length;
+          for (const m of mods) {
+            const uitv = await db('uitvoeringen', `model_id=eq.${m.id}&select=id`);
+            totUitv += uitv.length;
+          }
+        }
+      }
+      document.getElementById('stat-mod').textContent = totMod;
+      document.getElementById('stat-uitv').textContent = totUitv;
+    } catch(e2) { console.log('stats fout', e2); }
+
+  } catch(e) {
+    document.getElementById('families-list').innerHTML = error(e);
+  }
+}
+
+function openFamilyEl(el) {
+  const fid = parseInt(el.dataset.id);
+  const naam = el.dataset.naam;
+  const intro = el.dataset.intro;
+  const emoji = el.dataset.emoji;
+  const tag = el.dataset.tag;
+  const tagKleur = el.dataset.tagkleur;
+  openFamily(fid, naam, intro, emoji, tag, tagKleur);
+}
+
+async function openFamily(fid, naam, intro, emoji, tag, tagKleur) {
+  huidigFamily = {id: fid, naam, intro, emoji};
+  document.getElementById('gen-title').textContent = naam;
+  document.getElementById('bc-gen').innerHTML = bc([huidigMerk.naam, naam]);
+  document.getElementById('gen-intro').textContent = intro;
+  document.getElementById('gen-list').innerHTML = loading();
+  document.getElementById('back-gen').onclick = () => goTo('s-ducati');
+  goTo('s-generaties');
+
+  try {
+    const gens = await db('generaties', `family_id=eq.${fid}&order=id`);
+    const sorted = [...gens].reverse();
+    document.getElementById('gen-list').innerHTML = sorted.map(g => `
+      <div class="gen-item">
+        <div class="gen-dot${g.huidig?' current':''}"></div>
+        <div class="gen-card${g.huidig?' current':''}" onclick="openGeneratie(${g.id},'${g.naam.replace(/'/g,"\\'")}','${(g.beschrijving||'').replace(/'/g,"\\'").replace(/\n/g,' ')}',${g.huidig})">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:3px;">
+            <div class="gen-periode${g.huidig?' current':''}">${g.periode}</div>
+            <span style="font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500;background:${g.huidig?'#27AE6018':'#CC000018'};color:${g.huidig?'#27AE60':'#CC0000'};">${g.huidig?'Huidig':'Historisch'}</span>
+          </div>
+          <div class="gen-name">${g.naam}</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.5;">${(g.beschrijving||'').substring(0,100)}...</div>
+        </div>
+      </div>`).join('');
+  } catch(e) {
+    document.getElementById('gen-list').innerHTML = error(e);
+  }
+}
+
+async function openGeneratie(gid, naam, beschrijving, huidig) {
+  huidigGen = {id: gid, naam, beschrijving, huidig};
+  document.getElementById('mod-title').textContent = naam;
+  document.getElementById('bc-mod').innerHTML = bc([huidigMerk.naam, huidigFamily.naam, naam]);
+  document.getElementById('gen-uitleg').textContent = beschrijving;
+  document.getElementById('mod-list').innerHTML = loading();
+  document.getElementById('back-mod').onclick = () => goTo('s-generaties');
+  goTo('s-modellen');
+
+  try {
+    const mods = await db('modellen', `generatie_id=eq.${gid}&order=id`);
+    document.getElementById('mod-list').innerHTML = mods.map((m,i) => `
+      <div class="list-row" onclick="openModel(${m.id},'${m.naam.replace(/'/g,"\\'")}','${(m.sub||'').replace(/'/g,"\\'")}')">
+        <div>
+          <div class="list-row-name">${m.naam}</div>
+          <div class="list-row-sub">${m.sub||''}</div>
+        </div>
+        <div style="font-size:13px;color:var(--text3);">›</div>
+      </div>`).join('');
+  } catch(e) {
+    document.getElementById('mod-list').innerHTML = error(e);
+  }
+}
+
+async function openModel(mid, naam, sub) {
+  huidigModel = {id: mid, naam, sub};
+  document.getElementById('uitv-title').textContent = naam;
+  document.getElementById('bc-uitv').innerHTML = bc([huidigMerk.naam, huidigFamily.naam, huidigGen.naam, naam]);
+  document.getElementById('uitv-list').innerHTML = loading();
+  document.getElementById('back-uitv').onclick = () => goTo('s-modellen');
+  goTo('s-uitvoeringen');
+
+  try {
+    const uitv = await db('uitvoeringen', `model_id=eq.${mid}&order=id`);
+    document.getElementById('uitv-list').innerHTML = uitv.map(u => `
+      <div class="uitv-row${u.special?' special':''}" onclick="openSpecs(${u.id})">
+        <div class="uitv-header">
+          <div>
+            <div class="uitv-name">${u.naam}${u.special?'<span class="special-badge">Speciaal</span>':''}</div>
+            <div class="uitv-meta">${u.jaar} · ${u.cilinderinhoud}cc</div>
+          </div>
+          <div class="uitv-prijs">${u.prijs||''}</div>
+        </div>
+        <div class="pill-row">
+          <span class="pill red">${u.pk} pk</span>
+          <span class="pill">${u.nm} Nm</span>
+          <span class="pill">${u.topsnelheid} km/h</span>
+          <span class="pill">${u.gewicht} kg</span>
+          <span class="pill">0-100 in ${u.nul100}s</span>
+          ${u.special?'<span class="pill gold">Speciale editie</span>':''}
+        </div>
+      </div>`).join('');
+  } catch(e) {
+    document.getElementById('uitv-list').innerHTML = error(e);
+  }
+}
+
+async function openSpecs(uid) {
+  document.getElementById('spec-title').textContent = '...';
+  document.getElementById('spec-content').innerHTML = loading();
+  document.getElementById('back-spec').onclick = () => goTo('s-uitvoeringen');
+  goTo('s-specs');
+
+  try {
+    const [uitvArr, proscons, ervaringen] = await Promise.all([
+      db('uitvoeringen', `id=eq.${uid}`),
+      db('pros_cons', `uitvoering_id=eq.${uid}&order=type,id`),
+      db('ervaringen', `uitvoering_id=eq.${uid}&order=stemmen.desc`)
+    ]);
+
+    const u = uitvArr[0];
+    document.getElementById('spec-title').textContent = u.naam;
+    document.getElementById('bc-spec').innerHTML = bc([huidigMerk.naam, huidigFamily.naam, huidigGen.naam, huidigModel.naam, u.naam]);
+
+    const pros = proscons.filter(p => p.type === 'pro');
+    const cons = proscons.filter(p => p.type === 'con');
+    const heroBg = huidigGen.huidig ? '#27AE60' : '#CC0000';
+
+    const ervaringHtml = ervaringen.length === 0
+      ? '<p style="font-size:13px;color:var(--text3);padding:8px 0;">Nog geen ervaringen - wees de eerste!</p>'
+      : ervaringen.map(e => `
+        <div class="comment-box">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+            <div style="font-size:12px;font-weight:600;color:var(--text2);">${e.auteur}</div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <button class="vote-btn" onclick="stemOp(${e.id},this)">${e.gestemd?'✓ Nuttig':'Nuttig'}</button>
+              <span style="font-size:12px;font-weight:600;color:var(--text2);" id="vc-${e.id}">${e.stemmen}</span>
+            </div>
+          </div>
+          <div style="font-size:13px;">${e.tekst}</div>
+        </div>`).join('');
+
+    document.getElementById('spec-content').innerHTML = `
+      <div class="hero-band" style="background:${heroBg};">
+        <div style="font-size:36px;width:64px;height:64px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.15);border-radius:var(--radius);flex-shrink:0;">${huidigFamily.emoji||'🏍'}</div>
+        <div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;color:#fff;">${u.naam}</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:3px;">${u.jaar} · ${u.prijs||''}</div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <span class="spec-badge">${u.cilinders} · ${u.cilinderinhoud}cc</span>
+        ${huidigGen.huidig?'<span class="spec-badge" style="background:#27AE6015;color:#27AE60;border-color:#27AE6030;">Huidige generatie</span>':''}
+        ${u.special?'<span class="spec-badge" style="background:rgba(218,165,32,0.15);color:#B8860B;border-color:rgba(218,165,32,0.3);">Speciale editie</span>':''}
+      </div>
+      <div class="action-row" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+        <button style="background:none;border:1px solid #e67e22;border-radius:8px;padding:6px 13px;font-size:12px;color:#e67e22;cursor:pointer;font-family:'Barlow',sans-serif;" onclick="document.getElementById('rf').classList.toggle('open')">Fout melden</button>
+      </div>
+      <div class="report-form" id="rf">
+        <div style="font-size:12px;font-weight:600;color:#e67e22;margin-bottom:8px;">Fout melden voor ${u.naam}</div>
+        <div class="add-form">
+          <select id="r-type"><option>Verkeerde spec</option><option>Ontbrekende info</option><option>Anders</option></select>
+          <textarea id="r-tekst" placeholder="Beschrijf wat er niet klopt..."></textarea>
+          <button class="submit-btn" onclick="stuurFoutmelding(${uid})">Versturen</button>
+          <button class="cancel-btn" onclick="document.getElementById('rf').classList.remove('open')">Annuleren</button>
+        </div>
+      </div>
+      <div class="spec-grid">
+        <div class="spec-card"><div class="spec-label">Vermogen</div><div class="spec-value">${u.pk} pk</div></div>
+        <div class="spec-card"><div class="spec-label">Koppel</div><div class="spec-value">${u.nm} Nm</div></div>
+        <div class="spec-card"><div class="spec-label">Topsnelheid</div><div class="spec-value">${u.topsnelheid} km/h</div></div>
+        <div class="spec-card"><div class="spec-label">0-100 km/h</div><div class="spec-value">${u.nul100}s</div></div>
+        <div class="spec-card"><div class="spec-label">Gewicht</div><div class="spec-value">${u.gewicht} kg</div></div>
+        <div class="spec-card"><div class="spec-label">Cilinderinhoud</div><div class="spec-value">${u.cilinderinhoud}cc</div></div>
+      </div>
+      <p class="beschrijving">${u.beschrijving||''}</p>
+      <div class="sec">Voordelen</div>
+      ${pros.map(p=>`<div class="pro-con"><div class="pro-dot" style="background:#27AE60;"></div><span>${p.tekst}</span></div>`).join('')}
+      <div class="sec">Nadelen</div>
+      ${cons.map(c=>`<div class="pro-con"><div class="pro-dot" style="background:#e67e22;"></div><span>${c.tekst}</span></div>`).join('')}
+      <div class="sec">Ervaringen (${ervaringen.length})</div>
+      <div id="erv-list">${ervaringHtml}</div>
+      <div class="add-form" style="margin-top:12px;">
+        <div class="sec">Voeg jouw ervaring toe</div>
+        <input id="c-naam" placeholder="Jouw naam"/>
+        <textarea id="c-tekst" placeholder="Jouw ervaring..."></textarea>
+        <button class="submit-btn" onclick="voegErvaringToe(${uid})">Toevoegen</button>
+      </div>`;
+
+  } catch(e) {
+    document.getElementById('spec-content').innerHTML = error(e);
+  }
+}
+
+async function stemOp(eid, btn) {
+  const span = document.getElementById('vc-' + eid);
+  const huidig = parseInt(span.textContent);
+  if (btn.classList.contains('voted')) {
+    await dbPatch('ervaringen', eid, {stemmen: huidig - 1});
+    span.textContent = huidig - 1;
+    btn.textContent = 'Nuttig';
+    btn.classList.remove('voted');
+  } else {
+    await dbPatch('ervaringen', eid, {stemmen: huidig + 1});
+    span.textContent = huidig + 1;
+    btn.textContent = '✓ Nuttig';
+    btn.classList.add('voted');
+  }
+}
+
+async function voegErvaringToe(uid) {
+  const naam = document.getElementById('c-naam').value.trim();
+  const tekst = document.getElementById('c-tekst').value.trim();
+  if (!naam || !tekst) return;
+  const ok = await dbPost('ervaringen', {uitvoering_id: uid, auteur: naam, tekst, stemmen: 0});
+  if (ok) {
+    document.getElementById('erv-list').innerHTML += `
+      <div class="comment-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+          <div style="font-size:12px;font-weight:600;color:var(--text2);">${naam}</div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <button class="vote-btn">Nuttig</button>
+            <span style="font-size:12px;font-weight:600;color:var(--text2);">0</span>
+          </div>
+        </div>
+        <div style="font-size:13px;">${tekst}</div>
+      </div>`;
+    document.getElementById('c-naam').value = '';
+    document.getElementById('c-tekst').value = '';
+  }
+}
+
+async function stuurFoutmelding(uid) {
+  const type = document.getElementById('r-type').value;
+  const tekst = document.getElementById('r-tekst').value.trim();
+  if (!tekst) return;
+  await dbPost('foutmeldingen', {uitvoering_id: uid, type, beschrijving: tekst});
+  alert('Bedankt! Je melding is ontvangen.');
+  document.getElementById('r-tekst').value = '';
+  document.getElementById('rf').classList.remove('open');
+}
+
+function bc(items) {
+  return items.map((item,i) => i < items.length-1
+    ? `<span>${item}</span><span style="color:var(--text3);">›</span>`
+    : `<span style="color:var(--text);font-weight:500;">${item}</span>`
+  ).join('');
+}
+
+function loading() {
+  return `<div class="loading"><div class="spinner"></div>Laden...</div>`;
+}
+
+function error(e) {
+  return `<div class="error-box">Er ging iets mis: ${e.message}</div>`;
+}
+
+renderMerken('all');
+</script>
+</body>
+</html>
