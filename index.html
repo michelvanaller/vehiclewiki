@@ -249,7 +249,7 @@ async function dbPatch(table, id, data) {
 const merkenData = [
   {id:1, naam:'Ducati', land:'italiaans', bg:'#CC0000', fg:'#fff', logo:'DUCATI', db:true},
   {id:null, naam:'Yamaha', land:'japans', bg:'#002F6C', fg:'#fff', logo:'YAMAHA', db:false},
-  {id:null, naam:'Kawasaki', land:'japans', bg:'#009A44', fg:'#fff', logo:'KAWASAKI', db:false},
+  {id:2, naam:'Kawasaki', land:'japans', bg:'#009A44', fg:'#fff', logo:'KAWASAKI', db:true},
   {id:null, naam:'Honda', land:'japans', bg:'#CC0000', fg:'#fff', logo:'HONDA', db:false},
   {id:null, naam:'BMW', land:'duits', bg:'#1C69D4', fg:'#fff', logo:'BMW', db:false},
   {id:null, naam:'KTM', land:'duits', bg:'#FF6600', fg:'#fff', logo:'KTM', db:false},
@@ -458,40 +458,117 @@ function renderMerken(filter) {
 function openMerk(m) {
   huidigMerk = m;
   if (m.db) {
-    openDucati(m);
+    openMerkPagina(m);
   } else {
     alert(`${m.naam} wordt binnenkort toegevoegd!`);
   }
 }
 
-async function openDucati(m) {
-  // Haal accent kleur op uit database
-  try {
-    const merkData = await db('merken', `id=eq.${m.id}`);
-    if (merkData[0]) {
-      m.accent = merkData[0].accent_kleur || '#DAA520';
-      document.documentElement.style.setProperty('--merk-accent', m.accent);
-    }
-  } catch(e) { 
-    m.accent = '#DAA520';
-    document.documentElement.style.setProperty('--merk-accent', '#DAA520');
-  }
+async function openMerkPagina(m) {
+  // Bepaal vlag kleuren per land
+  const vlagKleuren = {
+    'italiaans': ['#009246','#fff','#CE2B37'],
+    'japans': ['#fff','#BC002D','#fff'],
+    'duits': ['#000','#DD0000','#FFCE00'],
+    'amerikaans': ['#B22234','#fff','#3C3B6E'],
+  };
+  const vlag = vlagKleuren[m.land] || ['#333','#666','#999'];
+  
   document.getElementById('merk-title').textContent = m.naam;
   document.getElementById('merk-header').innerHTML = `
-    <div class="ducati-header">
+    <div style="background:${m.bg};border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px;text-align:center;">
       <div style="padding:20px;">
-      <div class="ducati-logo">${m.logo}</div>
-      <div class="ducati-sub">Bologna, Italie - Opgericht 1926</div>
-      <div class="ducati-stats">
-        <div class="ds"><div class="ds-val" id="stat-fam">...</div><div class="ds-label">Families</div></div>
-        <div class="ds"><div class="ds-val" id="stat-mod">...</div><div class="ds-label">Modellen</div></div>
-        <div class="ds"><div class="ds-val" id="stat-uitv">...</div><div class="ds-label">Uitvoeringen</div></div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:700;color:${m.fg};letter-spacing:0.08em;">${m.logo}</div>
+        <div style="font-size:12px;color:rgba(${m.fg==='#fff'?'255,255,255':'0,0,0'},0.7);margin-top:3px;" id="merk-sub-tekst">Laden...</div>
+        <div class="ducati-stats" style="margin-top:14px;">
+          <div class="ds"><div class="ds-val" id="stat-fam">...</div><div class="ds-label">Families</div></div>
+          <div class="ds"><div class="ds-val" id="stat-mod">...</div><div class="ds-label">Modellen</div></div>
+          <div class="ds"><div class="ds-val" id="stat-uitv">...</div><div class="ds-label">Uitvoeringen</div></div>
+        </div>
       </div>
+      <div style="display:flex;height:8px;">
+        <div style="flex:1;background:${vlag[0]};"></div>
+        <div style="flex:1;background:${vlag[1]};"></div>
+        <div style="flex:1;background:${vlag[2]};"></div>
       </div>
-      <div style="display:flex;height:8px;"><div style="flex:1;background:#009246;"></div><div style="flex:1;background:#fff;"></div><div style="flex:1;background:#CE2B37;"></div></div>
     </div>`;
   document.getElementById('families-list').innerHTML = loading();
   goTo('s-ducati');
+
+  try {
+    // Haal merk info op
+    const merkInfo = await db('merken', `id=eq.${m.id}`);
+    if (merkInfo[0]) {
+      m.accent = merkInfo[0].accent_kleur || m.bg;
+      document.documentElement.style.setProperty('--merk-accent', m.accent);
+      const opgericht = merkInfo[0].opgericht || '';
+      const land = merkInfo[0].land || '';
+      document.getElementById('merk-sub-tekst').textContent = `${land} · Opgericht ${opgericht}`;
+    }
+
+    const families = await db('families', `merk_id=eq.${m.id}&order=id`);
+    document.getElementById('stat-fam').textContent = families.length;
+
+    // Tel modellen en uitvoeringen
+    try {
+      const famIds = families.map(f=>f.id).join(',');
+      const alleGens = await db('generaties', `family_id=in.(${famIds})&select=id,family_id`);
+      const genIds = alleGens.map(g => g.id).join(',');
+      const alleMods = genIds ? await db('modellen', `generatie_id=in.(${genIds})&select=id,generatie_id`) : [];
+      document.getElementById('stat-mod').textContent = alleMods.length;
+      const modIds = alleMods.map(mo => mo.id).join(',');
+      if (modIds) {
+        const alleUitv = await db('uitvoeringen', `model_id=in.(${modIds})&select=id`);
+        document.getElementById('stat-uitv').textContent = alleUitv.length;
+      }
+    } catch(e2) { console.log('stats fout', e2); }
+
+    const familyHtml = families.map(f => {
+      const gens = 0; const mods = 0;
+      return `<div class="family-card" data-id="${f.id}" data-naam="${(f.naam||'').replace(/"/g,'&quot;')}" data-intro="${(f.intro||'').replace(/"/g,'&quot;')}" data-emoji="${f.emoji||''}" data-tag="${f.tag||''}" data-tagkleur="${f.tag_kleur||m.bg}" onclick="openFamilyEl(this)">
+        <div style="display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:14px;padding:13px 14px;">
+          <div>
+            <div style="font-size:16px;font-weight:600;color:var(--text);">${f.naam}</div>
+            <div style="font-size:12px;color:var(--text2);margin-top:2px;">${f.type||''} · <span style="color:${f.tag_kleur||m.bg};">${f.tag||''}</span></div>
+          </div>
+          <div style="text-align:center;padding:7px 13px;border-radius:8px;background:rgba(218,165,32,0.1);" id="gens-${f.id}">
+            <div style="font-size:17px;font-weight:700;color:#DAA520;">...</div>
+            <div style="font-size:10px;color:var(--text2);margin-top:1px;">Generaties</div>
+          </div>
+          <div style="text-align:center;padding:7px 13px;border-radius:8px;background:rgba(218,165,32,0.1);" id="mods-${f.id}">
+            <div style="font-size:17px;font-weight:700;color:#DAA520;">...</div>
+            <div style="font-size:10px;color:var(--text2);margin-top:1px;">Modellen</div>
+          </div>
+        </div>
+      </div>`;
+    });
+
+    document.getElementById('families-list').innerHTML = familyHtml.join('') + '<div id="evenementen-section"></div>';
+    loadEvenementen(m.id);
+
+    // Vul generaties en modellen per familie in
+    const famIds2 = families.map(f=>f.id).join(',');
+    const alleGens2 = await db('generaties', `family_id=in.(${famIds2})&select=id,family_id`);
+    const genIds2 = alleGens2.map(g=>g.id).join(',');
+    const alleMods2 = genIds2 ? await db('modellen', `generatie_id=in.(${genIds2})&select=id,generatie_id`) : [];
+
+    families.forEach(f => {
+      const fGens = alleGens2.filter(g=>g.family_id===f.id);
+      const fGenIds = fGens.map(g=>g.id);
+      const fMods = alleMods2.filter(mo=>fGenIds.includes(mo.generatie_id));
+      const gEl = document.getElementById('gens-'+f.id);
+      const mEl = document.getElementById('mods-'+f.id);
+      if (gEl) gEl.innerHTML = `<div style="font-size:17px;font-weight:700;color:#DAA520;">${fGens.length}</div><div style="font-size:10px;color:var(--text2);margin-top:1px;">Generaties</div>`;
+      if (mEl) mEl.innerHTML = `<div style="font-size:17px;font-weight:700;color:#DAA520;">${fMods.length}</div><div style="font-size:10px;color:var(--text2);margin-top:1px;">Modellen</div>`;
+    });
+
+  } catch(e) {
+    document.getElementById('families-list').innerHTML = error(e);
+  }
+}
+
+async function openDucati(m) { return openMerkPagina(m); }
+async function openDucati_old(m) {
 
   try {
     const families = await db('families', `merk_id=eq.${m.id}&order=id`);
