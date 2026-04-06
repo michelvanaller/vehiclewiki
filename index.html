@@ -312,18 +312,18 @@ async function zoekKenteken() {
     const topsnelheid = v.maximale_constructiesnelheid || '-';
     const brandstof = v.brandstof_omschrijving || v.voertuigsoort || '-';
     const type = v.voertuigsoort || '-';
-    const apk = v.vervaldatum_apk ? v.vervaldatum_apk.substring(0,4)+'-'+v.vervaldatum_apk.substring(4,6)+'-'+v.vervaldatum_apk.substring(6,8) : 'Onbekend';
+    const apkRaw = v.vervaldatum_apk_dt || v.vervaldatum_apk || null;
+    const apk = apkRaw ? apkRaw.substring(0,10) : 'Niet vereist / onbekend';
     const catalogus = v.catalogusprijs ? '€ '+parseInt(v.catalogusprijs).toLocaleString('nl') : 'Onbekend';
     const kleur = v.eerste_kleur || '-';
-    const kw = v.vermogen_massarijklaar ? Math.round(parseFloat(v.vermogen_massarijklaar)*100) + ' kW' : '-';
+    const kwVal = v.vermogen_massarijklaar ? Math.round(parseFloat(v.vermogen_massarijklaar)) : null;
+    const kw = kwVal ? kwVal + ' kW / ' + Math.round(kwVal / 0.7355) + ' pk' : 'onbekend';
 
     // Wegenbelasting berekening
-    const gew = parseInt(gewicht) || 0;
-    let wbLaag, wbHoog;
-    if (gew <= 250) { wbLaag = 25; wbHoog = 35; }
-    else if (gew <= 500) { wbLaag = 65; wbHoog = 95; }
-    else if (gew <= 750) { wbLaag = 95; wbHoog = 130; }
-    else { wbLaag = 110; wbHoog = 155; }
+    // Wegenbelasting NL motoren 2025 - vast bedrag per kwartaal, alleen per provincie verschillend
+    // Noord-Holland goedkoopst, Zuid-Holland duurste - gewicht speelt geen rol voor motoren
+    const wbLaag = 32;  // Noord-Holland (goedkoopste provincie) per kwartaal
+    const wbHoog = 42;  // Zuid-Holland (duurste provincie) per kwartaal
 
     const merkKleur = merk === 'DUCATI' ? '#CC0000' : merk === 'KAWASAKI' ? '#009A44' : merk === 'YAMAHA' ? '#002F6C' : merk === 'BMW' ? '#1C69D4' : merk === 'HONDA' ? '#CC0000' : '#555';
 
