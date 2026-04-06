@@ -356,6 +356,91 @@ async function zoekKenteken() {
   }
 }
 
+async function loadEvenementen(merkId) {
+  const el = document.getElementById('evenementen-section');
+  if (!el) return;
+  try {
+    const evs = await db('evenementen', `merk_id=eq.${merkId}&goedgekeurd=eq.true&order=datum`);
+    const now = new Date().toISOString().split('T')[0];
+    const komend = evs.filter(e => e.datum >= now);
+    const geweest = evs.filter(e => e.datum < now);
+
+    el.innerHTML = `
+      <div style="margin-top:20px;">
+        <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);">Evenementen</div>
+        ${komend.length === 0 ? '<div style="font-size:13px;color:var(--text3);padding:8px 0 12px;">Geen komende evenementen gepland.</div>' :
+          komend.map(e => `
+          <div style="background:var(--bg2);border:2px solid var(--merk-accent,#DAA520);border-radius:var(--radius-lg);padding:13px 14px;margin-bottom:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px;">
+              <div style="font-size:14px;font-weight:600;color:var(--text);">${e.naam}</div>
+              <div style="font-size:11px;color:#DAA520;font-weight:600;white-space:nowrap;margin-left:10px;">${new Date(e.datum).toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'})}</div>
+            </div>
+            <div style="font-size:12px;color:var(--text2);margin-bottom:4px;">📍 ${e.locatie}</div>
+            ${e.beschrijving ? `<div style="font-size:12px;color:var(--text2);line-height:1.5;">${e.beschrijving}</div>` : ''}
+            ${e.organisator ? `<div style="font-size:11px;color:var(--text3);margin-top:4px;">Organisator: ${e.organisator}</div>` : ''}
+            ${e.website ? `<div style="margin-top:6px;"><a href="${e.website}" target="_blank" style="font-size:11px;color:#DAA520;">Meer info →</a></div>` : ''}
+          </div>`).join('')}
+        ${geweest.length > 0 ? `
+        <div style="font-size:11px;color:var(--text3);margin:10px 0 7px;">Voorbije evenementen</div>
+        ${geweest.slice(-3).reverse().map(e => `
+          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:11px 13px;margin-bottom:7px;opacity:0.6;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div style="font-size:13px;font-weight:500;color:var(--text);">${e.naam}</div>
+              <div style="font-size:11px;color:var(--text3);">${new Date(e.datum).toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'})}</div>
+            </div>
+            <div style="font-size:11px;color:var(--text3);margin-top:2px;">📍 ${e.locatie}</div>
+          </div>`).join('')}` : ''}
+        <div style="margin-top:12px;">
+          <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Evenement aanmelden</div>
+          <div id="ev-form-${merkId}" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:13px;">
+            <div class="add-form">
+              <input id="ev-naam" placeholder="Naam van het evenement" />
+              <input id="ev-datum" type="date" />
+              <input id="ev-locatie" placeholder="Locatie (bijv. TT Circuit Assen)" />
+              <input id="ev-org" placeholder="Organisator / club naam" />
+              <input id="ev-web" placeholder="Website (optioneel)" />
+              <textarea id="ev-desc" placeholder="Beschrijving van het evenement..."></textarea>
+              <button class="submit-btn" onclick="meldEvenementAan(${merkId})">Aanmelden ter goedkeuring</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  } catch(e) {
+    console.log('Evenementen fout:', e);
+  }
+}
+
+async function meldEvenementAan(merkId) {
+  const naam = document.getElementById('ev-naam').value.trim();
+  const datum = document.getElementById('ev-datum').value;
+  const locatie = document.getElementById('ev-locatie').value.trim();
+  const org = document.getElementById('ev-org').value.trim();
+  const web = document.getElementById('ev-web').value.trim();
+  const desc = document.getElementById('ev-desc').value.trim();
+  if (!naam || !datum || !locatie) {
+    alert('Vul minimaal naam, datum en locatie in!');
+    return;
+  }
+  const ok = await dbPost('evenementen', {
+    merk_id: merkId, naam, datum, locatie,
+    organisator: org || null,
+    website: web || null,
+    beschrijving: desc || null,
+    goedgekeurd: false
+  });
+  if (ok) {
+    alert('Bedankt! Je evenement is aangemeld en wordt beoordeeld door de beheerder.');
+    document.getElementById('ev-naam').value = '';
+    document.getElementById('ev-datum').value = '';
+    document.getElementById('ev-locatie').value = '';
+    document.getElementById('ev-org').value = '';
+    document.getElementById('ev-web').value = '';
+    document.getElementById('ev-desc').value = '';
+  } else {
+    alert('Er ging iets mis. Probeer het opnieuw.');
+  }
+}
+
 function renderMerken(filter) {
   const filtered = filter === 'all' ? merkenData : merkenData.filter(m => m.land === filter);
   document.getElementById('merk-grid').innerHTML = filtered.map(m => `
@@ -440,7 +525,8 @@ async function openDucati(m) {
       </div>`;
     });
 
-    document.getElementById('families-list').innerHTML = familyHtml.join('');
+    document.getElementById('families-list').innerHTML = familyHtml.join('') + '<div id="evenementen-section"></div>';
+    loadEvenementen(m.id);
     // Tel modellen en uitvoeringen via SQL
     try {
       const famIds = families.map(f=>f.id).join(',');
