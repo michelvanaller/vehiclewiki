@@ -277,6 +277,7 @@ function setHomeTab(tab, el) {
   el.classList.add('active');
   document.getElementById('ht-browse').style.display = tab==='browse' ? 'block' : 'none';
   document.getElementById('ht-merken').style.display = tab==='merken' ? 'block' : 'none';
+  document.getElementById('ht-kenteken').style.display = tab==='kenteken' ? 'block' : 'none';
   if (tab === 'merken') renderMerken('all');
 }
 
