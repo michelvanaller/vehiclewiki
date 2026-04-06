@@ -123,6 +123,17 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
   <div class="tab-bar">
     <div class="tab active" onclick="setHomeTab('browse',this)">Bladeren</div>
     <div class="tab" onclick="setHomeTab('merken',this)">Merken</div>
+    <div class="tab" onclick="setHomeTab('kenteken',this)">Kenteken</div>
+  </div>
+  <div id="ht-kenteken" style="display:none;">
+    <div style="margin-bottom:16px;">
+      <div style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.6;">Voer je kenteken in en ontdek alle technische gegevens van je voertuig direct uit het RDW kentekenregister.</div>
+      <div style="position:relative;margin-bottom:10px;">
+        <input id="kenteken-input" placeholder="Bijv. 24MZFT of 24-MZ-FT" style="width:100%;padding:12px 14px;border:2px solid var(--merk-accent,#DAA520);border-radius:var(--radius);background:var(--bg2);color:var(--text);font-size:16px;font-family:'Barlow',sans-serif;letter-spacing:0.05em;text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')zoekKenteken()">
+      </div>
+      <button onclick="zoekKenteken()" style="width:100%;padding:11px;border:none;border-radius:var(--radius);background:#DAA520;color:#000;font-size:14px;font-weight:600;cursor:pointer;font-family:'Barlow',sans-serif;">Zoek kenteken</button>
+    </div>
+    <div id="kenteken-result"></div>
   </div>
   <div id="ht-browse">
     <div class="cat-grid">
@@ -273,6 +284,71 @@ function filterMerk(land, btn) {
   document.querySelectorAll('.fb').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   renderMerken(land);
+}
+
+async function zoekKenteken() {
+  const input = document.getElementById('kenteken-input').value.replace(/[-\s]/g,'').toUpperCase();
+  if (!input || input.length < 4) return;
+  const el = document.getElementById('kenteken-result');
+  el.innerHTML = loading();
+
+  try {
+    const res = await fetch(`https://opendata.rdw.nl/resource/m9d7-ebf2.json?kenteken=${input}`);
+    const data = await res.json();
+
+    if (!data || data.length === 0) {
+      el.innerHTML = '<div class="error-box">Kenteken niet gevonden. Controleer de invoer en probeer opnieuw.</div>';
+      return;
+    }
+
+    const v = data[0];
+    const merk = v.merk || 'Onbekend';
+    const model = v.handelsbenaming || 'Onbekend';
+    const bouwjaar = v.datum_eerste_toelating ? v.datum_eerste_toelating.substring(0,4) : 'Onbekend';
+    const cil = v.aantal_cilinders || '-';
+    const cc = v.cilinderinhoud || '-';
+    const gewicht = v.massa_ledig_voertuig || '-';
+    const topsnelheid = v.maximale_constructiesnelheid || '-';
+    const brandstof = v.brandstof_omschrijving || v.voertuigsoort || '-';
+    const type = v.voertuigsoort || '-';
+    const apk = v.vervaldatum_apk ? v.vervaldatum_apk.substring(0,4)+'-'+v.vervaldatum_apk.substring(4,6)+'-'+v.vervaldatum_apk.substring(6,8) : 'Onbekend';
+    const catalogus = v.catalogusprijs ? '€ '+parseInt(v.catalogusprijs).toLocaleString('nl') : 'Onbekend';
+    const kleur = v.eerste_kleur || '-';
+    const kw = v.vermogen_massarijklaar ? Math.round(parseFloat(v.vermogen_massarijklaar)*100) + ' kW' : '-';
+
+    // Wegenbelasting berekening
+    const gew = parseInt(gewicht) || 0;
+    let wbLaag, wbHoog;
+    if (gew <= 250) { wbLaag = 25; wbHoog = 35; }
+    else if (gew <= 500) { wbLaag = 65; wbHoog = 95; }
+    else if (gew <= 750) { wbLaag = 95; wbHoog = 130; }
+    else { wbLaag = 110; wbHoog = 155; }
+
+    const merkKleur = merk === 'DUCATI' ? '#CC0000' : merk === 'KAWASAKI' ? '#009A44' : merk === 'YAMAHA' ? '#002F6C' : merk === 'BMW' ? '#1C69D4' : merk === 'HONDA' ? '#CC0000' : '#555';
+
+    el.innerHTML = `
+      <div style="background:${merkKleur};border-radius:var(--radius-lg);padding:16px;margin-bottom:14px;text-align:center;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:700;color:#fff;letter-spacing:0.06em;">${merk}</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.85);margin-top:3px;font-weight:500;">${model}</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.65);margin-top:2px;">${bouwjaar} · ${type} · ${kleur}</div>
+      </div>
+      <div style="background:var(--bg2);border:2px solid #DAA520;border-radius:var(--radius-lg);padding:14px;margin-bottom:14px;">
+        <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">Kenteken ${input}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Cilinders</div><div style="font-size:16px;font-weight:600;">${cil}</div></div>
+          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Cilinderinhoud</div><div style="font-size:16px;font-weight:600;">${cc}cc</div></div>
+          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Gewicht</div><div style="font-size:16px;font-weight:600;">${gewicht} kg</div></div>
+          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Topsnelheid</div><div style="font-size:16px;font-weight:600;">${topsnelheid} km/h</div></div>
+          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Vermogen</div><div style="font-size:16px;font-weight:600;">${kw}</div></div>
+          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Brandstof</div><div style="font-size:16px;font-weight:600;">${brandstof}</div></div>
+          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Catalogusprijs</div><div style="font-size:16px;font-weight:600;">${catalogus}</div></div>
+          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">APK vervaldatum</div><div style="font-size:16px;font-weight:600;">${apk}</div></div>
+          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;grid-column:1/-1;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Wegenbelasting (per kwartaal)</div><div style="font-size:16px;font-weight:600;">€${wbLaag} – €${wbHoog}</div></div>
+        </div>
+      </div>`;
+  } catch(e) {
+    el.innerHTML = '<div class="error-box">Er ging iets mis: ' + e.message + '</div>';
+  }
 }
 
 function renderMerken(filter) {
