@@ -525,6 +525,17 @@ async function openSpecs(uid) {
           <div style="font-size:13px;">${e.tekst}</div>
         </div>`).join('');
 
+    // Bereken kW en wegenbelasting
+    const kw = Math.round(u.pk * 0.7355);
+    const gew = u.gewicht;
+    // Wegenbelasting NL motoren op basis van gewicht
+    // Bron: gemiddelde laagste en hoogste provincie
+    let wbLaag, wbHoog;
+    if (gew <= 250) { wbLaag = 25; wbHoog = 35; }
+    else if (gew <= 500) { wbLaag = 65; wbHoog = 95; }
+    else if (gew <= 750) { wbLaag = 95; wbHoog = 130; }
+    else { wbLaag = 110; wbHoog = 155; }
+
     document.getElementById('spec-content').innerHTML = `
       <div class="hero-band" style="background:${heroBg};">
         <div style="font-size:36px;width:64px;height:64px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.15);border-radius:var(--radius);flex-shrink:0;">${huidigFamily.emoji||'🏍'}</div>
@@ -551,12 +562,14 @@ async function openSpecs(uid) {
         </div>
       </div>
       <div class="spec-grid">
-        <div class="spec-card"><div class="spec-label">Vermogen</div><div class="spec-value">${u.pk} pk</div></div>
+        <div class="spec-card"><div class="spec-label">Vermogen</div><div class="spec-value">${u.pk} pk / ${kw} kW</div></div>
         <div class="spec-card"><div class="spec-label">Koppel</div><div class="spec-value">${u.nm} Nm</div></div>
         <div class="spec-card"><div class="spec-label">Topsnelheid</div><div class="spec-value">${u.topsnelheid} km/h</div></div>
         <div class="spec-card"><div class="spec-label">0-100 km/h</div><div class="spec-value">${u.nul100}s</div></div>
         <div class="spec-card"><div class="spec-label">Gewicht</div><div class="spec-value">${u.gewicht} kg</div></div>
-        <div class="spec-card"><div class="spec-label">Cilinderinhoud</div><div class="spec-value">${u.cilinderinhoud}cc</div></div>
+        <div class="spec-card"><div class="spec-label">Cilinderinhoud</div><div class="spec-value">${u.cilinderinhoud}cc · ${u.cilinders}</div></div>
+        <div class="spec-card"><div class="spec-label">Verbruik</div><div class="spec-value">${u.verbruik ? u.verbruik + ' L/100km' : 'onbekend'}</div></div>
+        <div class="spec-card"><div class="spec-label">Wegenbelasting</div><div class="spec-value" style="font-size:14px;">€${wbLaag} – €${wbHoog} /kwartaal</div></div>
       </div>
       <p class="beschrijving">${u.beschrijving||''}</p>
       <div class="sec">Voordelen</div>
