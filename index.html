@@ -316,7 +316,11 @@ async function zoekKenteken() {
     const apk = apkRaw ? apkRaw.substring(0,10) : 'Niet vereist / onbekend';
     const catalogus = v.catalogusprijs ? '€ '+parseInt(v.catalogusprijs).toLocaleString('nl') : 'Onbekend';
     const kleur = v.eerste_kleur || '-';
-    const kwVal = v.vermogen_massarijklaar ? Math.round(parseFloat(v.vermogen_massarijklaar)) : null;
+    // RDW slaat vermogen op als kW/kg (vermogen per massa rijklaar)
+    // Formule: vermogen_massarijklaar * massa_rijklaar = kW
+    const vMassa = parseFloat(v.vermogen_massarijklaar) || 0;
+    const mRijklaar = parseInt(v.massa_rijklaar || v.massa_ledig_voertuig || gewicht) || 0;
+    const kwVal = vMassa > 0 && mRijklaar > 0 ? Math.round(vMassa * mRijklaar) : null;
     const kw = kwVal ? kwVal + ' kW / ' + Math.round(kwVal / 0.7355) + ' pk' : 'onbekend';
 
     // Wegenbelasting berekening
