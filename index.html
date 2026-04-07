@@ -730,6 +730,12 @@ async function openMerkPagina(m) {
       </div>`;
     });
 
+    // Haal generaties en modellen op EERST
+    const famIds2 = families.map(f=>f.id).join(',');
+    const alleGens2 = await db('generaties', `family_id=in.(${famIds2})&select=id,family_id`);
+    const genIds2 = alleGens2.map(g=>g.id).join(',');
+    const alleMods2 = genIds2 ? await db('modellen', `generatie_id=in.(${genIds2})&select=id,generatie_id`) : [];
+
     // Bewaar families voor filtering
     window._huidigeFamilies = families;
     window._alleGens = alleGens2;
@@ -738,12 +744,6 @@ async function openMerkPagina(m) {
 
     renderFamilyList(families, alleGens2, alleMods2);
     loadEvenementen(m.id);
-
-    // Vul generaties en modellen per familie in
-    const famIds2 = families.map(f=>f.id).join(',');
-    const alleGens2 = await db('generaties', `family_id=in.(${famIds2})&select=id,family_id`);
-    const genIds2 = alleGens2.map(g=>g.id).join(',');
-    const alleMods2 = genIds2 ? await db('modellen', `generatie_id=in.(${genIds2})&select=id,generatie_id`) : [];
 
     families.forEach(f => {
       const fGens = alleGens2.filter(g=>g.family_id===f.id);
@@ -995,7 +995,7 @@ async function openSpecs(uid) {
 
   try {
     const [uitvArr, proscons, ervaringen] = await Promise.all([
-      db('uitvoeringen', `id=eq.${uid}`),
+      db('uitvoeringen', `id=eq.${uid}&select=*`),
       db('pros_cons', `uitvoering_id=eq.${uid}&order=type,id`),
       db('ervaringen', `uitvoering_id=eq.${uid}&order=stemmen.desc`)
     ]);
@@ -1033,18 +1033,28 @@ async function openSpecs(uid) {
     else if (gew <= 750) { wbLaag = 95; wbHoog = 130; }
     else { wbLaag = 110; wbHoog = 155; }
 
+    // Bouw spec cards dynamisch — alleen gevulde velden tonen
+    const specCard = (label, value, unit='') => value !== null && value !== undefined && value !== '' && value !== 0
+      ? `<div class="spec-card"><div class="spec-label">${label}</div><div class="spec-value" style="${String(value).length > 8 ? 'font-size:14px;' : ''}">${value}${unit ? ' '+unit : ''}</div></div>`
+      : '';
+
+    const isAuto = u.carrosserie || u.deuren;
+    const isElektrisch = u.brandstof && u.brandstof.includes('elektrisch');
+
     document.getElementById('spec-content').innerHTML = `
       <div class="hero-band" style="background:${heroBg};">
         <div style="font-size:36px;width:64px;height:64px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.15);border-radius:var(--radius);flex-shrink:0;">${huidigFamily.emoji||'🏍'}</div>
         <div>
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;color:#fff;">${u.naam}</div>
-          <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:3px;">${u.jaar} · ${u.prijs||''}</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:3px;">${u.jaar} · ${u.prijs && !isNaN(parseInt(u.prijs)) ? '€ '+parseInt(u.prijs).toLocaleString('nl') : u.prijs||''}</div>
         </div>
       </div>
       <div style="margin-bottom:12px;">
-        <span class="spec-badge">${u.cilinders} · ${u.cilinderinhoud}cc</span>
-        ${huidigGen.huidig?'<span class="spec-badge" style="background:#27AE6015;color:#27AE60;border-color:#27AE6030;">Huidige generatie</span>':''}
-        ${u.special?'<span class="spec-badge" style="background:rgba(218,165,32,0.15);color:#B8860B;border-color:rgba(218,165,32,0.3);">Speciale editie</span>':''}
+        ${u.cilinders && u.cilinderinhoud ? `<span class="spec-badge">${u.cilinders} · ${u.cilinderinhoud}cc</span>` : ''}
+        ${u.brandstof ? `<span class="spec-badge" style="background:${isElektrisch ? '#3498db20' : 'rgba(204,0,0,0.15)'};color:${isElektrisch ? '#2980b9' : '#CC0000'};border-color:${isElektrisch ? '#3498db40' : 'rgba(204,0,0,0.3)'};">${u.brandstof}</span>` : ''}
+        ${u.carrosserie ? `<span class="spec-badge">${u.carrosserie}</span>` : ''}
+        ${huidigGen.huidig ? '<span class="spec-badge" style="background:#27AE6015;color:#27AE60;border-color:#27AE6030;">Huidige generatie</span>' : ''}
+        ${u.special ? '<span class="spec-badge" style="background:rgba(218,165,32,0.15);color:#B8860B;border-color:rgba(218,165,32,0.3);">Speciale editie</span>' : ''}
       </div>
       <div class="action-row" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
         <button style="background:none;border:1px solid #e67e22;border-radius:8px;padding:6px 13px;font-size:12px;color:#e67e22;cursor:pointer;font-family:'Barlow',sans-serif;" onclick="document.getElementById('rf').classList.toggle('open')">Fout melden</button>
@@ -1058,14 +1068,44 @@ async function openSpecs(uid) {
           <button class="cancel-btn" onclick="document.getElementById('rf').classList.remove('open')">Annuleren</button>
         </div>
       </div>
+
+      <div class="sec">Prestaties</div>
       <div class="spec-grid">
-        <div class="spec-card"><div class="spec-label">Vermogen</div><div class="spec-value">${u.pk} pk / ${kw} kW</div></div>
-        <div class="spec-card"><div class="spec-label">Koppel</div><div class="spec-value">${u.nm} Nm</div></div>
-        <div class="spec-card"><div class="spec-label">Topsnelheid</div><div class="spec-value">${u.topsnelheid} km/h</div></div>
-        <div class="spec-card"><div class="spec-label">0-100 km/h</div><div class="spec-value">${u.nul100}s</div></div>
-        <div class="spec-card"><div class="spec-label">Gewicht</div><div class="spec-value">${u.gewicht} kg</div></div>
-        <div class="spec-card"><div class="spec-label">Cilinderinhoud</div><div class="spec-value">${u.cilinderinhoud}cc · ${u.cilinders}</div></div>
-        <div class="spec-card"><div class="spec-label">Verbruik</div><div class="spec-value">${u.verbruik ? u.verbruik + ' L/100km' : 'onbekend'}</div></div>
+        ${specCard('Vermogen', u.pk ? u.pk + ' pk / ' + kw + ' kW' : null)}
+        ${specCard('Koppel', u.nm, 'Nm')}
+        ${specCard('Topsnelheid', u.topsnelheid, 'km/h')}
+        ${specCard('0-100 km/h', u.nul100, 's')}
+        ${u.actieradius ? specCard('Actieradius', u.actieradius, 'km') : ''}
+      </div>
+
+      <div class="sec">Motor & Aandrijving</div>
+      <div class="spec-grid">
+        ${u.cilinderinhoud ? specCard('Cilinderinhoud', u.cilinderinhoud, 'cc') : ''}
+        ${u.cilinders ? specCard('Cilinders', u.cilinders) : ''}
+        ${u.brandstof ? specCard('Brandstof', u.brandstof) : ''}
+        ${u.aandrijving ? specCard('Aandrijving', u.aandrijving) : ''}
+        ${u.transmissie ? specCard('Transmissie', u.transmissie) : ''}
+        ${u.accu_capaciteit ? specCard('Accu capaciteit', u.accu_capaciteit, 'kWh') : ''}
+        ${u.accu_laadtijd ? specCard('Laadtijd AC', u.accu_laadtijd) : ''}
+        ${u.accu_laadsnelheid ? specCard('Laadsnelheid DC', u.accu_laadsnelheid, 'kW') : ''}
+      </div>
+
+      <div class="sec">Afmetingen & Gewicht</div>
+      <div class="spec-grid">
+        ${specCard('Gewicht', u.gewicht, 'kg')}
+        ${u.carrosserie ? specCard('Carrosserie', u.carrosserie) : ''}
+        ${u.deuren ? specCard('Deuren', u.deuren) : ''}
+        ${u.stoelen ? specCard('Zitplaatsen', u.stoelen) : ''}
+        ${u.kofferbak ? specCard('Kofferbak', u.kofferbak, 'liter') : ''}
+        ${u.trekgewicht_geremd ? specCard('Trekgewicht geremd', u.trekgewicht_geremd, 'kg') : ''}
+        ${u.trekgewicht_ongeremd ? specCard('Trekgewicht ongeremd', u.trekgewicht_ongeremd, 'kg') : ''}
+      </div>
+
+      <div class="sec">Verbruik & Milieu</div>
+      <div class="spec-grid">
+        ${u.verbruik ? specCard('Verbruik', u.verbruik, isElektrisch ? 'kWh/100km' : 'L/100km') : ''}
+        ${u.co2_uitstoot ? specCard('CO2 uitstoot', u.co2_uitstoot, 'g/km') : specCard('CO2 uitstoot', isElektrisch ? '0' : null, 'g/km')}
+        ${u.energielabel ? specCard('Energielabel', u.energielabel) : ''}
         <div class="spec-card"><div class="spec-label">Wegenbelasting</div><div class="spec-value" style="font-size:14px;">€${wbLaag} – €${wbHoog} /kwartaal</div></div>
       </div>
       <p class="beschrijving">${u.beschrijving||''}</p>
