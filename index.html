@@ -396,28 +396,62 @@ async function doSearch() {
 
     try {
       // Build query
-      let params = 'select=id,naam,jaar,pk,nul100,topsnelheid,gewicht,prijs,brandstof,carrosserie,cilinders,cilinderinhoud,special';
-      params += '&limit=50';
+      // Bouw params op
+      let params = 'select=id,naam,jaar,pk,nul100,topsnelheid,gewicht,prijs,brandstof,carrosserie,cilinders,cilinderinhoud,special,model_id&limit=100';
       if (fPk > 0) params += `&pk=gte.${fPk}`;
       if (fBrand) params += `&brandstof=ilike.*${fBrand}*`;
 
       let uitvoeringen = await db('uitvoeringen', params);
 
-      // Get all model/generatie/family/merk info for filtering
-      // First get all modellen
-      const modIds = [...new Set(uitvoeringen.map(u => u.model_id).filter(Boolean))];
-
       // Filter by naam
-      if (q) {
-        uitvoeringen = uitvoeringen.filter(u => u.naam.toLowerCase().includes(q));
-      }
+      if (q) uitvoeringen = uitvoeringen.filter(u => u.naam.toLowerCase().includes(q));
 
       // Filter by prijs
-      if (fPrijs) {
-        uitvoeringen = uitvoeringen.filter(u => {
-          const p = parseInt(u.prijs);
-          return !isNaN(p) && p <= parseInt(fPrijs);
-        });
+      if (fPrijs) uitvoeringen = uitvoeringen.filter(u => {
+        const p = parseInt(u.prijs);
+        return !isNaN(p) && p <= parseInt(fPrijs);
+      });
+
+      // Filter by categorie of merk — haal model->generatie->family->merk keten op
+      if (fCat || fMerk) {
+        const modIds = [...new Set(uitvoeringen.map(u => u.model_id).filter(Boolean))];
+        if (modIds.length > 0) {
+          const mods = await db('modellen', `id=in.(${modIds.join(',')})&select=id,generatie_id`);
+          const genIds = [...new Set(mods.map(m=>m.generatie_id))];
+          const gens = await db('generaties', `id=in.(${genIds.join(',')})&select=id,family_id`);
+          const famIds = [...new Set(gens.map(g=>g.family_id))];
+          const fams = await db('families', `id=in.(${famIds.join(',')})&select=id,merk_id`);
+          const merken = await db('merken', `id=in.(${[...new Set(fams.map(f=>f.merk_id))].join(',')})&select=id,naam,categorie`);
+
+          // Build lookup
+          const modToGen = {}; mods.forEach(m=>modToGen[m.id]=m.generatie_id);
+          const genToFam = {}; gens.forEach(g=>genToFam[g.id]=g.family_id);
+          const famToMerk = {}; fams.forEach(f=>famToFam[f.id]=f.merk_id);
+          const merkMap = {}; merken.forEach(m=>merkMap[m.id]=m);
+
+          // Fix typo
+          const famToMerkId = {}; fams.forEach(f=>famToMerkId[f.id]=f.merk_id);
+
+          uitvoeringen = uitvoeringen.filter(u => {
+            const genId = modToGen[u.model_id];
+            const famId = genToFam[genId];
+            const merkId = famToMerkId[famId];
+            const merk = merkMap[merkId];
+            if (!merk) return false;
+            if (fMerk && merkId !== parseInt(fMerk)) return false;
+            if (fCat && merk.categorie !== fCat) return false;
+            return true;
+          });
+
+          // Add merk naam to results for display
+          uitvoeringen = uitvoeringen.map(u => {
+            const genId = modToGen[u.model_id];
+            const famId = genToFam[genId];
+            const merkId = famToMerkId[famId];
+            const merk = merkMap[merkId];
+            return {...u, merkNaam: merk ? merk.naam : ''};
+          });
+        }
       }
 
       // Sort
@@ -444,6 +478,7 @@ async function doSearch() {
 
       document.getElementById('res-list').innerHTML = uitvoeringen.slice(0,30).map(u => `
         <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:11px 13px;margin-bottom:7px;cursor:pointer;" onclick="">
+          ${u.merkNaam ? `<div style="font-size:10px;color:var(--text3);margin-bottom:2px;">${u.merkNaam}</div>` : ''}
           <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;">${u.naam}</div>
           <div style="display:flex;gap:5px;flex-wrap:wrap;">
             ${u.brandstof ? `<span style="font-size:10px;padding:2px 7px;border-radius:20px;${brandKleur(u.brandstof)}">${u.brandstof}</span>` : ''}
@@ -742,6 +777,15 @@ async function openMerkPagina(m) {
     window._alleMods = alleMods2;
     window._huidigMerkBg = m.bg;
 
+    // Laad brandstof data voor filter
+    try {
+      const modIds = alleMods2.map(mo=>mo.id).join(',');
+      if (modIds) {
+        const uitvBrand = await db('uitvoeringen', `model_id=in.(${modIds})&select=model_id,brandstof`);
+        window._uitvoeringenBrandstof = uitvBrand;
+      }
+    } catch(e2) { console.log('brandstof laden fout', e2); }
+
     renderFamilyList(families, alleGens2, alleMods2);
     loadEvenementen(m.id);
 
@@ -801,6 +845,15 @@ async function openDucati_old(m) {
     window._alleMods = alleMods2;
     window._huidigMerkBg = m.bg;
 
+    // Laad brandstof data voor filter
+    try {
+      const modIds = alleMods2.map(mo=>mo.id).join(',');
+      if (modIds) {
+        const uitvBrand = await db('uitvoeringen', `model_id=in.(${modIds})&select=model_id,brandstof`);
+        window._uitvoeringenBrandstof = uitvBrand;
+      }
+    } catch(e2) { console.log('brandstof laden fout', e2); }
+
     renderFamilyList(families, alleGens2, alleMods2);
     loadEvenementen(m.id);
     // Tel modellen en uitvoeringen via SQL
@@ -840,12 +893,13 @@ async function openDucati_old(m) {
 function renderFamilyList(families, alleGens, alleMods, brandFilter) {
   const gefilterd = brandFilter
     ? families.filter(f => {
-        // Check if family has uitvoeringen with this brandstof
+        // Check brandstof via stored uitvoeringen data
         const fGenIds = alleGens.filter(g=>g.family_id===f.id).map(g=>g.id);
         const fModIds = alleMods.filter(mo=>fGenIds.includes(mo.generatie_id)).map(mo=>mo.id);
-        return window._brandstofPerModel && fModIds.some(mid => {
-          const b = window._brandstofPerModel[mid];
-          return b && b.toLowerCase().includes(brandFilter.toLowerCase());
+        if (!window._uitvoeringenBrandstof) return true;
+        return fModIds.some(mid => {
+          const uitvs = window._uitvoeringenBrandstof.filter(u => u.model_id === mid);
+          return uitvs.some(u => u.brandstof && u.brandstof.toLowerCase().includes(brandFilter.toLowerCase()));
         });
       })
     : families;
