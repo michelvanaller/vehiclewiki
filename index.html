@@ -123,7 +123,70 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
   <div class="tab-bar">
     <div class="tab active" onclick="setHomeTab('browse',this)">Bladeren</div>
     <div class="tab" onclick="setHomeTab('merken',this)">Merken</div>
+    <div class="tab" onclick="setHomeTab('zoeken',this)">Zoeken</div>
     <div class="tab" onclick="setHomeTab('kenteken',this)">Kenteken</div>
+  </div>
+  <div id="ht-zoeken" style="display:none;">
+    <div style="position:relative;margin-bottom:10px;">
+      <input id="q" placeholder="Zoek op naam, merk, type..." oninput="doSearch()" style="width:100%;padding:10px 14px 10px 38px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--bg2);color:var(--text);font-size:14px;font-family:'Barlow',sans-serif;">
+      <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--text3);">🔍</span>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:13px;margin-bottom:12px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+        <div><label style="font-size:10px;color:var(--text3);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.06em;">Categorie</label>
+          <select id="f-cat" onchange="doSearch()" style="width:100%;padding:6px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--bg2);color:var(--text);font-size:12px;font-family:'Barlow',sans-serif;">
+            <option value="">Alle voertuigen</option>
+            <option value="motor">Motoren</option>
+            <option value="auto">Auto's</option>
+          </select>
+        </div>
+        <div><label style="font-size:10px;color:var(--text3);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.06em;">Brandstof</label>
+          <select id="f-brand" onchange="doSearch()" style="width:100%;padding:6px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--bg2);color:var(--text);font-size:12px;font-family:'Barlow',sans-serif;">
+            <option value="">Alle brandstof</option>
+            <option value="benzine">Benzine</option>
+            <option value="elektrisch">Elektrisch</option>
+            <option value="hybride">Hybride</option>
+            <option value="diesel">Diesel</option>
+          </select>
+        </div>
+        <div><label style="font-size:10px;color:var(--text3);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.06em;">Merk</label>
+          <select id="f-merk" onchange="doSearch()" style="width:100%;padding:6px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--bg2);color:var(--text);font-size:12px;font-family:'Barlow',sans-serif;">
+            <option value="">Alle merken</option>
+            <option value="1">Ducati</option>
+            <option value="2">Kawasaki</option>
+            <option value="3">Ford</option>
+            <option value="4">Lamborghini</option>
+          </select>
+        </div>
+        <div><label style="font-size:10px;color:var(--text3);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.06em;">Min. vermogen: <span id="pk-val">0</span> pk</label>
+          <input type="range" id="f-pk" min="0" max="1015" value="0" step="10" oninput="document.getElementById('pk-val').textContent=this.value;doSearch()" style="width:100%;">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div><label style="font-size:10px;color:var(--text3);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.06em;">Max. prijs</label>
+          <select id="f-prijs" onchange="doSearch()" style="width:100%;padding:6px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--bg2);color:var(--text);font-size:12px;font-family:'Barlow',sans-serif;">
+            <option value="">Alle prijzen</option>
+            <option value="20000">Tot 20.000</option>
+            <option value="50000">Tot 50.000</option>
+            <option value="100000">Tot 100.000</option>
+            <option value="250000">Tot 250.000</option>
+          </select>
+        </div>
+        <div><label style="font-size:10px;color:var(--text3);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.06em;">Sorteer op</label>
+          <select id="f-sort" onchange="doSearch()" style="width:100%;padding:6px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--bg2);color:var(--text);font-size:12px;font-family:'Barlow',sans-serif;">
+            <option value="naam">Naam A-Z</option>
+            <option value="pk">Meest vermogen</option>
+            <option value="nul100">Snelste 0-100</option>
+            <option value="prijs">Goedkoopste eerst</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <div style="font-size:12px;color:var(--text2);" id="res-count">Voer een zoekopdracht in</div>
+      <button onclick="resetZoeken()" style="background:none;border:1px solid var(--border2);border-radius:8px;padding:5px 12px;font-size:12px;color:var(--text2);cursor:pointer;font-family:'Barlow',sans-serif;">Reset</button>
+    </div>
+    <div id="res-list"></div>
   </div>
   <div id="ht-kenteken" style="display:none;">
     <div style="margin-bottom:16px;">
@@ -281,7 +344,9 @@ function setHomeTab(tab, el) {
   el.classList.add('active');
   document.getElementById('ht-browse').style.display = tab==='browse' ? 'block' : 'none';
   document.getElementById('ht-merken').style.display = tab==='merken' ? 'block' : 'none';
+  document.getElementById('ht-zoeken').style.display = tab==='zoeken' ? 'block' : 'none';
   document.getElementById('ht-kenteken').style.display = tab==='kenteken' ? 'block' : 'none';
+  if (tab === 'zoeken') doSearch();
   if (tab === 'merken') renderMerken('all');
 }
 
@@ -307,6 +372,106 @@ function filterMerk(land, btn) {
   document.querySelectorAll('.fb').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   renderMerken(land);
+}
+
+let zoekTimeout = null;
+async function doSearch() {
+  clearTimeout(zoekTimeout);
+  zoekTimeout = setTimeout(async () => {
+    const q = (document.getElementById('q').value || '').toLowerCase().trim();
+    const fCat = document.getElementById('f-cat').value;
+    const fBrand = document.getElementById('f-brand').value;
+    const fMerk = document.getElementById('f-merk').value;
+    const fPk = parseInt(document.getElementById('f-pk').value) || 0;
+    const fPrijs = document.getElementById('f-prijs').value;
+
+    if (!q && !fCat && !fBrand && !fMerk && fPk === 0 && !fPrijs) {
+      document.getElementById('res-count').textContent = 'Voer een zoekopdracht in';
+      document.getElementById('res-list').innerHTML = '';
+      return;
+    }
+
+    document.getElementById('res-count').textContent = 'Zoeken...';
+    document.getElementById('res-list').innerHTML = loading();
+
+    try {
+      // Build query
+      let params = 'select=id,naam,jaar,pk,nul100,topsnelheid,gewicht,prijs,brandstof,carrosserie,cilinders,cilinderinhoud,special';
+      params += '&limit=50';
+      if (fPk > 0) params += `&pk=gte.${fPk}`;
+      if (fBrand) params += `&brandstof=ilike.*${fBrand}*`;
+
+      let uitvoeringen = await db('uitvoeringen', params);
+
+      // Get all model/generatie/family/merk info for filtering
+      // First get all modellen
+      const modIds = [...new Set(uitvoeringen.map(u => u.model_id).filter(Boolean))];
+
+      // Filter by naam
+      if (q) {
+        uitvoeringen = uitvoeringen.filter(u => u.naam.toLowerCase().includes(q));
+      }
+
+      // Filter by prijs
+      if (fPrijs) {
+        uitvoeringen = uitvoeringen.filter(u => {
+          const p = parseInt(u.prijs);
+          return !isNaN(p) && p <= parseInt(fPrijs);
+        });
+      }
+
+      // Sort
+      const sort = document.getElementById('f-sort').value;
+      if (sort === 'pk') uitvoeringen.sort((a,b) => b.pk - a.pk);
+      else if (sort === 'nul100') uitvoeringen.sort((a,b) => a.nul100 - b.nul100);
+      else if (sort === 'prijs') uitvoeringen.sort((a,b) => parseInt(a.prijs||999999) - parseInt(b.prijs||999999));
+      else uitvoeringen.sort((a,b) => a.naam.localeCompare(b.naam));
+
+      document.getElementById('res-count').textContent = `${uitvoeringen.length} resultaat${uitvoeringen.length !== 1 ? 'en' : ''}`;
+
+      if (uitvoeringen.length === 0) {
+        document.getElementById('res-list').innerHTML = '<div style="text-align:center;padding:30px;font-size:14px;color:var(--text3);">Geen resultaten — pas de filters aan</div>';
+        return;
+      }
+
+      const brandKleur = (b) => {
+        if (!b) return '';
+        if (b.includes('elektrisch')) return 'background:rgba(52,152,219,0.15);color:#2980b9;';
+        if (b.includes('hybride') || b.includes('elektrisch')) return 'background:rgba(39,174,96,0.15);color:#27AE60;';
+        if (b.includes('diesel')) return 'background:rgba(100,100,100,0.15);color:#666;';
+        return 'background:rgba(230,126,34,0.15);color:#d35400;';
+      };
+
+      document.getElementById('res-list').innerHTML = uitvoeringen.slice(0,30).map(u => `
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:11px 13px;margin-bottom:7px;cursor:pointer;" onclick="">
+          <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;">${u.naam}</div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;">
+            ${u.brandstof ? `<span style="font-size:10px;padding:2px 7px;border-radius:20px;${brandKleur(u.brandstof)}">${u.brandstof}</span>` : ''}
+            <span style="font-size:10px;padding:2px 7px;border-radius:20px;background:var(--bg3);color:var(--text2);">${u.pk} pk</span>
+            ${u.topsnelheid ? `<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:var(--bg3);color:var(--text2);">${u.topsnelheid} km/h</span>` : ''}
+            ${u.nul100 ? `<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:var(--bg3);color:var(--text2);">0-100 in ${u.nul100}s</span>` : ''}
+            ${u.prijs && !isNaN(parseInt(u.prijs)) ? `<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:var(--bg3);color:var(--text2);">€ ${parseInt(u.prijs).toLocaleString('nl')}</span>` : ''}
+            ${u.special ? '<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(218,165,32,0.15);color:#B8860B;">Speciaal</span>' : ''}
+          </div>
+        </div>`).join('');
+
+    } catch(e) {
+      document.getElementById('res-list').innerHTML = error(e);
+    }
+  }, 300);
+}
+
+function resetZoeken() {
+  document.getElementById('q').value = '';
+  document.getElementById('f-cat').value = '';
+  document.getElementById('f-brand').value = '';
+  document.getElementById('f-merk').value = '';
+  document.getElementById('f-pk').value = 0;
+  document.getElementById('pk-val').textContent = '0';
+  document.getElementById('f-prijs').value = '';
+  document.getElementById('f-sort').value = 'naam';
+  document.getElementById('res-count').textContent = 'Voer een zoekopdracht in';
+  document.getElementById('res-list').innerHTML = '';
 }
 
 async function zoekKenteken() {
@@ -565,7 +730,13 @@ async function openMerkPagina(m) {
       </div>`;
     });
 
-    document.getElementById('families-list').innerHTML = familyHtml.join('') + '<div id="evenementen-section"></div>';
+    // Bewaar families voor filtering
+    window._huidigeFamilies = families;
+    window._alleGens = alleGens2;
+    window._alleMods = alleMods2;
+    window._huidigMerkBg = m.bg;
+
+    renderFamilyList(families, alleGens2, alleMods2);
     loadEvenementen(m.id);
 
     // Vul generaties en modellen per familie in
@@ -624,7 +795,13 @@ async function openDucati_old(m) {
       </div>`;
     });
 
-    document.getElementById('families-list').innerHTML = familyHtml.join('') + '<div id="evenementen-section"></div>';
+    // Bewaar families voor filtering
+    window._huidigeFamilies = families;
+    window._alleGens = alleGens2;
+    window._alleMods = alleMods2;
+    window._huidigMerkBg = m.bg;
+
+    renderFamilyList(families, alleGens2, alleMods2);
     loadEvenementen(m.id);
     // Tel modellen en uitvoeringen via SQL
     try {
@@ -658,6 +835,60 @@ async function openDucati_old(m) {
   } catch(e) {
     document.getElementById('families-list').innerHTML = error(e);
   }
+}
+
+function renderFamilyList(families, alleGens, alleMods, brandFilter) {
+  const gefilterd = brandFilter
+    ? families.filter(f => {
+        // Check if family has uitvoeringen with this brandstof
+        const fGenIds = alleGens.filter(g=>g.family_id===f.id).map(g=>g.id);
+        const fModIds = alleMods.filter(mo=>fGenIds.includes(mo.generatie_id)).map(mo=>mo.id);
+        return window._brandstofPerModel && fModIds.some(mid => {
+          const b = window._brandstofPerModel[mid];
+          return b && b.toLowerCase().includes(brandFilter.toLowerCase());
+        });
+      })
+    : families;
+
+  const html = gefilterd.map(f => {
+    const fGens = alleGens.filter(g=>g.family_id===f.id);
+    const fGenIds = fGens.map(g=>g.id);
+    const fMods = alleMods.filter(mo=>fGenIds.includes(mo.generatie_id));
+    return `<div class="family-card" data-id="${f.id}" data-naam="${(f.naam||'').replace(/"/g,'&quot;')}" data-intro="${(f.intro||'').replace(/"/g,'&quot;')}" data-emoji="${f.emoji||''}" data-tag="${f.tag||''}" data-tagkleur="${f.tag_kleur||'#CC0000'}" onclick="openFamilyEl(this)">
+      <div style="display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:14px;padding:13px 14px;">
+        <div>
+          <div style="font-size:16px;font-weight:600;color:var(--text);">${f.naam}</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:2px;">${f.type||''} · <span style="color:${f.tag_kleur||'#CC0000'};">${f.tag||''}</span></div>
+        </div>
+        <div style="text-align:center;padding:7px 13px;border-radius:8px;background:rgba(218,165,32,0.1);">
+          <div style="font-size:17px;font-weight:700;color:#DAA520;">${fGens.length}</div>
+          <div style="font-size:10px;color:var(--text2);margin-top:1px;">Generaties</div>
+        </div>
+        <div style="text-align:center;padding:7px 13px;border-radius:8px;background:rgba(218,165,32,0.1);">
+          <div style="font-size:17px;font-weight:700;color:#DAA520;">${fMods.length}</div>
+          <div style="font-size:10px;color:var(--text2);margin-top:1px;">Modellen</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('families-list').innerHTML = `
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;" id="brand-filter-bar">
+      <button class="fb ${!brandFilter?'active':''}" onclick="filterFamiliesBrandstof(null,this)">Alle</button>
+      <button class="fb ${brandFilter==='benzine'?'active':''}" onclick="filterFamiliesBrandstof('benzine',this)">Benzine</button>
+      <button class="fb ${brandFilter==='elektrisch'?'active':''}" onclick="filterFamiliesBrandstof('elektrisch',this)">Elektrisch</button>
+      <button class="fb ${brandFilter==='hybride'?'active':''}" onclick="filterFamiliesBrandstof('hybride',this)">Hybride</button>
+      <button class="fb ${brandFilter==='diesel'?'active':''}" onclick="filterFamiliesBrandstof('diesel',this)">Diesel</button>
+    </div>
+    ${html}
+    <div id="evenementen-section"></div>`;
+}
+
+function filterFamiliesBrandstof(brand, btn) {
+  document.querySelectorAll('#brand-filter-bar .fb').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderFamilyList(window._huidigeFamilies, window._alleGens, window._alleMods, brand);
+  loadEvenementen(huidigMerk.id);
 }
 
 function openFamilyEl(el) {
