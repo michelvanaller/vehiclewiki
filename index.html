@@ -426,11 +426,8 @@ async function doSearch() {
           // Build lookup
           const modToGen = {}; mods.forEach(m=>modToGen[m.id]=m.generatie_id);
           const genToFam = {}; gens.forEach(g=>genToFam[g.id]=g.family_id);
-          const famToMerk = {}; fams.forEach(f=>famToFam[f.id]=f.merk_id);
-          const merkMap = {}; merken.forEach(m=>merkMap[m.id]=m);
-
-          // Fix typo
           const famToMerkId = {}; fams.forEach(f=>famToMerkId[f.id]=f.merk_id);
+          const merkMap = {}; merken.forEach(m=>merkMap[m.id]=m);
 
           uitvoeringen = uitvoeringen.filter(u => {
             const genId = modToGen[u.model_id];
