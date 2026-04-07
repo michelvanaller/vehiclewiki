@@ -142,10 +142,10 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
         <div style="font-size:13px;font-weight:600;">Motoren</div>
         <div style="font-size:11px;color:var(--text3);margin-top:3px;">12 merken</div>
       </div>
-      <div class="cat-card disabled">
+      <div class="cat-card" onclick="setHomeTab('merken',document.querySelectorAll('.tab')[1]);filterMerkCategorie('auto')">
         <div style="font-size:32px;margin-bottom:8px;">🚗</div>
         <div style="font-size:13px;font-weight:600;">Auto's</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:3px;">binnenkort</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:3px;">2 merken</div>
       </div>
       <div class="cat-card disabled">
         <div style="font-size:32px;margin-bottom:8px;">✈️</div>
@@ -157,6 +157,8 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
   <div id="ht-merken" style="display:none;">
     <div class="filter-bar">
       <button class="fb active" onclick="filterMerk('all',this)">Alle</button>
+      <button class="fb" onclick="filterMerkCategorie('motor');this.classList.add('active')">🏍 Motoren</button>
+      <button class="fb" onclick="filterMerkCategorie('auto');this.classList.add('active')">🚗 Auto's</button>
       <button class="fb" onclick="filterMerk('italiaans',this)">Italiaans</button>
       <button class="fb" onclick="filterMerk('japans',this)">Japans</button>
       <button class="fb" onclick="filterMerk('amerikaans',this)">Amerikaans</button>
@@ -259,6 +261,8 @@ const merkenData = [
   {id:null, naam:'Suzuki', land:'japans', bg:'#1A1A1A', fg:'#fff', logo:'SUZUKI', db:false},
   {id:null, naam:'MV Agusta', land:'italiaans', bg:'#C41E3A', fg:'#fff', logo:'MV', db:false},
   {id:null, naam:'Indian', land:'amerikaans', bg:'#8B0000', fg:'#fff', logo:'INDIAN', db:false},
+  {id:3, naam:'Ford', land:'amerikaans', bg:'#003478', fg:'#fff', logo:'FORD', db:true, categorie:'auto'},
+  {id:4, naam:'Lamborghini', land:'italiaans', bg:'#1a1a1a', fg:'#FFD700', logo:'LAMBORGHINI', db:true, categorie:'auto'},
 ];
 
 let huidigMerk = null;
@@ -279,6 +283,24 @@ function setHomeTab(tab, el) {
   document.getElementById('ht-merken').style.display = tab==='merken' ? 'block' : 'none';
   document.getElementById('ht-kenteken').style.display = tab==='kenteken' ? 'block' : 'none';
   if (tab === 'merken') renderMerken('all');
+}
+
+function filterMerkCategorie(cat) {
+  // Filter op categorie (motor/auto)
+  const grid = document.getElementById('merk-grid');
+  const filtered = cat === 'auto' 
+    ? merkenData.filter(m => m.categorie === 'auto')
+    : merkenData.filter(m => m.categorie !== 'auto');
+  grid.innerHTML = filtered.map(m => `
+    <div class="merk-card" onclick="openMerk(${JSON.stringify(m).replace(/"/g,'&quot;')})">
+      <div class="merk-logo-box" style="background:${m.bg};">
+        <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:0.06em;font-size:${m.logo.length > 6 ? '11' : '18'}px;color:${m.fg};">${m.logo}</span>
+      </div>
+      <div class="merk-footer">
+        <div class="merk-naam">${m.naam}</div>
+        <div class="merk-sub">${m.db ? 'Volledig uitgewerkt' : 'Binnenkort'}</div>
+      </div>
+    </div>`).join('');
 }
 
 function filterMerk(land, btn) {
