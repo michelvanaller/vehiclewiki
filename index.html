@@ -507,16 +507,25 @@ async function doSearch() {
         return 'background:rgba(230,126,34,0.15);color:#d35400;';
       };
 
+      const pill = (label, value, unit='', highlight=false) => value ? 
+        `<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:${highlight ? 'rgba(218,165,32,0.2)' : 'var(--bg3)'};color:${highlight ? '#DAA520' : 'var(--text2)'};font-weight:${highlight ? '600' : '400'};">${label ? label+': ' : ''}${value}${unit ? ' '+unit : ''}</span>` : '';
+
       document.getElementById('res-list').innerHTML = uitvoeringen.slice(0,30).map(u => `
-        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:11px 13px;margin-bottom:7px;cursor:pointer;" onclick="">
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:11px 13px;margin-bottom:7px;">
           ${u.merkNaam ? `<div style="font-size:10px;color:var(--text3);margin-bottom:2px;">${u.merkNaam}</div>` : ''}
-          <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;">${u.naam}</div>
+          <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">${u.naam}</div>
           <div style="display:flex;gap:5px;flex-wrap:wrap;">
             ${u.brandstof ? `<span style="font-size:10px;padding:2px 7px;border-radius:20px;${brandKleur(u.brandstof)}">${u.brandstof}</span>` : ''}
-            <span style="font-size:10px;padding:2px 7px;border-radius:20px;background:var(--bg3);color:var(--text2);">${u.pk} pk</span>
-            ${u.topsnelheid ? `<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:var(--bg3);color:var(--text2);">${u.topsnelheid} km/h</span>` : ''}
-            ${u.nul100 ? `<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:var(--bg3);color:var(--text2);">0-100 in ${u.nul100}s</span>` : ''}
-            ${u.prijs && !isNaN(parseInt(u.prijs)) ? `<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:var(--bg3);color:var(--text2);">€ ${parseInt(u.prijs).toLocaleString('nl')}</span>` : ''}
+            ${pill('', u.pk, 'pk', sort==='pk')}
+            ${pill('', u.nm, 'Nm', sort==='nm')}
+            ${pill('', u.topsnelheid, 'km/h', sort==='topsnelheid')}
+            ${pill('0-100', u.nul100, 's', sort==='nul100')}
+            ${pill('', u.cilinders, 'cil.', sort==='cilinders')}
+            ${pill('', u.stoelen, 'stoelen', sort==='stoelen')}
+            ${u.kofferbak ? pill('', u.kofferbak, 'L kofferbak', sort==='kofferbak') : ''}
+            ${u.actieradius ? pill('', u.actieradius, 'km bereik', sort==='actieradius') : ''}
+            ${u.verbruik ? pill('', u.verbruik, 'L/100km', sort==='verbruik_laag') : ''}
+            ${u.prijs && !isNaN(parseInt(u.prijs)) ? pill('', '€ '+parseInt(u.prijs).toLocaleString('nl'), '', sort==='prijs'||sort==='prijs_hoog') : ''}
             ${u.special ? '<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(218,165,32,0.15);color:#B8860B;">Speciaal</span>' : ''}
           </div>
         </div>`).join('');
