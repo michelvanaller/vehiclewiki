@@ -396,10 +396,54 @@ async function doSearch() {
 
     try {
       // Build query
+      // Bepaal eerst welke model_ids relevant zijn op basis van merk/categorie filter
+      let toegestaneModIds = null;
+      if (fCat || fMerk) {
+        // Haal merken op met filter
+        let merkParams = 'select=id,naam,categorie';
+        if (fMerk) merkParams += `&id=eq.${fMerk}`;
+        if (fCat) merkParams += `&categorie=eq.${fCat}`;
+        const merkFilter = await db('merken', merkParams);
+        const merkIds = merkFilter.map(m=>m.id);
+        const merkMap = {}; merkFilter.forEach(m=>merkMap[m.id]=m);
+
+        if (merkIds.length > 0) {
+          const fams = await db('families', `merk_id=in.(${merkIds.join(',')})&select=id,merk_id`);
+          const famIds = fams.map(f=>f.id);
+          const famToMerkId = {}; fams.forEach(f=>famToMerkId[f.id]=f.merk_id);
+
+          if (famIds.length > 0) {
+            const gens = await db('generaties', `family_id=in.(${famIds.join(',')})&select=id,family_id`);
+            const genIds = gens.map(g=>g.id);
+            const genToFam = {}; gens.forEach(g=>genToFam[g.id]=g.family_id);
+
+            if (genIds.length > 0) {
+              const mods = await db('modellen', `generatie_id=in.(${genIds.join(',')})&select=id,generatie_id`);
+              toegestaneModIds = mods.map(m=>m.id);
+
+              // Store lookup for merkNaam
+              window._zoekModToGen = {}; mods.forEach(m=>window._zoekModToGen[m.id]=m.generatie_id);
+              window._zoekGenToFam = genToFam;
+              window._zoekFamToMerk = famToMerkId;
+              window._zoekMerkMap = merkMap;
+            }
+          }
+        } else {
+          toegestaneModIds = [];
+        }
+      }
+
       // Bouw params op
-      let params = 'select=id,naam,jaar,pk,nm,nul100,topsnelheid,gewicht,prijs,brandstof,carrosserie,cilinders,cilinderinhoud,special,model_id,stoelen,kofferbak,actieradius,verbruik&limit=100';
+      let params = 'select=id,naam,jaar,pk,nm,nul100,topsnelheid,gewicht,prijs,brandstof,carrosserie,cilinders,cilinderinhoud,special,model_id,stoelen,kofferbak,actieradius,verbruik&limit=500';
       if (fPk > 0) params += `&pk=gte.${fPk}`;
       if (fBrand) params += `&brandstof=ilike.*${fBrand}*`;
+      if (toegestaneModIds && toegestaneModIds.length > 0) {
+        params += `&model_id=in.(${toegestaneModIds.join(',')})`;
+      } else if (toegestaneModIds && toegestaneModIds.length === 0) {
+        document.getElementById('res-count').textContent = '0 resultaten';
+        document.getElementById('res-list').innerHTML = '<div style="text-align:center;padding:30px;font-size:14px;color:var(--text3);">Geen resultaten — pas de filters aan</div>';
+        return;
+      }
 
       let uitvoeringen = await db('uitvoeringen', params);
 
@@ -412,46 +456,17 @@ async function doSearch() {
         return !isNaN(p) && p <= parseInt(fPrijs);
       });
 
-      // Filter by categorie of merk — haal model->generatie->family->merk keten op
-      if (fCat || fMerk) {
-        const modIds = [...new Set(uitvoeringen.map(u => u.model_id).filter(Boolean))];
-        if (modIds.length > 0) {
-          const mods = await db('modellen', `id=in.(${modIds.join(',')})&select=id,generatie_id`);
-          const genIds = [...new Set(mods.map(m=>m.generatie_id))];
-          const gens = await db('generaties', `id=in.(${genIds.join(',')})&select=id,family_id`);
-          const famIds = [...new Set(gens.map(g=>g.family_id))];
-          const fams = await db('families', `id=in.(${famIds.join(',')})&select=id,merk_id`);
-          const merken = await db('merken', `id=in.(${[...new Set(fams.map(f=>f.merk_id))].join(',')})&select=id,naam,categorie`);
-
-          // Build lookup
-          const modToGen = {}; mods.forEach(m=>modToGen[m.id]=m.generatie_id);
-          const genToFam = {}; gens.forEach(g=>genToFam[g.id]=g.family_id);
-          const famToMerkId = {}; fams.forEach(f=>famToMerkId[f.id]=f.merk_id);
-          const merkMap = {}; merken.forEach(m=>merkMap[m.id]=m);
-
-          uitvoeringen = uitvoeringen.filter(u => {
-            const genId = modToGen[u.model_id];
-            const famId = genToFam[genId];
-            const merkId = famToMerkId[famId];
-            const merk = merkMap[merkId];
-            if (!merk) return false;
-            if (fMerk && merkId !== parseInt(fMerk)) return false;
-            // Auto merken zijn id 3 en 4 (Ford, Lamborghini), motoren zijn 1 en 2
-          if (fCat === 'auto' && merkId < 3) return false;
-          if (fCat === 'motor' && merkId >= 3) return false;
-            return true;
-          });
-
-          // Add merk naam to results for display
-          uitvoeringen = uitvoeringen.map(u => {
-            const genId = modToGen[u.model_id];
-            const famId = genToFam[genId];
-            const merkId = famToMerkId[famId];
-            const merk = merkMap[merkId];
-            return {...u, merkNaam: merk ? merk.naam : ''};
-          });
+      // Add merkNaam to results
+      uitvoeringen = uitvoeringen.map(u => {
+        if (window._zoekModToGen && u.model_id) {
+          const genId = window._zoekModToGen[u.model_id];
+          const famId = window._zoekGenToFam && window._zoekGenToFam[genId];
+          const merkId = window._zoekFamToMerk && window._zoekFamToMerk[famId];
+          const merk = window._zoekMerkMap && window._zoekMerkMap[merkId];
+          return {...u, merkNaam: merk ? merk.naam : ''};
         }
-      }
+        return u;
+      });
 
       // Sort
       const sort = document.getElementById('f-sort').value;
