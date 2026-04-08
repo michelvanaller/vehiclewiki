@@ -397,7 +397,7 @@ async function doSearch() {
     try {
       // Build query
       // Bouw params op
-      let params = 'select=id,naam,jaar,pk,nul100,topsnelheid,gewicht,prijs,brandstof,carrosserie,cilinders,cilinderinhoud,special,model_id&limit=100';
+      let params = 'select=id,naam,jaar,pk,nm,nul100,topsnelheid,gewicht,prijs,brandstof,carrosserie,cilinders,cilinderinhoud,special,model_id,stoelen,kofferbak,actieradius,verbruik&limit=100';
       if (fPk > 0) params += `&pk=gte.${fPk}`;
       if (fBrand) params += `&brandstof=ilike.*${fBrand}*`;
 
@@ -436,7 +436,9 @@ async function doSearch() {
             const merk = merkMap[merkId];
             if (!merk) return false;
             if (fMerk && merkId !== parseInt(fMerk)) return false;
-            if (fCat && merk.categorie !== fCat) return false;
+            // Auto merken zijn id 3 en 4 (Ford, Lamborghini), motoren zijn 1 en 2
+          if (fCat === 'auto' && merkId < 3) return false;
+          if (fCat === 'motor' && merkId >= 3) return false;
             return true;
           });
 
@@ -454,8 +456,16 @@ async function doSearch() {
       // Sort
       const sort = document.getElementById('f-sort').value;
       if (sort === 'pk') uitvoeringen.sort((a,b) => b.pk - a.pk);
+      else if (sort === 'nm') uitvoeringen.sort((a,b) => b.nm - a.nm);
+      else if (sort === 'topsnelheid') uitvoeringen.sort((a,b) => b.topsnelheid - a.topsnelheid);
       else if (sort === 'nul100') uitvoeringen.sort((a,b) => a.nul100 - b.nul100);
+      else if (sort === 'cilinders') uitvoeringen.sort((a,b) => b.cilinders - a.cilinders);
+      else if (sort === 'stoelen') uitvoeringen.sort((a,b) => b.stoelen - a.stoelen);
+      else if (sort === 'kofferbak') uitvoeringen.sort((a,b) => b.kofferbak - a.kofferbak);
+      else if (sort === 'actieradius') uitvoeringen.sort((a,b) => b.actieradius - a.actieradius);
+      else if (sort === 'verbruik_laag') uitvoeringen.sort((a,b) => a.verbruik - b.verbruik);
       else if (sort === 'prijs') uitvoeringen.sort((a,b) => parseInt(a.prijs||999999) - parseInt(b.prijs||999999));
+      else if (sort === 'prijs_hoog') uitvoeringen.sort((a,b) => parseInt(b.prijs||0) - parseInt(a.prijs||0));
       else uitvoeringen.sort((a,b) => a.naam.localeCompare(b.naam));
 
       document.getElementById('res-count').textContent = `${uitvoeringen.length} resultaat${uitvoeringen.length !== 1 ? 'en' : ''}`;
@@ -1108,6 +1118,7 @@ async function openSpecs(uid) {
         ${u.special ? '<span class="spec-badge" style="background:rgba(218,165,32,0.15);color:#B8860B;border-color:rgba(218,165,32,0.3);">Speciale editie</span>' : ''}
       </div>
       <div class="action-row" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+        <button style="background:none;border:1px solid var(--merk-accent,#DAA520);border-radius:8px;padding:6px 13px;font-size:12px;color:var(--merk-accent,#DAA520);cursor:pointer;font-family:'Barlow',sans-serif;" onclick="voegToeAanVergelijking(${uid},'${u.naam.replace(/'/g,'')}')">+ Vergelijken</button>
         <button style="background:none;border:1px solid #e67e22;border-radius:8px;padding:6px 13px;font-size:12px;color:#e67e22;cursor:pointer;font-family:'Barlow',sans-serif;" onclick="document.getElementById('rf').classList.toggle('open')">Fout melden</button>
       </div>
       <div class="report-form" id="rf">
@@ -1120,7 +1131,7 @@ async function openSpecs(uid) {
         </div>
       </div>
 
-      <div class="sec">Prestaties</div>
+      <div class="sec" style="background:linear-gradient(90deg,rgba(232,56,61,0.15),transparent);border-left:3px solid #e8383d;padding-left:10px;border-radius:0;">Prestaties</div>
       <div class="spec-grid">
         ${specCard('Vermogen', u.pk ? u.pk + ' pk / ' + kw + ' kW' : null)}
         ${specCard('Koppel', u.nm, 'Nm')}
@@ -1129,7 +1140,7 @@ async function openSpecs(uid) {
         ${u.actieradius ? specCard('Actieradius', u.actieradius, 'km') : ''}
       </div>
 
-      <div class="sec">Motor & Aandrijving</div>
+      <div class="sec" style="background:linear-gradient(90deg,rgba(218,165,32,0.15),transparent);border-left:3px solid #DAA520;padding-left:10px;border-radius:0;">Motor & Aandrijving</div>
       <div class="spec-grid">
         ${u.cilinderinhoud ? specCard('Cilinderinhoud', u.cilinderinhoud, 'cc') : ''}
         ${u.cilinders ? specCard('Cilinders', u.cilinders) : ''}
@@ -1141,7 +1152,7 @@ async function openSpecs(uid) {
         ${u.accu_laadsnelheid ? specCard('Laadsnelheid DC', u.accu_laadsnelheid, 'kW') : ''}
       </div>
 
-      <div class="sec">Afmetingen & Gewicht</div>
+      <div class="sec" style="background:linear-gradient(90deg,rgba(52,152,219,0.15),transparent);border-left:3px solid #3498db;padding-left:10px;border-radius:0;">Afmetingen & Gewicht</div>
       <div class="spec-grid">
         ${specCard('Gewicht', u.gewicht, 'kg')}
         ${u.carrosserie ? specCard('Carrosserie', u.carrosserie) : ''}
@@ -1152,7 +1163,7 @@ async function openSpecs(uid) {
         ${u.trekgewicht_ongeremd ? specCard('Trekgewicht ongeremd', u.trekgewicht_ongeremd, 'kg') : ''}
       </div>
 
-      <div class="sec">Verbruik & Milieu</div>
+      <div class="sec" style="background:linear-gradient(90deg,rgba(39,174,96,0.15),transparent);border-left:3px solid #27AE60;padding-left:10px;border-radius:0;">Verbruik & Milieu</div>
       <div class="spec-grid">
         ${u.verbruik ? specCard('Verbruik', u.verbruik, isElektrisch ? 'kWh/100km' : 'L/100km') : ''}
         ${u.co2_uitstoot ? specCard('CO2 uitstoot', u.co2_uitstoot, 'g/km') : specCard('CO2 uitstoot', isElektrisch ? '0' : null, 'g/km')}
