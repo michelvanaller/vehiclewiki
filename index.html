@@ -1110,9 +1110,18 @@ async function openSpecs(uid) {
     else { wbLaag = 110; wbHoog = 155; }
 
     // Bouw spec cards dynamisch — alleen gevulde velden tonen
-    const specCard = (label, value, unit='') => value !== null && value !== undefined && value !== '' && value !== 0
-      ? `<div class="spec-card"><div class="spec-label">${label}</div><div class="spec-value" style="${String(value).length > 8 ? 'font-size:14px;' : ''}">${value}${unit ? ' '+unit : ''}</div></div>`
+    const specCardColored = (label, value, unit='', bg='rgba(218,165,32,0.1)', kleur='#B8860B') =>
+      value !== null && value !== undefined && value !== '' && value !== 0
+      ? `<div style="background:${bg};border-radius:10px;padding:10px 12px;">
+          <div style="font-size:10px;color:${kleur};text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">${label}</div>
+          <div><span style="font-size:${String(value).length > 8 ? '15' : '20'}px;font-weight:500;color:${kleur};">${value}</span>${unit ? `<span style="font-size:11px;color:${kleur};margin-left:3px;">${unit}</span>` : ''}</div>
+        </div>`
       : '';
+    const specCard = specCardColored;
+    const prestCard = (label, value, unit='') => specCardColored(label, value, unit, 'rgba(232,56,61,0.1)', '#e8383d');
+    const motorCard = (label, value, unit='') => specCardColored(label, value, unit, 'rgba(218,165,32,0.1)', '#B8860B');
+    const afmCard = (label, value, unit='') => specCardColored(label, value, unit, 'rgba(52,152,219,0.1)', '#2980b9');
+    const milieuCard = (label, value, unit='') => specCardColored(label, value, unit, 'rgba(39,174,96,0.1)', '#27AE60');
 
     const isAuto = u.carrosserie || u.deuren;
     const isElektrisch = u.brandstof && u.brandstof.includes('elektrisch');
@@ -1148,42 +1157,42 @@ async function openSpecs(uid) {
 
       <div class="sec" style="background:linear-gradient(90deg,rgba(232,56,61,0.15),transparent);border-left:3px solid #e8383d;padding-left:10px;border-radius:0;">Prestaties</div>
       <div class="spec-grid">
-        ${specCard('Vermogen', u.pk ? u.pk + ' pk / ' + kw + ' kW' : null)}
-        ${specCard('Koppel', u.nm, 'Nm')}
-        ${specCard('Topsnelheid', u.topsnelheid, 'km/h')}
-        ${specCard('0-100 km/h', u.nul100, 's')}
-        ${u.actieradius ? specCard('Actieradius', u.actieradius, 'km') : ''}
+        ${prestCard('Vermogen', u.pk ? u.pk + ' pk / ' + kw + ' kW' : null)}
+        ${prestCard('Koppel', u.nm, 'Nm')}
+        ${prestCard('Topsnelheid', u.topsnelheid, 'km/h')}
+        ${prestCard('0-100 km/h', u.nul100, 's')}
+        ${u.actieradius ? prestCard('Actieradius', u.actieradius, 'km') : ''}
       </div>
 
       <div class="sec" style="background:linear-gradient(90deg,rgba(218,165,32,0.15),transparent);border-left:3px solid #DAA520;padding-left:10px;border-radius:0;">Motor & Aandrijving</div>
       <div class="spec-grid">
-        ${u.cilinderinhoud ? specCard('Cilinderinhoud', u.cilinderinhoud, 'cc') : ''}
-        ${u.cilinders ? specCard('Cilinders', u.cilinders) : ''}
-        ${u.brandstof ? specCard('Brandstof', u.brandstof) : ''}
-        ${u.aandrijving ? specCard('Aandrijving', u.aandrijving) : ''}
-        ${u.transmissie ? specCard('Transmissie', u.transmissie) : ''}
-        ${u.accu_capaciteit ? specCard('Accu capaciteit', u.accu_capaciteit, 'kWh') : ''}
-        ${u.accu_laadtijd ? specCard('Laadtijd AC', u.accu_laadtijd) : ''}
-        ${u.accu_laadsnelheid ? specCard('Laadsnelheid DC', u.accu_laadsnelheid, 'kW') : ''}
+        ${u.cilinderinhoud ? motorCard('Cilinderinhoud', u.cilinderinhoud, 'cc') : ''}
+        ${u.cilinders ? motorCard('Cilinders', u.cilinders) : ''}
+        ${u.brandstof ? motorCard('Brandstof', u.brandstof) : ''}
+        ${u.aandrijving ? motorCard('Aandrijving', u.aandrijving) : ''}
+        ${u.transmissie ? motorCard('Transmissie', u.transmissie) : ''}
+        ${u.accu_capaciteit ? motorCard('Accu capaciteit', u.accu_capaciteit, 'kWh') : ''}
+        ${u.accu_laadtijd ? motorCard('Laadtijd AC', u.accu_laadtijd) : ''}
+        ${u.accu_laadsnelheid ? motorCard('Laadsnelheid DC', u.accu_laadsnelheid, 'kW') : ''}
       </div>
 
       <div class="sec" style="background:linear-gradient(90deg,rgba(52,152,219,0.15),transparent);border-left:3px solid #3498db;padding-left:10px;border-radius:0;">Afmetingen & Gewicht</div>
       <div class="spec-grid">
-        ${specCard('Gewicht', u.gewicht, 'kg')}
-        ${u.carrosserie ? specCard('Carrosserie', u.carrosserie) : ''}
-        ${u.deuren ? specCard('Deuren', u.deuren) : ''}
-        ${u.stoelen ? specCard('Zitplaatsen', u.stoelen) : ''}
-        ${u.kofferbak ? specCard('Kofferbak', u.kofferbak, 'liter') : ''}
-        ${u.trekgewicht_geremd ? specCard('Trekgewicht geremd', u.trekgewicht_geremd, 'kg') : ''}
-        ${u.trekgewicht_ongeremd ? specCard('Trekgewicht ongeremd', u.trekgewicht_ongeremd, 'kg') : ''}
+        ${afmCard('Gewicht', u.gewicht, 'kg')}
+        ${u.carrosserie ? afmCard('Carrosserie', u.carrosserie) : ''}
+        ${u.deuren ? afmCard('Deuren', u.deuren) : ''}
+        ${u.stoelen ? afmCard('Zitplaatsen', u.stoelen) : ''}
+        ${u.kofferbak ? afmCard('Kofferbak', u.kofferbak, 'liter') : ''}
+        ${u.trekgewicht_geremd ? afmCard('Trekgewicht geremd', u.trekgewicht_geremd, 'kg') : ''}
+        ${u.trekgewicht_ongeremd ? afmCard('Trekgewicht ongeremd', u.trekgewicht_ongeremd, 'kg') : ''}
       </div>
 
       <div class="sec" style="background:linear-gradient(90deg,rgba(39,174,96,0.15),transparent);border-left:3px solid #27AE60;padding-left:10px;border-radius:0;">Verbruik & Milieu</div>
       <div class="spec-grid">
-        ${u.verbruik ? specCard('Verbruik', u.verbruik, isElektrisch ? 'kWh/100km' : 'L/100km') : ''}
-        ${u.co2_uitstoot ? specCard('CO2 uitstoot', u.co2_uitstoot, 'g/km') : specCard('CO2 uitstoot', isElektrisch ? '0' : null, 'g/km')}
-        ${u.energielabel ? specCard('Energielabel', u.energielabel) : ''}
-        <div class="spec-card"><div class="spec-label">Wegenbelasting</div><div class="spec-value" style="font-size:14px;">€${wbLaag} – €${wbHoog} /kwartaal</div></div>
+        ${u.verbruik ? milieuCard('Verbruik', u.verbruik, isElektrisch ? 'kWh/100km' : 'L/100km') : ''}
+        ${u.co2_uitstoot ? milieuCard('CO2 uitstoot', u.co2_uitstoot, 'g/km') : milieuCard('CO2 uitstoot', isElektrisch ? '0' : null, 'g/km')}
+        ${u.energielabel ? milieuCard('Energielabel', u.energielabel) : ''}
+        ${milieuCard('Wegenbelasting', '€'+wbLaag+' – €'+wbHoog, '/kwartaal')}
       </div>
       <p class="beschrijving">${u.beschrijving||''}</p>
       <div class="sec">Voordelen</div>
