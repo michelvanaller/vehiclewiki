@@ -685,6 +685,90 @@ async function meldEvenementAan(merkId) {
   }
 }
 
+
+window._vergelijking = [];
+
+function voegToeAanVergelijking(uid, naam) {
+  if (window._vergelijking.find(v => v.id === uid)) {
+    alert(naam + ' staat al in de vergelijking!');
+    return;
+  }
+  if (window._vergelijking.length >= 3) {
+    alert('Maximaal 3 voertuigen. Verwijder er eerst een.');
+    return;
+  }
+  window._vergelijking.push({id: uid, naam: naam});
+  toonVergelijkBalk();
+}
+
+function toonVergelijkBalk() {
+  let balk = document.getElementById('vergelijk-balk');
+  if (!balk) {
+    balk = document.createElement('div');
+    balk.id = 'vergelijk-balk';
+    balk.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:2px solid var(--merk-accent,#DAA520);padding:10px 16px;display:flex;align-items:center;gap:10px;z-index:999;flex-wrap:wrap;';
+    document.body.appendChild(balk);
+  }
+  if (window._vergelijking.length === 0) { balk.remove(); return; }
+  balk.innerHTML =
+    '<div style="font-size:12px;font-weight:600;color:var(--text);flex-shrink:0;">Vergelijking:</div>' +
+    window._vergelijking.map(v =>
+      '<div style="background:var(--bg3);border-radius:8px;padding:5px 10px;font-size:12px;color:var(--text);display:flex;align-items:center;gap:6px;">' +
+      v.naam + '<span onclick="verwijderUitVergelijking(' + v.id + ')" style="cursor:pointer;color:var(--text3);font-size:14px;">x</span></div>'
+    ).join('') +
+    (window._vergelijking.length >= 2
+      ? '<button onclick="startVergelijking()" style="background:var(--merk-accent,#DAA520);color:#000;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:Barlow,sans-serif;margin-left:auto;">Vergelijk nu</button>'
+      : '<span style="font-size:11px;color:var(--text3);">Voeg nog ' + (2 - window._vergelijking.length) + ' toe</span>') +
+    '<span onclick="window._vergelijking=[];toonVergelijkBalk()" style="font-size:11px;color:var(--text3);cursor:pointer;margin-left:4px;">Wis alles</span>';
+}
+
+function verwijderUitVergelijking(uid) {
+  window._vergelijking = window._vergelijking.filter(v => v.id !== uid);
+  toonVergelijkBalk();
+}
+
+async function startVergelijking() {
+  const ids = window._vergelijking.map(v => v.id).join(',');
+  const uitvoeringen = await db('uitvoeringen', 'id=in.(' + ids + ')&select=*');
+  
+  const velden = [
+    ['Vermogen', function(u) { return u.pk ? u.pk + ' pk' : '-'; }],
+    ['Koppel', function(u) { return u.nm ? u.nm + ' Nm' : '-'; }],
+    ['Topsnelheid', function(u) { return u.topsnelheid ? u.topsnelheid + ' km/h' : '-'; }],
+    ['0-100 km/h', function(u) { return u.nul100 ? u.nul100 + 's' : '-'; }],
+    ['Gewicht', function(u) { return u.gewicht ? u.gewicht + ' kg' : '-'; }],
+    ['Brandstof', function(u) { return u.brandstof || '-'; }],
+    ['Aandrijving', function(u) { return u.aandrijving || '-'; }],
+    ['Transmissie', function(u) { return u.transmissie || '-'; }],
+    ['Verbruik', function(u) { return u.verbruik ? u.verbruik + ' L/100km' : '-'; }],
+    ['Prijs', function(u) { return u.prijs && !isNaN(parseInt(u.prijs)) ? 'EUR ' + parseInt(u.prijs).toLocaleString('nl') : '-'; }],
+  ];
+
+  goTo('s-home');
+  setHomeTab('zoeken', document.querySelectorAll('.tab')[2]);
+
+  document.getElementById('res-count').textContent = 'Vergelijking van ' + uitvoeringen.length + ' voertuigen';
+  document.getElementById('res-list').innerHTML =
+    '<div style="overflow-x:auto;">' +
+    '<table style="width:100%;border-collapse:collapse;font-size:13px;">' +
+    '<thead><tr>' +
+    '<th style="text-align:left;padding:8px;color:var(--text3);font-weight:500;border-bottom:1px solid var(--border);">Spec</th>' +
+    uitvoeringen.map(function(u) {
+      return '<th style="text-align:center;padding:8px;color:var(--merk-accent,#DAA520);font-weight:600;border-bottom:1px solid var(--border);">' + u.naam + '</th>';
+    }).join('') +
+    '</tr></thead><tbody>' +
+    velden.map(function(veld) {
+      return '<tr>' +
+        '<td style="padding:8px;color:var(--text2);border-bottom:1px solid var(--border);">' + veld[0] + '</td>' +
+        uitvoeringen.map(function(u) {
+          return '<td style="text-align:center;padding:8px;color:var(--text);border-bottom:1px solid var(--border);">' + veld[1](u) + '</td>';
+        }).join('') +
+        '</tr>';
+    }).join('') +
+    '</tbody></table></div>';
+}
+
+
 function renderMerken(filter) {
   const filtered = filter === 'all' ? merkenData : merkenData.filter(m => m.land === filter);
   document.getElementById('merk-grid').innerHTML = filtered.map(m => `
