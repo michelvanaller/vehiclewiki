@@ -346,7 +346,7 @@ function setHomeTab(tab, el) {
   document.getElementById('ht-merken').style.display = tab==='merken' ? 'block' : 'none';
   document.getElementById('ht-zoeken').style.display = tab==='zoeken' ? 'block' : 'none';
   document.getElementById('ht-kenteken').style.display = tab==='kenteken' ? 'block' : 'none';
-  if (tab === 'zoeken') doSearch();
+  if (tab === 'zoeken' && !window._vergelijkingActief) doSearch();
   if (tab === 'merken') renderMerken('all');
 }
 
@@ -376,6 +376,7 @@ function filterMerk(land, btn) {
 
 let zoekTimeout = null;
 async function doSearch() {
+  window._vergelijkingActief = false;
   clearTimeout(zoekTimeout);
   zoekTimeout = setTimeout(async () => {
     const q = (document.getElementById('q').value || '').toLowerCase().trim();
@@ -728,6 +729,7 @@ function verwijderUitVergelijking(uid) {
 }
 
 async function startVergelijking() {
+  window._vergelijkingActief = true;
   const ids = window._vergelijking.map(v => v.id).join(',');
   const uitvoeringen = await db('uitvoeringen', 'id=in.(' + ids + ')&select=*');
   
