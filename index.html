@@ -633,10 +633,42 @@ async function zoekKenteken() {
     const kw = kwVal ? kwVal + ' kW / ' + Math.round(kwVal / 0.7355) + ' pk' : 'onbekend';
 
     // Wegenbelasting berekening
-    // Wegenbelasting NL motoren 2025 - vast bedrag per kwartaal, alleen per provincie verschillend
-    // Noord-Holland goedkoopst, Zuid-Holland duurste - gewicht speelt geen rol voor motoren
-    const wbLaag = 32;  // Noord-Holland (goedkoopste provincie) per kwartaal
-    const wbHoog = 42;  // Zuid-Holland (duurste provincie) per kwartaal
+    // Wegenbelasting NL 2025 per kwartaal
+    let wbLaag, wbHoog;
+    const isMotor = !u.carrosserie && !u.deuren;
+    if (isMotor) {
+      // Motoren: vast bedrag per provincie, gewicht speelt geen rol
+      wbLaag = 32;  // Noord-Holland
+      wbHoog = 42;  // Zuid-Holland
+    } else {
+      // Auto's: gebaseerd op gewicht en brandstof
+      const autoGew = u.gewicht || 0;
+      const isElek = u.brandstof && u.brandstof.includes('elektrisch');
+      const isDiesel = u.brandstof && u.brandstof.includes('diesel');
+      
+      if (isElek) {
+        // Elektrisch: vanaf 2026 volledig tarief met 25% korting (afgebouwd)
+        if (autoGew <= 1300) { wbLaag = 50; wbHoog = 70; }
+        else if (autoGew <= 1700) { wbLaag = 100; wbHoog = 140; }
+        else if (autoGew <= 2100) { wbLaag = 160; wbHoog = 220; }
+        else { wbLaag = 210; wbHoog = 290; }
+      } else if (isDiesel) {
+        // Diesel: hoger tarief
+        wbLaag = Math.round((autoGew * 0.22) / 4);
+        wbHoog = Math.round((autoGew * 0.28) / 4);
+      } else {
+        // Benzine/hybride: standaard tarief
+        // Gewichtsklassen NL 2025 per kwartaal (laagste - hoogste provincie)
+        if (autoGew <= 900) { wbLaag = 45; wbHoog = 65; }
+        else if (autoGew <= 1100) { wbLaag = 85; wbHoog = 120; }
+        else if (autoGew <= 1300) { wbLaag = 130; wbHoog = 180; }
+        else if (autoGew <= 1500) { wbLaag = 175; wbHoog = 240; }
+        else if (autoGew <= 1700) { wbLaag = 220; wbHoog = 305; }
+        else if (autoGew <= 1900) { wbLaag = 265; wbHoog = 365; }
+        else if (autoGew <= 2100) { wbLaag = 310; wbHoog = 430; }
+        else { wbLaag = 360; wbHoog = 500; }
+      }
+    }
 
     const merkKleur = merk === 'DUCATI' ? '#CC0000' : merk === 'KAWASAKI' ? '#009A44' : merk === 'YAMAHA' ? '#002F6C' : merk === 'BMW' ? '#1C69D4' : merk === 'HONDA' ? '#CC0000' : '#555';
 
