@@ -1460,13 +1460,34 @@ async function openSpecs(uid) {
     // Bereken kW en wegenbelasting
     const kw = Math.round(u.pk * 0.7355);
     const gew = u.gewicht;
-    // Wegenbelasting NL motoren op basis van gewicht
-    // Bron: gemiddelde laagste en hoogste provincie
     let wbLaag, wbHoog;
-    if (gew <= 250) { wbLaag = 25; wbHoog = 35; }
-    else if (gew <= 500) { wbLaag = 65; wbHoog = 95; }
-    else if (gew <= 750) { wbLaag = 95; wbHoog = 130; }
-    else { wbLaag = 110; wbHoog = 155; }
+    const isMotorVoertuig = huidigMerk && (huidigMerk.id === 1 || huidigMerk.id === 2);
+    if (isMotorVoertuig) {
+      // Motoren: vast tarief per provincie
+      wbLaag = 32; wbHoog = 42;
+    } else {
+      // Auto's: gebaseerd op gewicht en brandstof
+      const isElek = u.brandstof && u.brandstof.includes('elektrisch');
+      const isDiesel = u.brandstof && u.brandstof.includes('diesel');
+      if (isElek) {
+        if (gew <= 1300) { wbLaag = 50; wbHoog = 70; }
+        else if (gew <= 1700) { wbLaag = 100; wbHoog = 140; }
+        else if (gew <= 2100) { wbLaag = 160; wbHoog = 220; }
+        else { wbLaag = 210; wbHoog = 290; }
+      } else if (isDiesel) {
+        wbLaag = Math.round((gew * 0.22) / 4);
+        wbHoog = Math.round((gew * 0.28) / 4);
+      } else {
+        if (gew <= 900) { wbLaag = 45; wbHoog = 65; }
+        else if (gew <= 1100) { wbLaag = 85; wbHoog = 120; }
+        else if (gew <= 1300) { wbLaag = 130; wbHoog = 180; }
+        else if (gew <= 1500) { wbLaag = 175; wbHoog = 240; }
+        else if (gew <= 1700) { wbLaag = 220; wbHoog = 305; }
+        else if (gew <= 1900) { wbLaag = 265; wbHoog = 365; }
+        else if (gew <= 2100) { wbLaag = 310; wbHoog = 430; }
+        else { wbLaag = 360; wbHoog = 500; }
+      }
+    }
 
     // Bouw spec cards dynamisch — alleen gevulde velden tonen
     const specCardColored = (label, value, unit='', bg='rgba(218,165,32,0.1)', kleur='#B8860B') =>
