@@ -635,7 +635,8 @@ async function zoekKenteken() {
     // Wegenbelasting berekening
     // Wegenbelasting NL 2025 per kwartaal
     let wbLaag, wbHoog;
-    const isMotor = !u.carrosserie && !u.deuren;
+    // Bepaal of het een motor of auto is op basis van merk
+    const isMotor = huidigMerk && (huidigMerk.id === 1 || huidigMerk.id === 2);
     if (isMotor) {
       // Motoren: vast bedrag per provincie, gewicht speelt geen rol
       wbLaag = 32;  // Noord-Holland
