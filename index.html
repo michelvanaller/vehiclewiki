@@ -511,7 +511,7 @@ async function doSearch() {
         `<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:${highlight ? 'rgba(218,165,32,0.2)' : 'var(--bg3)'};color:${highlight ? '#DAA520' : 'var(--text2)'};font-weight:${highlight ? '600' : '400'};">${label ? label+': ' : ''}${value}${unit ? ' '+unit : ''}</span>` : '';
 
       document.getElementById('res-list').innerHTML = uitvoeringen.slice(0,30).map(u => `
-        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:11px 13px;margin-bottom:7px;">
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:11px 13px;margin-bottom:7px;cursor:pointer;" onclick="openUitvoeringDirect(${u.id})">
           ${u.merkNaam ? `<div style="font-size:10px;color:var(--text3);margin-bottom:2px;">${u.merkNaam}</div>` : ''}
           <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">${u.naam}</div>
           <div style="display:flex;gap:5px;flex-wrap:wrap;">
@@ -703,6 +703,49 @@ async function meldEvenementAan(merkId) {
   }
 }
 
+
+async function openUitvoeringDirect(uid) {
+  // Haal uitvoering op en navigeer direct naar spec pagina
+  try {
+    const uitvs = await db('uitvoeringen', `id=eq.${uid}&select=*`);
+    if (!uitvs || uitvs.length === 0) return;
+    const u = uitvs[0];
+
+    // Haal model info op
+    const mods = await db('modellen', `id=eq.${u.model_id}&select=id,naam,generatie_id`);
+    if (!mods || mods.length === 0) return;
+    const mod = mods[0];
+
+    // Haal generatie op
+    const gens = await db('generaties', `id=eq.${mod.generatie_id}&select=id,naam,huidig,family_id`);
+    if (!gens || gens.length === 0) return;
+    const gen = gens[0];
+
+    // Haal family op
+    const fams = await db('families', `id=eq.${gen.family_id}&select=id,naam,emoji,merk_id`);
+    if (!fams || fams.length === 0) return;
+    const fam = fams[0];
+
+    // Haal merk op
+    const merken = await db('merken', `id=eq.${fam.merk_id}&select=*`);
+    if (!merken || merken.length === 0) return;
+    const merk = merken[0];
+
+    // Stel globals in
+    huidigMerk = {id: merk.id, naam: merk.naam, bg: merk.bg_kleur, fg: merk.fg_kleur, logo: merk.logo, db: true, land: merk.land};
+    huidigFamily = {id: fam.id, naam: fam.naam, emoji: fam.emoji};
+    huidigGen = {id: gen.id, naam: gen.naam, huidig: gen.huidig};
+    huidigModel = {id: mod.id, naam: mod.naam};
+
+    // Zet accent kleur
+    document.documentElement.style.setProperty('--merk-accent', merk.accent_kleur || merk.bg_kleur || '#DAA520');
+
+    // Open spec pagina
+    openSpecs(uid);
+  } catch(e) {
+    console.log('openUitvoeringDirect fout:', e);
+  }
+}
 
 window._vergelijking = [];
 
