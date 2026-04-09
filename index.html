@@ -742,6 +742,19 @@ async function openUitvoeringDirect(uid) {
 
     // Open spec pagina
     openSpecs(uid);
+    
+    // Overschrijf de terugknop om terug te gaan naar zoeken
+    setTimeout(() => {
+      const backBtn = document.getElementById('back-spec');
+      if (backBtn) {
+        backBtn.textContent = '← zoekresultaten';
+        backBtn.onclick = () => {
+          goTo('s-home');
+          setHomeTab('zoeken', document.querySelectorAll('.tab')[2]);
+          window._vergelijkingActief = true; // Behoud zoekresultaten
+        };
+      }
+    }, 100);
   } catch(e) {
     console.log('openUitvoeringDirect fout:', e);
   }
