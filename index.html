@@ -523,8 +523,8 @@ async function doSearch() {
             ${pill('', u.cilinders, 'cil.', sort==='cilinders')}
             ${pill('', u.stoelen, 'stoelen', sort==='stoelen')}
             ${u.kofferbak ? pill('', u.kofferbak, 'L kofferbak', sort==='kofferbak') : ''}
-            ${u.actieradius ? pill('', u.actieradius, 'km bereik', sort==='actieradius') : ''}
-            ${u.verbruik ? pill('', u.verbruik, 'L/100km', sort==='verbruik_laag') : ''}
+            ${(u.actieradius || sort==='actieradius') ? pill('', u.actieradius || 'n.v.t.', u.actieradius ? 'km bereik' : '', sort==='actieradius') : ''}
+            ${(u.verbruik || sort==='verbruik_laag') ? pill('', u.verbruik || 'n.v.t.', u.verbruik ? 'L/100km' : '', sort==='verbruik_laag') : ''}
             ${u.prijs && !isNaN(parseInt(u.prijs)) ? pill('', '€ '+parseInt(u.prijs).toLocaleString('nl'), '', sort==='prijs'||sort==='prijs_hoog') : ''}
             ${u.special ? '<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(218,165,32,0.15);color:#B8860B;">Speciaal</span>' : ''}
           </div>
