@@ -912,7 +912,7 @@ async function openUitvoeringDirect(uid) {
     const u = uitvs[0];
 
     // Haal model info op
-    const mods = await db('modellen', `id=eq.${u.model_id}&select=id,naam,generatie_id`);
+    const mods = await db('modellen', `id=eq.${u.model_id}&select=*`);
     if (!mods || mods.length === 0) return;
     const mod = mods[0];
 
@@ -935,7 +935,7 @@ async function openUitvoeringDirect(uid) {
     huidigMerk = {id: merk.id, naam: merk.naam, bg: merk.bg_kleur, fg: merk.fg_kleur, logo: merk.logo, db: true, land: merk.land};
     huidigFamily = {id: fam.id, naam: fam.naam, emoji: fam.emoji};
     huidigGen = {id: gen.id, naam: gen.naam, huidig: gen.huidig};
-    huidigModel = {id: mod.id, naam: mod.naam};
+    huidigModel = {id: mod.id, naam: mod.naam, foto_url: mod.foto_url||''};
 
     // Zet accent kleur
     document.documentElement.style.setProperty('--merk-accent', merk.accent_kleur || merk.bg_kleur || '#DAA520');
@@ -1509,7 +1509,7 @@ async function openSpecs(uid) {
 
     document.getElementById('spec-content').innerHTML = `
       <div class="hero-band" style="background:${heroBg};">
-        ${huidigModel && huidigModel.foto_url ? `<img src="${huidigModel.foto_url}" style="width:80px;height:60px;object-fit:cover;border-radius:var(--radius);flex-shrink:0;" onerror="this.style.display='none'">` : `<div style="font-size:36px;width:64px;height:64px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.15);border-radius:var(--radius);flex-shrink:0;">${huidigFamily.emoji||'🏍'}</div>`}
+        ${huidigModel && huidigModel.foto_url ? `<img src="${huidigModel.foto_url}" style="width:120px;height:80px;object-fit:cover;border-radius:var(--radius);flex-shrink:0;border:2px solid rgba(255,255,255,0.2);" onerror="this.style.display='none'">` : `<div style="font-size:36px;width:64px;height:64px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.15);border-radius:var(--radius);flex-shrink:0;">${huidigFamily.emoji||'🏍'}</div>`}
         <div>
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;color:#fff;">${u.naam}</div>
           <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:3px;">${u.jaar} · ${u.prijs && !isNaN(parseInt(u.prijs)) ? '€ '+parseInt(u.prijs).toLocaleString('nl') : u.prijs||''}</div>
