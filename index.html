@@ -1437,6 +1437,16 @@ async function openSpecs(uid) {
     ]);
 
     const u = uitvArr[0];
+    
+    // Haal foto op van het model
+    if (u.model_id) {
+      try {
+        const modData = await db('modellen', `id=eq.${u.model_id}&select=foto_url`);
+        if (modData[0] && modData[0].foto_url) {
+          huidigModel = {...(huidigModel||{}), foto_url: modData[0].foto_url};
+        }
+      } catch(e2) { console.log('foto laden fout', e2); }
+    }
     document.getElementById('spec-title').textContent = u.naam;
     document.getElementById('bc-spec').innerHTML = bc([huidigMerk.naam, huidigFamily.naam, huidigGen.naam, huidigModel.naam, u.naam]);
 
