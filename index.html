@@ -632,20 +632,17 @@ async function zoekKenteken() {
     const kwVal = vMassa > 0 && mRijklaar > 0 ? Math.round(vMassa * mRijklaar) : null;
     const kw = kwVal ? kwVal + ' kW / ' + Math.round(kwVal / 0.7355) + ' pk' : 'onbekend';
 
-    // Wegenbelasting berekening
-    // Wegenbelasting NL 2025 per kwartaal
+    // Wegenbelasting berekening voor kenteken zoeker
     let wbLaag, wbHoog;
-    // Bepaal of het een motor of auto is op basis van merk
-    const isMotor = huidigMerk && (huidigMerk.id === 1 || huidigMerk.id === 2);
-    if (isMotor) {
-      // Motoren: vast bedrag per provincie, gewicht speelt geen rol
-      wbLaag = 32;  // Noord-Holland
-      wbHoog = 42;  // Zuid-Holland
+    const kentBrandstof = v.brandstof_omschrijving || '';
+    const kentGew = parseInt(v.massa_rijklaar || v.massa_ledig_voertuig || 0) || 0;
+    const kentIsMotor = (v.voertuigsoort||'').toLowerCase().includes('motor');
+    if (kentIsMotor) {
+      wbLaag = 32; wbHoog = 42;
     } else {
-      // Auto's: gebaseerd op gewicht en brandstof
-      const autoGew = u.gewicht || 0;
-      const isElek = u.brandstof && u.brandstof.includes('elektrisch');
-      const isDiesel = u.brandstof && u.brandstof.includes('diesel');
+      const autoGew = kentGew;
+      const isElek = kentBrandstof.toLowerCase().includes('elektr');
+      const isDiesel = kentBrandstof.toLowerCase().includes('diesel');
       
       if (isElek) {
         // Elektrisch: vanaf 2026 volledig tarief met 25% korting (afgebouwd)
