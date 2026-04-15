@@ -1419,6 +1419,24 @@ async function openModel(mid, naam, sub, fotoUrl) {
   }
 }
 
+let _fotoIndex = 0;
+let _fotos = [];
+
+function fotoGaNaar(idx) {
+  const fotos = [huidigModel?.foto_url, huidigModel?.foto_url_2, huidigModel?.foto_url_3].filter(Boolean);
+  if (!fotos.length) return;
+  _fotoIndex = (idx + fotos.length) % fotos.length;
+  const img = document.getElementById('foto-main');
+  if (img) img.src = fotos[_fotoIndex];
+  fotos.forEach((f, i) => {
+    const dot = document.getElementById(`foto-dot-${i}`);
+    if (dot) dot.style.background = i === _fotoIndex ? '#fff' : 'rgba(255,255,255,0.4)';
+  });
+}
+
+function fotoVolgende() { fotoGaNaar(_fotoIndex + 1); }
+function fotoVorige() { fotoGaNaar(_fotoIndex - 1); }
+
 async function openSpecs(uid) {
   document.getElementById('spec-title').textContent = '...';
   document.getElementById('spec-content').innerHTML = loading();
@@ -1437,9 +1455,9 @@ async function openSpecs(uid) {
     // Haal foto op van het model
     if (u.model_id) {
       try {
-        const modData = await db('modellen', `id=eq.${u.model_id}&select=foto_url`);
-        if (modData[0] && modData[0].foto_url) {
-          huidigModel = {...(huidigModel||{}), foto_url: modData[0].foto_url};
+        const modData = await db('modellen', `id=eq.${u.model_id}&select=foto_url,foto_url_2,foto_url_3`);
+        if (modData[0]) {
+          huidigModel = {...(huidigModel||{}), foto_url: modData[0].foto_url||'', foto_url_2: modData[0].foto_url_2||'', foto_url_3: modData[0].foto_url_3||''};
         }
       } catch(e2) { console.log('foto laden fout', e2); }
     }
@@ -1514,22 +1532,32 @@ async function openSpecs(uid) {
     const isElektrisch = u.brandstof && u.brandstof.includes('elektrisch');
 
     document.getElementById('spec-content').innerHTML = `
-      ${huidigModel && huidigModel.foto_url
-        ? `<div style="position:relative;width:100%;height:220px;border-radius:var(--radius-lg);overflow:hidden;margin-bottom:14px;border-bottom:3px solid var(--merk-accent,#DAA520);">
-            <img src="${huidigModel.foto_url}" style="width:100%;height:100%;object-fit:contain;background:#111;" onerror="this.parentElement.style.display='none'">
-           </div>
-           <div style="margin-bottom:14px;">
-             <div style="font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:700;color:var(--text);">${u.naam}</div>
-             <div style="font-size:12px;color:var(--text2);margin-top:2px;">${u.jaar} · ${u.prijs && !isNaN(parseInt(u.prijs)) ? '€ '+parseInt(u.prijs).toLocaleString('nl') : u.prijs||''}</div>
-           </div>`
-        : `<div class="hero-band" style="background:${heroBg};margin-bottom:14px;">
+      ${(() => {
+        const fotos = [huidigModel?.foto_url, huidigModel?.foto_url_2, huidigModel?.foto_url_3].filter(Boolean);
+        if (fotos.length > 0) {
+          return `<div style="position:relative;width:100%;height:220px;border-radius:var(--radius-lg);overflow:hidden;margin-bottom:14px;border-bottom:3px solid var(--merk-accent,#DAA520);" id="foto-gallery">
+            <img id="foto-main" src="${fotos[0]}" style="width:100%;height:100%;object-fit:contain;background:#111;" onerror="this.style.display='none'">
+            ${fotos.length > 1 ? `
+            <button onclick="fotoVorige()" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.5);border:none;color:#fff;font-size:20px;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;">‹</button>
+            <button onclick="fotoVolgende()" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.5);border:none;color:#fff;font-size:20px;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;">›</button>
+            <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:5px;">
+              ${fotos.map((f,i) => `<div id="foto-dot-${i}" style="width:8px;height:8px;border-radius:50%;background:${i===0?'#fff':'rgba(255,255,255,0.4)'};cursor:pointer;" onclick="fotoGaNaar(${i})"></div>`).join('')}
+            </div>` : ''}
+          </div>
+          <div style="margin-bottom:14px;">
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:700;color:var(--text);">${u.naam}</div>
+            <div style="font-size:12px;color:var(--text2);margin-top:2px;">${u.jaar} · ${u.prijs && !isNaN(parseInt(u.prijs)) ? '€ '+parseInt(u.prijs).toLocaleString('nl') : u.prijs||''}</div>
+          </div>`;
+        } else {
+          return `<div class="hero-band" style="background:${heroBg};margin-bottom:14px;">
              <div style="font-size:36px;width:64px;height:64px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.15);border-radius:var(--radius);flex-shrink:0;">${huidigFamily.emoji||'🏍'}</div>
              <div>
                <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;color:#fff;">${u.naam}</div>
                <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:3px;">${u.jaar} · ${u.prijs && !isNaN(parseInt(u.prijs)) ? '€ '+parseInt(u.prijs).toLocaleString('nl') : u.prijs||''}</div>
              </div>
-           </div>`
-      }
+           </div>`;
+        }
+      })()}
       <div style="margin-bottom:12px;">
         ${u.cilinders && u.cilinderinhoud ? `<span class="spec-badge">${u.cilinders} · ${u.cilinderinhoud}cc</span>` : ''}
         ${u.brandstof ? `<span class="spec-badge" style="background:${isElektrisch ? '#3498db20' : 'rgba(204,0,0,0.15)'};color:${isElektrisch ? '#2980b9' : '#CC0000'};border-color:${isElektrisch ? '#3498db40' : 'rgba(204,0,0,0.3)'};">${u.brandstof}</span>` : ''}
