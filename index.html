@@ -1421,15 +1421,21 @@ async function openModel(mid, naam, sub, fotoUrl) {
 
 let _fotoIndex = 0;
 let _fotos = [];
+let _fotoIndex = 0;
 
 function fotoGaNaar(idx) {
-  const fotos = [huidigModel?.foto_url, huidigModel?.foto_url_2, huidigModel?.foto_url_3].filter(Boolean);
-  if (!fotos.length) return;
-  _fotoIndex = (idx + fotos.length) % fotos.length;
+  if (!_fotos.length) return;
+  _fotoIndex = ((idx % _fotos.length) + _fotos.length) % _fotos.length;
   const img = document.getElementById('foto-main');
-  if (img) img.src = fotos[_fotoIndex];
-  fotos.forEach((f, i) => {
-    const dot = document.getElementById(`foto-dot-${i}`);
+  if (img) {
+    img.style.opacity = '0';
+    setTimeout(() => {
+      img.src = _fotos[_fotoIndex];
+      img.style.opacity = '1';
+    }, 150);
+  }
+  _fotos.forEach((f, i) => {
+    const dot = document.getElementById('foto-dot-' + i);
     if (dot) dot.style.background = i === _fotoIndex ? '#fff' : 'rgba(255,255,255,0.4)';
   });
 }
@@ -1534,9 +1540,11 @@ async function openSpecs(uid) {
     document.getElementById('spec-content').innerHTML = `
       ${(() => {
         const fotos = [huidigModel?.foto_url, huidigModel?.foto_url_2, huidigModel?.foto_url_3].filter(Boolean);
+        _fotos = fotos;
+        _fotoIndex = 0;
         if (fotos.length > 0) {
           return `<div style="position:relative;width:100%;height:220px;border-radius:var(--radius-lg);overflow:hidden;margin-bottom:14px;border-bottom:3px solid var(--merk-accent,#DAA520);" id="foto-gallery">
-            <img id="foto-main" src="${fotos[0]}" style="width:100%;height:100%;object-fit:contain;background:#111;" onerror="this.style.display='none'">
+            <img id="foto-main" src="${fotos[0]}" style="width:100%;height:100%;object-fit:contain;background:#111;transition:opacity 0.15s;" onerror="this.style.display='none'">
             ${fotos.length > 1 ? `
             <button onclick="fotoVorige()" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.5);border:none;color:#fff;font-size:20px;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;">‹</button>
             <button onclick="fotoVolgende()" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.5);border:none;color:#fff;font-size:20px;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;">›</button>
