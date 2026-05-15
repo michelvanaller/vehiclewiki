@@ -38,21 +38,12 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 .filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
 .fb{background:none;border:1px solid var(--border2);border-radius:20px;padding:5px 13px;font-size:12px;color:var(--text2);cursor:pointer;font-family:'Barlow',sans-serif;}
 .fb.active,.fb:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
-.ducati-header{background:#CC0000;border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px;text-align:center;}
-.ducati-logo{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:700;letter-spacing:0.08em;color:#fff;}
-.ducati-sub{font-size:12px;color:rgba(255,255,255,0.7);margin-top:3px;}
 .ducati-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px;}
 .ds{background:rgba(0,0,0,0.2);border-radius:8px;padding:8px;text-align:center;}
 .ds-val{font-size:18px;font-weight:700;color:#fff;}
 .ds-label{font-size:10px;color:rgba(255,255,255,0.6);margin-top:2px;}
-.section-header{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin:16px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--border);}
 .family-card{background:var(--bg2);border:2px solid var(--merk-accent, #DAA520);border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;transition:all 0.15s;margin-bottom:8px;}
 .family-card:hover{border-color:var(--border2);}
-.family-header{display:flex;align-items:center;gap:12px;padding:13px 14px;}
-.family-icon{width:46px;height:46px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
-.family-name{font-size:15px;font-weight:500;}
-.family-sub{font-size:12px;color:var(--text2);margin-top:2px;}
-.family-tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;margin-top:5px;font-weight:500;}
 .breadcrumb{font-size:11px;color:var(--text3);margin-bottom:12px;display:flex;gap:4px;flex-wrap:wrap;align-items:center;}
 .breadcrumb span{color:var(--text2);}
 .timeline{position:relative;padding-left:26px;}
@@ -66,9 +57,6 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 .gen-periode{font-size:12px;font-weight:600;color:#CC0000;}
 .gen-periode.current{color:#27AE60;}
 .gen-name{font-size:13px;font-weight:500;margin:3px 0;}
-.gen-preview{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px;}
-.gp{font-size:10px;padding:2px 7px;border-radius:20px;background:var(--bg3);color:var(--text2);}
-.gp.red{background:rgba(204,0,0,0.15);color:#CC0000;}
 .list-row{background:var(--bg2);border:2px solid var(--merk-accent,#DAA520);border-radius:var(--radius-lg);padding:12px 13px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;transition:all 0.15s;}
 .list-row:hover{border-color:var(--border2);}
 .list-row-name{font-size:14px;font-weight:500;}
@@ -85,11 +73,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 .pill.red{background:rgba(204,0,0,0.15);color:#CC0000;}
 .pill.gold{background:rgba(218,165,32,0.15);color:#B8860B;}
 .special-badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(39,174,96,0.15);color:#27AE60;border:0.5px solid rgba(39,174,96,0.3);margin-left:6px;vertical-align:middle;}
-.hero-band{border-radius:var(--radius-lg);padding:16px;margin-bottom:14px;display:flex;gap:14px;align-items:center;}
 .spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
-.spec-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;}
-.spec-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;}
-.spec-value{font-size:18px;font-weight:600;font-family:'Barlow Condensed',sans-serif;}
 .sec{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin:14px 0 7px;}
 .pro-con{display:flex;gap:8px;margin-bottom:5px;font-size:13px;align-items:flex-start;}
 .pro-dot{width:6px;height:6px;border-radius:50%;margin-top:5px;flex-shrink:0;}
@@ -101,11 +85,15 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 .vote-btn.voted{background:rgba(46,204,113,0.15);color:var(--green);border-color:var(--green);}
 .report-form{background:rgba(230,126,34,0.08);border:1px solid rgba(230,126,34,0.3);border-radius:var(--radius);padding:13px;margin-top:8px;display:none;}
 .report-form.open{display:block;}
+.foto-upload-form{background:rgba(52,152,219,0.06);border:1px solid rgba(52,152,219,0.25);border-radius:var(--radius);padding:13px;margin-top:8px;display:none;}
+.foto-upload-form.open{display:block;}
 .add-form input,.add-form textarea,.add-form select{width:100%;margin-bottom:7px;padding:8px 11px;border:1px solid var(--border2);border-radius:8px;background:var(--bg3);color:var(--text);font-size:13px;font-family:'Barlow',sans-serif;}
 .add-form textarea{height:64px;resize:vertical;}
 .add-form .submit-btn{border:1px solid var(--accent);background:none;border-radius:8px;padding:7px 16px;font-size:13px;color:var(--accent);cursor:pointer;font-family:'Barlow',sans-serif;margin-right:6px;}
 .add-form .submit-btn:hover{background:var(--accent);color:#fff;}
 .add-form .cancel-btn{border:1px solid var(--border2);background:none;border-radius:8px;padding:7px 16px;font-size:13px;color:var(--text2);cursor:pointer;font-family:'Barlow',sans-serif;}
+.foto-placeholder{width:100%;height:200px;border-radius:var(--radius-lg);border:2px dashed var(--border2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;margin-bottom:14px;cursor:pointer;transition:all 0.2s;background:var(--bg2);}
+.foto-placeholder:hover{border-color:var(--merk-accent,#DAA520);background:var(--bg3);}
 .loading{text-align:center;padding:40px;color:var(--text2);font-size:14px;}
 .spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;}
 @keyframes spin{to{transform:rotate(360deg);}}
@@ -198,7 +186,12 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
     <div id="res-list"></div>
   </div>
   <div id="ht-admin" style="display:none;">
-    <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">Admin — Specs importeren</div>
+    <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">Admin</div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px;margin-bottom:12px;">
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:10px;">📷 Foto voorstellen goedkeuren</div>
+      <button onclick="laadFotoVoorstellen()" style="background:none;border:1px solid var(--merk-accent,#DAA520);border-radius:8px;padding:7px 16px;font-size:12px;color:var(--merk-accent,#DAA520);cursor:pointer;font-family:'Barlow',sans-serif;margin-bottom:10px;">Laad openstaande foto voorstellen</button>
+      <div id="admin-foto-voorstellen"></div>
+    </div>
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px;margin-bottom:12px;">
       <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:10px;">Stap 1 — Zoek model via Car Query</div>
       <div style="display:flex;gap:8px;margin-bottom:10px;">
@@ -304,11 +297,7 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 async function db(table, params='') {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${params}`, {
-    headers: {
-      'apikey': SUPABASE_KEY,
-      'Authorization': `Bearer ${SUPABASE_KEY}`,
-      'Content-Type': 'application/json'
-    }
+    headers: {'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json'}
   });
   if (!res.ok) throw new Error(`DB fout: ${res.status}`);
   return res.json();
@@ -336,15 +325,20 @@ async function dbDelete(table, id) {
 async function dbPost(table, data) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
     method: 'POST',
-    headers: {
-      'apikey': SUPABASE_KEY,
-      'Authorization': `Bearer ${SUPABASE_KEY}`,
-      'Content-Type': 'application/json',
-      'Prefer': 'return=minimal'
-    },
+    headers: {'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal'},
     body: JSON.stringify(data)
   });
   return res.ok;
+}
+
+async function uploadNaarSupabase(bestand, bestandsnaam) {
+  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/fotos-pending/${bestandsnaam}`, {
+    method: 'POST',
+    headers: {'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': bestand.type},
+    body: bestand
+  });
+  if (!res.ok) throw new Error('Upload mislukt');
+  return `${SUPABASE_URL}/storage/v1/object/public/fotos-pending/${bestandsnaam}`;
 }
 
 const merkenData = [
@@ -389,18 +383,13 @@ function setHomeTab(tab, el) {
 
 function filterMerkCategorie(cat) {
   const grid = document.getElementById('merk-grid');
-  const filtered = cat === 'auto'
-    ? merkenData.filter(m => m.categorie === 'auto')
-    : merkenData.filter(m => m.categorie !== 'auto');
+  const filtered = cat === 'auto' ? merkenData.filter(m => m.categorie === 'auto') : merkenData.filter(m => m.categorie !== 'auto');
   grid.innerHTML = filtered.map(m => `
     <div class="merk-card" onclick="openMerk(${JSON.stringify(m).replace(/"/g,'&quot;')})">
       <div class="merk-logo-box" style="background:${m.bg};">
         <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:0.06em;font-size:${m.logo.length > 6 ? '11' : '18'}px;color:${m.fg};">${m.logo}</span>
       </div>
-      <div class="merk-footer">
-        <div class="merk-naam">${m.naam}</div>
-        <div class="merk-sub">${m.db ? 'Volledig uitgewerkt' : 'Binnenkort'}</div>
-      </div>
+      <div class="merk-footer"><div class="merk-naam">${m.naam}</div><div class="merk-sub">${m.db ? 'Volledig uitgewerkt' : 'Binnenkort'}</div></div>
     </div>`).join('');
 }
 
@@ -440,17 +429,14 @@ async function doSearch() {
         const merkFilter = await db('merken', merkParams);
         const merkIds = merkFilter.map(m=>m.id);
         const merkMap = {}; merkFilter.forEach(m=>merkMap[m.id]=m);
-
         if (merkIds.length > 0) {
           const fams = await db('families', `merk_id=in.(${merkIds.join(',')})&select=id,merk_id`);
           const famIds = fams.map(f=>f.id);
           const famToMerkId = {}; fams.forEach(f=>famToMerkId[f.id]=f.merk_id);
-
           if (famIds.length > 0) {
             const gens = await db('generaties', `family_id=in.(${famIds.join(',')})&select=id,family_id`);
             const genIds = gens.map(g=>g.id);
             const genToFam = {}; gens.forEach(g=>genToFam[g.id]=g.family_id);
-
             if (genIds.length > 0) {
               const mods = await db('modellen', `generatie_id=in.(${genIds.join(',')})&select=id,generatie_id`);
               toegestaneModIds = mods.map(m=>m.id);
@@ -460,17 +446,14 @@ async function doSearch() {
               window._zoekMerkMap = merkMap;
             }
           }
-        } else {
-          toegestaneModIds = [];
-        }
+        } else { toegestaneModIds = []; }
       }
 
       let params = 'select=id,naam,jaar,pk,nm,nul100,topsnelheid,gewicht,prijs,brandstof,carrosserie,cilinders,cilinderinhoud,special,model_id,stoelen,kofferbak,actieradius,verbruik&limit=500';
       if (fPk > 0) params += `&pk=gte.${fPk}`;
       if (fBrand) params += `&brandstof=ilike.*${fBrand}*`;
-      if (toegestaneModIds && toegestaneModIds.length > 0) {
-        params += `&model_id=in.(${toegestaneModIds.join(',')})`;
-      } else if (toegestaneModIds && toegestaneModIds.length === 0) {
+      if (toegestaneModIds && toegestaneModIds.length > 0) params += `&model_id=in.(${toegestaneModIds.join(',')})`;
+      else if (toegestaneModIds && toegestaneModIds.length === 0) {
         document.getElementById('res-count').textContent = '0 resultaten';
         document.getElementById('res-list').innerHTML = '<div style="text-align:center;padding:30px;font-size:14px;color:var(--text3);">Geen resultaten — pas de filters aan</div>';
         return;
@@ -478,10 +461,7 @@ async function doSearch() {
 
       let uitvoeringen = await db('uitvoeringen', params);
       if (q) uitvoeringen = uitvoeringen.filter(u => u.naam.toLowerCase().includes(q));
-      if (fPrijs) uitvoeringen = uitvoeringen.filter(u => {
-        const p = parseInt(u.prijs);
-        return !isNaN(p) && p <= parseInt(fPrijs);
-      });
+      if (fPrijs) uitvoeringen = uitvoeringen.filter(u => { const p = parseInt(u.prijs); return !isNaN(p) && p <= parseInt(fPrijs); });
 
       uitvoeringen = uitvoeringen.map(u => {
         if (window._zoekModToGen && u.model_id) {
@@ -509,11 +489,7 @@ async function doSearch() {
       else uitvoeringen.sort((a,b) => a.naam.localeCompare(b.naam));
 
       document.getElementById('res-count').textContent = `${uitvoeringen.length} resultaat${uitvoeringen.length !== 1 ? 'en' : ''}`;
-
-      if (uitvoeringen.length === 0) {
-        document.getElementById('res-list').innerHTML = '<div style="text-align:center;padding:30px;font-size:14px;color:var(--text3);">Geen resultaten — pas de filters aan</div>';
-        return;
-      }
+      if (uitvoeringen.length === 0) { document.getElementById('res-list').innerHTML = '<div style="text-align:center;padding:30px;font-size:14px;color:var(--text3);">Geen resultaten — pas de filters aan</div>'; return; }
 
       const brandKleur = (b) => {
         if (!b) return '';
@@ -522,7 +498,6 @@ async function doSearch() {
         if (b.includes('diesel')) return 'background:rgba(100,100,100,0.15);color:#666;';
         return 'background:rgba(230,126,34,0.15);color:#d35400;';
       };
-
       const pill = (label, value, unit='', highlight=false) => value ?
         `<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:${highlight ? 'rgba(218,165,32,0.2)' : 'var(--bg3)'};color:${highlight ? '#DAA520' : 'var(--text2)'};font-weight:${highlight ? '600' : '400'};">${label ? label+': ' : ''}${value}${unit ? ' '+unit : ''}</span>` : '';
 
@@ -532,23 +507,15 @@ async function doSearch() {
           <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">${u.naam}</div>
           <div style="display:flex;gap:5px;flex-wrap:wrap;">
             ${u.brandstof ? `<span style="font-size:10px;padding:2px 7px;border-radius:20px;${brandKleur(u.brandstof)}">${u.brandstof}</span>` : ''}
-            ${pill('', u.pk, 'pk', sort==='pk')}
-            ${pill('', u.nm, 'Nm', sort==='nm')}
-            ${pill('', u.topsnelheid, 'km/h', sort==='topsnelheid')}
-            ${pill('0-100', u.nul100, 's', sort==='nul100')}
-            ${pill('', u.cilinders, 'cil.', sort==='cilinders')}
+            ${pill('', u.pk, 'pk', sort==='pk')}${pill('', u.nm, 'Nm', sort==='nm')}${pill('', u.topsnelheid, 'km/h', sort==='topsnelheid')}
+            ${pill('0-100', u.nul100, 's', sort==='nul100')}${pill('', u.cilinders, 'cil.', sort==='cilinders')}
             ${pill('', u.stoelen, 'stoelen', sort==='stoelen')}
             ${u.kofferbak ? pill('', u.kofferbak, 'L kofferbak', sort==='kofferbak') : ''}
-            ${(u.actieradius || sort==='actieradius') ? pill('', u.actieradius || 'n.v.t.', u.actieradius ? 'km bereik' : '', sort==='actieradius') : ''}
-            ${(u.verbruik || sort==='verbruik_laag') ? pill('', u.verbruik || 'n.v.t.', u.verbruik ? 'L/100km' : '', sort==='verbruik_laag') : ''}
             ${u.prijs && !isNaN(parseInt(u.prijs)) ? pill('', '€ '+parseInt(u.prijs).toLocaleString('nl'), '', sort==='prijs'||sort==='prijs_hoog') : (sort==='prijs'||sort==='prijs_hoog') ? pill('', 'tweedehands', '', true) : ''}
             ${u.special ? '<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(218,165,32,0.15);color:#B8860B;">Speciaal</span>' : ''}
           </div>
         </div>`).join('');
-
-    } catch(e) {
-      document.getElementById('res-list').innerHTML = error(e);
-    }
+    } catch(e) { document.getElementById('res-list').innerHTML = error(e); }
   }, 300);
 }
 
@@ -570,16 +537,10 @@ async function zoekKenteken() {
   if (!input || input.length < 4) return;
   const el = document.getElementById('kenteken-result');
   el.innerHTML = loading();
-
   try {
     const res = await fetch(`https://opendata.rdw.nl/resource/m9d7-ebf2.json?kenteken=${input}`);
     const data = await res.json();
-
-    if (!data || data.length === 0) {
-      el.innerHTML = '<div class="error-box">Kenteken niet gevonden. Controleer de invoer en probeer opnieuw.</div>';
-      return;
-    }
-
+    if (!data || data.length === 0) { el.innerHTML = '<div class="error-box">Kenteken niet gevonden.</div>'; return; }
     const v = data[0];
     const merk = v.merk || 'Onbekend';
     const model = v.handelsbenaming || 'Onbekend';
@@ -588,7 +549,7 @@ async function zoekKenteken() {
     const cc = v.cilinderinhoud || '-';
     const gewicht = v.massa_ledig_voertuig || '-';
     const topsnelheid = v.maximale_constructiesnelheid || '-';
-    const brandstof = v.brandstof_omschrijving || v.voertuigsoort || '-';
+    const brandstof = v.brandstof_omschrijving || '-';
     const type = v.voertuigsoort || '-';
     const apkRaw = v.vervaldatum_apk_dt || v.vervaldatum_apk || null;
     const apk = apkRaw ? apkRaw.substring(0,10) : 'Niet vereist / onbekend';
@@ -598,61 +559,46 @@ async function zoekKenteken() {
     const mRijklaar = parseInt(v.massa_rijklaar || v.massa_ledig_voertuig || gewicht) || 0;
     const kwVal = vMassa > 0 && mRijklaar > 0 ? Math.round(vMassa * mRijklaar) : null;
     const kw = kwVal ? kwVal + ' kW / ' + Math.round(kwVal / 0.7355) + ' pk' : 'onbekend';
-
     let wbLaag, wbHoog;
     const kentBrandstof = v.brandstof_omschrijving || '';
     const kentGew = parseInt(v.massa_rijklaar || v.massa_ledig_voertuig || 0) || 0;
     const kentIsMotor = (v.voertuigsoort||'').toLowerCase().includes('motor');
-    if (kentIsMotor) {
-      wbLaag = 32; wbHoog = 42;
-    } else {
+    if (kentIsMotor) { wbLaag = 32; wbHoog = 42; }
+    else {
       const isElek = kentBrandstof.toLowerCase().includes('elektr');
       const isDiesel = kentBrandstof.toLowerCase().includes('diesel');
       if (isElek) {
-        if (kentGew <= 1300) { wbLaag = 50; wbHoog = 70; }
-        else if (kentGew <= 1700) { wbLaag = 100; wbHoog = 140; }
-        else if (kentGew <= 2100) { wbLaag = 160; wbHoog = 220; }
-        else { wbLaag = 210; wbHoog = 290; }
-      } else if (isDiesel) {
-        wbLaag = Math.round((kentGew * 0.22) / 4);
-        wbHoog = Math.round((kentGew * 0.28) / 4);
-      } else {
-        if (kentGew <= 900) { wbLaag = 45; wbHoog = 65; }
-        else if (kentGew <= 1100) { wbLaag = 85; wbHoog = 120; }
-        else if (kentGew <= 1300) { wbLaag = 130; wbHoog = 180; }
-        else if (kentGew <= 1500) { wbLaag = 175; wbHoog = 240; }
-        else if (kentGew <= 1700) { wbLaag = 220; wbHoog = 305; }
-        else if (kentGew <= 1900) { wbLaag = 265; wbHoog = 365; }
-        else if (kentGew <= 2100) { wbLaag = 310; wbHoog = 430; }
-        else { wbLaag = 360; wbHoog = 500; }
+        if (kentGew <= 1300) { wbLaag = 50; wbHoog = 70; } else if (kentGew <= 1700) { wbLaag = 100; wbHoog = 140; }
+        else if (kentGew <= 2100) { wbLaag = 160; wbHoog = 220; } else { wbLaag = 210; wbHoog = 290; }
+      } else if (isDiesel) { wbLaag = Math.round((kentGew * 0.22) / 4); wbHoog = Math.round((kentGew * 0.28) / 4); }
+      else {
+        if (kentGew <= 900) { wbLaag = 45; wbHoog = 65; } else if (kentGew <= 1100) { wbLaag = 85; wbHoog = 120; }
+        else if (kentGew <= 1300) { wbLaag = 130; wbHoog = 180; } else if (kentGew <= 1500) { wbLaag = 175; wbHoog = 240; }
+        else if (kentGew <= 1700) { wbLaag = 220; wbHoog = 305; } else if (kentGew <= 1900) { wbLaag = 265; wbHoog = 365; }
+        else if (kentGew <= 2100) { wbLaag = 310; wbHoog = 430; } else { wbLaag = 360; wbHoog = 500; }
       }
     }
-
-    const merkKleur = merk === 'DUCATI' ? '#CC0000' : merk === 'KAWASAKI' ? '#009A44' : merk === 'YAMAHA' ? '#002F6C' : merk === 'BMW' ? '#1C69D4' : merk === 'HONDA' ? '#CC0000' : '#555';
-
+    const merkKleur = merk === 'DUCATI' ? '#CC0000' : merk === 'KAWASAKI' ? '#009A44' : merk === 'YAMAHA' ? '#002F6C' : merk === 'BMW' ? '#1C69D4' : '#555';
     el.innerHTML = `
       <div style="background:${merkKleur};border-radius:var(--radius-lg);padding:16px;margin-bottom:14px;text-align:center;">
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:700;color:#fff;letter-spacing:0.06em;">${merk}</div>
-        <div style="font-size:14px;color:rgba(255,255,255,0.85);margin-top:3px;font-weight:500;">${model}</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:700;color:#fff;">${merk}</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.85);margin-top:3px;">${model}</div>
         <div style="font-size:12px;color:rgba(255,255,255,0.65);margin-top:2px;">${bouwjaar} · ${type} · ${kleur}</div>
       </div>
-      <div style="background:var(--bg2);border:2px solid #DAA520;border-radius:var(--radius-lg);padding:14px;margin-bottom:14px;">
-        <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">Kenteken ${input}</div>
+      <div style="background:var(--bg2);border:2px solid #DAA520;border-radius:var(--radius-lg);padding:14px;">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Cilinders</div><div style="font-size:16px;font-weight:600;">${cil}</div></div>
-          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Cilinderinhoud</div><div style="font-size:16px;font-weight:600;">${cc}cc</div></div>
-          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Gewicht</div><div style="font-size:16px;font-weight:600;">${gewicht} kg</div></div>
-          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Topsnelheid</div><div style="font-size:16px;font-weight:600;">${topsnelheid} km/h</div></div>
-          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Vermogen</div><div style="font-size:16px;font-weight:600;">${kw}</div></div>
-          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Brandstof</div><div style="font-size:16px;font-weight:600;">${brandstof}</div></div>
-          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Catalogusprijs</div><div style="font-size:16px;font-weight:600;">${catalogus}</div></div>
-          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">APK vervaldatum</div><div style="font-size:16px;font-weight:600;">${apk}</div></div>
-          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;grid-column:1/-1;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Wegenbelasting (per kwartaal)</div><div style="font-size:16px;font-weight:600;">€${wbLaag} – €${wbHoog}</div></div>
+          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);margin-bottom:3px;">Cilinders</div><div style="font-size:16px;font-weight:600;">${cil}</div></div>
+          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);margin-bottom:3px;">Cilinderinhoud</div><div style="font-size:16px;font-weight:600;">${cc}cc</div></div>
+          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);margin-bottom:3px;">Gewicht</div><div style="font-size:16px;font-weight:600;">${gewicht} kg</div></div>
+          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);margin-bottom:3px;">Vermogen</div><div style="font-size:16px;font-weight:600;">${kw}</div></div>
+          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);margin-bottom:3px;">Brandstof</div><div style="font-size:16px;font-weight:600;">${brandstof}</div></div>
+          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);margin-bottom:3px;">Catalogusprijs</div><div style="font-size:16px;font-weight:600;">${catalogus}</div></div>
+          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);margin-bottom:3px;">APK vervaldatum</div><div style="font-size:16px;font-weight:600;">${apk}</div></div>
+          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);margin-bottom:3px;">Topsnelheid</div><div style="font-size:16px;font-weight:600;">${topsnelheid} km/h</div></div>
+          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;grid-column:1/-1;"><div style="font-size:10px;color:var(--text3);margin-bottom:3px;">Wegenbelasting (per kwartaal)</div><div style="font-size:16px;font-weight:600;">€${wbLaag} – €${wbHoog}</div></div>
         </div>
       </div>`;
-  } catch(e) {
-    el.innerHTML = '<div class="error-box">Er ging iets mis: ' + e.message + '</div>';
-  }
+  } catch(e) { el.innerHTML = '<div class="error-box">Er ging iets mis: ' + e.message + '</div>'; }
 }
 
 async function loadEvenementen(merkId) {
@@ -663,32 +609,18 @@ async function loadEvenementen(merkId) {
     const now = new Date().toISOString().split('T')[0];
     const komend = evs.filter(e => e.datum >= now);
     const geweest = evs.filter(e => e.datum < now);
-
     el.innerHTML = `
       <div style="margin-top:20px;">
         <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);">Evenementen</div>
         ${komend.length === 0 ? '<div style="font-size:13px;color:var(--text3);padding:8px 0 12px;">Geen komende evenementen gepland.</div>' :
-          komend.map(e => `
-          <div style="background:var(--bg2);border:2px solid var(--merk-accent,#DAA520);border-radius:var(--radius-lg);padding:13px 14px;margin-bottom:8px;">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px;">
-              <div style="font-size:14px;font-weight:600;color:var(--text);">${e.naam}</div>
-              <div style="font-size:11px;color:#DAA520;font-weight:600;white-space:nowrap;margin-left:10px;">${new Date(e.datum).toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'})}</div>
+          komend.map(e => `<div style="background:var(--bg2);border:2px solid var(--merk-accent,#DAA520);border-radius:var(--radius-lg);padding:13px 14px;margin-bottom:8px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+              <div style="font-size:14px;font-weight:600;">${e.naam}</div>
+              <div style="font-size:11px;color:#DAA520;font-weight:600;">${new Date(e.datum).toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'})}</div>
             </div>
-            <div style="font-size:12px;color:var(--text2);margin-bottom:4px;">📍 ${e.locatie}</div>
-            ${e.beschrijving ? `<div style="font-size:12px;color:var(--text2);line-height:1.5;">${e.beschrijving}</div>` : ''}
-            ${e.organisator ? `<div style="font-size:11px;color:var(--text3);margin-top:4px;">Organisator: ${e.organisator}</div>` : ''}
-            ${e.website ? `<div style="margin-top:6px;"><a href="${e.website}" target="_blank" style="font-size:11px;color:#DAA520;">Meer info →</a></div>` : ''}
+            <div style="font-size:12px;color:var(--text2);">📍 ${e.locatie}</div>
+            ${e.beschrijving ? `<div style="font-size:12px;color:var(--text2);margin-top:4px;">${e.beschrijving}</div>` : ''}
           </div>`).join('')}
-        ${geweest.length > 0 ? `
-        <div style="font-size:11px;color:var(--text3);margin:10px 0 7px;">Voorbije evenementen</div>
-        ${geweest.slice(-3).reverse().map(e => `
-          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:11px 13px;margin-bottom:7px;opacity:0.6;">
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-              <div style="font-size:13px;font-weight:500;color:var(--text);">${e.naam}</div>
-              <div style="font-size:11px;color:var(--text3);">${new Date(e.datum).toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'})}</div>
-            </div>
-            <div style="font-size:11px;color:var(--text3);margin-top:2px;">📍 ${e.locatie}</div>
-          </div>`).join('')}` : ''}
         <div style="margin-top:12px;">
           <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Evenement aanmelden</div>
           <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:13px;">
@@ -698,33 +630,26 @@ async function loadEvenementen(merkId) {
               <input id="ev-locatie" placeholder="Locatie (bijv. TT Circuit Assen)" />
               <input id="ev-org" placeholder="Organisator / club naam" />
               <input id="ev-web" placeholder="Website (optioneel)" />
-              <textarea id="ev-desc" placeholder="Beschrijving van het evenement..."></textarea>
+              <textarea id="ev-desc" placeholder="Beschrijving..."></textarea>
               <button class="submit-btn" onclick="meldEvenementAan(${merkId})">Aanmelden ter goedkeuring</button>
             </div>
           </div>
         </div>
       </div>`;
-  } catch(e) {
-    console.log('Evenementen fout:', e);
-  }
+  } catch(e) { console.log('Evenementen fout:', e); }
 }
 
 async function meldEvenementAan(merkId) {
   const naam = document.getElementById('ev-naam').value.trim();
   const datum = document.getElementById('ev-datum').value;
   const locatie = document.getElementById('ev-locatie').value.trim();
-  const org = document.getElementById('ev-org').value.trim();
-  const web = document.getElementById('ev-web').value.trim();
-  const desc = document.getElementById('ev-desc').value.trim();
   if (!naam || !datum || !locatie) { alert('Vul minimaal naam, datum en locatie in!'); return; }
-  const ok = await dbPost('evenementen', {
-    merk_id: merkId, naam, datum, locatie,
-    organisator: org || null, website: web || null, beschrijving: desc || null, goedgekeurd: false
-  });
-  if (ok) {
-    alert('Bedankt! Je evenement is aangemeld en wordt beoordeeld door de beheerder.');
-    ['ev-naam','ev-datum','ev-locatie','ev-org','ev-web','ev-desc'].forEach(id => document.getElementById(id).value = '');
-  } else { alert('Er ging iets mis. Probeer het opnieuw.'); }
+  const ok = await dbPost('evenementen', {merk_id: merkId, naam, datum, locatie,
+    organisator: document.getElementById('ev-org').value.trim() || null,
+    website: document.getElementById('ev-web').value.trim() || null,
+    beschrijving: document.getElementById('ev-desc').value.trim() || null, goedgekeurd: false});
+  if (ok) { alert('Bedankt! Aangemeld ter beoordeling.'); ['ev-naam','ev-datum','ev-locatie','ev-org','ev-web','ev-desc'].forEach(id => document.getElementById(id).value = ''); }
+  else { alert('Er ging iets mis.'); }
 }
 
 async function zoekCarQuery() {
@@ -734,39 +659,31 @@ async function zoekCarQuery() {
   const el = document.getElementById('cq-resultaten');
   el.innerHTML = '<div style="font-size:12px;color:var(--text3);">Zoeken...</div>';
   try {
-    const url = `https://www.carqueryapi.com/api/0.3/?cmd=getTrims&make=${encodeURIComponent(merk)}&model=${encodeURIComponent(model)}&full_results=1`;
-    const res = await fetch(url);
+    const res = await fetch(`https://www.carqueryapi.com/api/0.3/?cmd=getTrims&make=${encodeURIComponent(merk)}&model=${encodeURIComponent(model)}&full_results=1`);
     const data = await res.json();
     const trims = data.Trims || [];
-    if (trims.length === 0) { el.innerHTML = '<div style="font-size:12px;color:var(--accent);">Geen resultaten gevonden.</div>'; return; }
+    if (trims.length === 0) { el.innerHTML = '<div style="font-size:12px;color:var(--accent);">Geen resultaten.</div>'; return; }
     el.innerHTML = trims.slice(0,20).map(t => `
       <div style="background:var(--bg3);border-radius:8px;padding:9px 12px;margin-bottom:6px;cursor:pointer;border:1px solid var(--border);" onclick="previewCarQuery(${JSON.stringify(t).replace(/"/g,'&quot;')})">
-        <div style="font-size:13px;font-weight:600;color:var(--text);">${t.model_year} ${t.make_display} ${t.model_name} ${t.model_trim||''}</div>
-        <div style="font-size:11px;color:var(--text2);margin-top:2px;">${t.model_engine_power_ps||'?'} pk · ${t.model_engine_cc||'?'}cc</div>
+        <div style="font-size:13px;font-weight:600;">${t.model_year} ${t.make_display} ${t.model_name} ${t.model_trim||''}</div>
+        <div style="font-size:11px;color:var(--text2);">${t.model_engine_power_ps||'?'} pk · ${t.model_engine_cc||'?'}cc</div>
       </div>`).join('');
   } catch(e) { el.innerHTML = '<div style="font-size:12px;color:var(--accent);">Fout: ' + e.message + '</div>'; }
 }
 
 function previewCarQuery(t) {
-  const box = document.getElementById('cq-preview-box');
-  box.style.display = 'block';
-  const specs = [
-    ['Vermogen', t.model_engine_power_ps, 'pk'],['Koppel', t.model_engine_torque_nm, 'Nm'],
-    ['Topsnelheid', t.model_top_speed_kph, 'km/h'],['0-100 km/h', t.model_0_to_100_kph, 's'],
-    ['Cilinderinhoud', t.model_engine_cc, 'cc'],['Cilinders', t.model_engine_cyl, ''],
-    ['Gewicht', t.model_weight_kg, 'kg'],['Deuren', t.model_doors, ''],
-    ['Zitplaatsen', t.model_seats, ''],['Brandstof', t.model_engine_fuel, ''],
-  ].filter(s => s[1] && s[1] !== '0');
+  document.getElementById('cq-preview-box').style.display = 'block';
+  const specs = [['Vermogen',t.model_engine_power_ps,'pk'],['Koppel',t.model_engine_torque_nm,'Nm'],['Topsnelheid',t.model_top_speed_kph,'km/h'],['0-100',t.model_0_to_100_kph,'s'],['CC',t.model_engine_cc,'cc'],['Cilinders',t.model_engine_cyl,''],['Gewicht',t.model_weight_kg,'kg']].filter(s=>s[1]&&s[1]!=='0');
   document.getElementById('cq-preview').innerHTML = `
-    <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:10px;">${t.model_year} ${t.make_display} ${t.model_name} ${t.model_trim||''}</div>
+    <div style="font-size:14px;font-weight:600;margin-bottom:10px;">${t.model_year} ${t.make_display} ${t.model_name}</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;">
-      ${specs.map(s => `<div style="background:var(--bg3);border-radius:8px;padding:8px 10px;"><div style="font-size:10px;color:var(--text3);">${s[0]}</div><div style="font-size:14px;font-weight:600;color:var(--text);margin-top:2px;">${s[1]} ${s[2]}</div></div>`).join('')}
+      ${specs.map(s=>`<div style="background:var(--bg3);border-radius:8px;padding:8px 10px;"><div style="font-size:10px;color:var(--text3);">${s[0]}</div><div style="font-size:14px;font-weight:600;margin-top:2px;">${s[1]} ${s[2]}</div></div>`).join('')}
     </div>
-    <button onclick="kopieerNaarClipboard(${JSON.stringify(t).replace(/"/g,'&quot;')})" style="background:var(--merk-accent,#DAA520);color:#000;border:none;border-radius:8px;padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Barlow',sans-serif;">Kopieer SQL naar klembord</button>`;
+    <button onclick="kopieerNaarClipboard(${JSON.stringify(t).replace(/"/g,'&quot;')})" style="background:var(--merk-accent,#DAA520);color:#000;border:none;border-radius:8px;padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Barlow',sans-serif;">Kopieer SQL</button>`;
 }
 
 function kopieerNaarClipboard(t) {
-  const sql = `UPDATE uitvoeringen SET pk=${t.model_engine_power_ps||'NULL'},nm=${t.model_engine_torque_nm||'NULL'},topsnelheid=${t.model_top_speed_kph||'NULL'},nul100=${t.model_0_to_100_kph||'NULL'},gewicht=${t.model_weight_kg||'NULL'},cilinderinhoud=${t.model_engine_cc||'NULL'},cilinders=${t.model_engine_cyl||'NULL'},deuren=${t.model_doors||'NULL'},stoelen=${t.model_seats||'NULL'} WHERE id=???;`;
+  const sql = `UPDATE uitvoeringen SET pk=${t.model_engine_power_ps||'NULL'},nm=${t.model_engine_torque_nm||'NULL'},topsnelheid=${t.model_top_speed_kph||'NULL'},nul100=${t.model_0_to_100_kph||'NULL'},gewicht=${t.model_weight_kg||'NULL'},cilinderinhoud=${t.model_engine_cc||'NULL'},cilinders=${t.model_engine_cyl||'NULL'} WHERE id=???;`;
   navigator.clipboard.writeText(sql).then(() => alert('SQL gekopieerd!'));
 }
 
@@ -778,9 +695,8 @@ async function laadEvenementen() {
     if (evs.length === 0) { el.innerHTML = '<div style="font-size:12px;color:var(--text3);">Geen openstaande evenementen.</div>'; return; }
     el.innerHTML = evs.map(e => `
       <div style="background:var(--bg3);border-radius:8px;padding:10px 12px;margin-bottom:8px;border:1px solid var(--border);">
-        <div style="font-size:13px;font-weight:600;color:var(--text);">${e.naam}</div>
+        <div style="font-size:13px;font-weight:600;">${e.naam}</div>
         <div style="font-size:11px;color:var(--text2);margin-top:3px;">${e.datum} · ${e.locatie}</div>
-        ${e.beschrijving ? `<div style="font-size:11px;color:var(--text2);margin-top:3px;">${e.beschrijving}</div>` : ''}
         <div style="display:flex;gap:8px;margin-top:8px;">
           <button onclick="keurGoed(${e.id})" style="background:#27AE60;color:#fff;border:none;border-radius:8px;padding:5px 14px;font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;">Goedkeuren</button>
           <button onclick="afwijzen(${e.id})" style="background:none;border:1px solid var(--accent);border-radius:8px;padding:5px 14px;font-size:12px;color:var(--accent);cursor:pointer;font-family:'Barlow',sans-serif;">Afwijzen</button>
@@ -791,6 +707,97 @@ async function laadEvenementen() {
 
 async function keurGoed(id) { await dbPatch('evenementen', id, {goedgekeurd: true}); laadEvenementen(); }
 async function afwijzen(id) { if (confirm('Evenement verwijderen?')) { await dbDelete('evenementen', id); laadEvenementen(); } }
+
+// ===== FOTO VOORSTELLEN =====
+async function laadFotoVoorstellen() {
+  const el = document.getElementById('admin-foto-voorstellen');
+  el.innerHTML = '<div style="font-size:12px;color:var(--text3);">Laden...</div>';
+  try {
+    const voorstellen = await db('foto_voorstellen', 'goedgekeurd=eq.false&order=created_at.desc');
+    if (voorstellen.length === 0) { el.innerHTML = '<div style="font-size:12px;color:var(--text3);">Geen openstaande foto voorstellen.</div>'; return; }
+
+    // Haal modelnamen op
+    const modelIds = [...new Set(voorstellen.map(v => v.model_id))].join(',');
+    const modellen = await db('modellen', `id=in.(${modelIds})&select=id,naam`);
+    const modelMap = {}; modellen.forEach(m => modelMap[m.id] = m.naam);
+
+    el.innerHTML = voorstellen.map(v => `
+      <div style="background:var(--bg3);border-radius:var(--radius-lg);padding:12px;margin-bottom:10px;border:1px solid var(--border);">
+        <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px;">📷 ${modelMap[v.model_id] || 'Model ' + v.model_id}</div>
+        ${v.ingediend_door ? `<div style="font-size:11px;color:var(--text3);margin-bottom:6px;">Door: ${v.ingediend_door}</div>` : ''}
+        ${v.opmerking ? `<div style="font-size:12px;color:var(--text2);margin-bottom:8px;">${v.opmerking}</div>` : ''}
+        <img src="${v.foto_url}" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;margin-bottom:10px;" onerror="this.style.display='none'">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button onclick="keurFotoGoed(${v.id}, ${v.model_id}, '${v.foto_url}')" style="background:#27AE60;color:#fff;border:none;border-radius:8px;padding:5px 14px;font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;">✓ Goedkeuren</button>
+          <button onclick="wijsFotoAf(${v.id})" style="background:none;border:1px solid var(--accent);border-radius:8px;padding:5px 14px;font-size:12px;color:var(--accent);cursor:pointer;font-family:'Barlow',sans-serif;">Afwijzen</button>
+          <a href="${v.foto_url}" target="_blank" style="background:none;border:1px solid var(--border2);border-radius:8px;padding:5px 14px;font-size:12px;color:var(--text2);cursor:pointer;font-family:'Barlow',sans-serif;text-decoration:none;">Bekijk</a>
+        </div>
+      </div>`).join('');
+  } catch(e) { el.innerHTML = '<div style="font-size:12px;color:var(--accent);">Fout: ' + e.message + '</div>'; }
+}
+
+async function keurFotoGoed(voorstelId, modelId, fotoUrl) {
+  try {
+    // Haal huidig model op om te weten welk slot vrij is
+    const mods = await db('modellen', `id=eq.${modelId}&select=foto_url,foto_url_2,foto_url_3`);
+    const mod = mods[0];
+    let updateData = {};
+    if (!mod.foto_url) updateData.foto_url = fotoUrl;
+    else if (!mod.foto_url_2) updateData.foto_url_2 = fotoUrl;
+    else if (!mod.foto_url_3) updateData.foto_url_3 = fotoUrl;
+    else { alert('Dit model heeft al 3 foto\'s. Verwijder er eerst een.'); return; }
+
+    await dbPatch('modellen', modelId, updateData);
+    await dbPatch('foto_voorstellen', voorstelId, {goedgekeurd: true});
+    alert('Foto goedgekeurd en toegevoegd aan het model!');
+    laadFotoVoorstellen();
+  } catch(e) { alert('Fout: ' + e.message); }
+}
+
+async function wijsFotoAf(id) {
+  if (confirm('Foto voorstel afwijzen?')) {
+    await dbPatch('foto_voorstellen', id, {goedgekeurd: true}); // markeer als behandeld
+    laadFotoVoorstellen();
+  }
+}
+
+async function dienFotoVoorstelIn(modelId, modelNaam) {
+  const form = document.getElementById('foto-upload-form-' + modelId);
+  if (!form) return;
+  const bestandInput = document.getElementById('foto-bestand-' + modelId);
+  const naamInput = document.getElementById('foto-naam-' + modelId);
+  const opmInput = document.getElementById('foto-opm-' + modelId);
+  const bestand = bestandInput.files[0];
+  if (!bestand) { alert('Kies eerst een foto!'); return; }
+
+  const btn = form.querySelector('.submit-btn');
+  btn.textContent = 'Uploaden...';
+  btn.disabled = true;
+
+  try {
+    const ext = bestand.name.split('.').pop();
+    const bestandsnaam = `voorstel_${modelId}_${Date.now()}.${ext}`;
+    const url = await uploadNaarSupabase(bestand, bestandsnaam);
+    await dbPost('foto_voorstellen', {
+      model_id: modelId,
+      foto_url: url,
+      bestandsnaam: bestandsnaam,
+      ingediend_door: naamInput.value.trim() || null,
+      opmerking: opmInput.value.trim() || null,
+      goedgekeurd: false
+    });
+    alert('Bedankt! Je foto is ingediend en wordt beoordeeld.');
+    form.classList.remove('open');
+    bestandInput.value = '';
+    naamInput.value = '';
+    opmInput.value = '';
+  } catch(e) {
+    alert('Upload mislukt: ' + e.message);
+  } finally {
+    btn.textContent = 'Foto indienen';
+    btn.disabled = false;
+  }
+}
 
 async function openUitvoeringDirect(uid) {
   try {
@@ -817,10 +824,7 @@ async function openUitvoeringDirect(uid) {
     openSpecs(uid);
     setTimeout(() => {
       const backBtn = document.getElementById('back-spec');
-      if (backBtn) {
-        backBtn.textContent = '← zoekresultaten';
-        backBtn.onclick = () => { goTo('s-home'); setHomeTab('zoeken', document.querySelectorAll('.tab')[2]); window._vergelijkingActief = true; };
-      }
+      if (backBtn) { backBtn.textContent = '← zoekresultaten'; backBtn.onclick = () => { goTo('s-home'); setHomeTab('zoeken', document.querySelectorAll('.tab')[2]); window._vergelijkingActief = true; }; }
     }, 100);
   } catch(e) { console.log('openUitvoeringDirect fout:', e); }
 }
@@ -836,16 +840,10 @@ function voegToeAanVergelijking(uid, naam) {
 
 function toonVergelijkBalk() {
   let balk = document.getElementById('vergelijk-balk');
-  if (!balk) {
-    balk = document.createElement('div');
-    balk.id = 'vergelijk-balk';
-    balk.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:2px solid var(--merk-accent,#DAA520);padding:10px 16px;display:flex;align-items:center;gap:10px;z-index:999;flex-wrap:wrap;';
-    document.body.appendChild(balk);
-  }
+  if (!balk) { balk = document.createElement('div'); balk.id = 'vergelijk-balk'; balk.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:2px solid var(--merk-accent,#DAA520);padding:10px 16px;display:flex;align-items:center;gap:10px;z-index:999;flex-wrap:wrap;'; document.body.appendChild(balk); }
   if (window._vergelijking.length === 0) { balk.remove(); return; }
-  balk.innerHTML =
-    '<div style="font-size:12px;font-weight:600;color:var(--text);flex-shrink:0;">Vergelijking:</div>' +
-    window._vergelijking.map(v => '<div style="background:var(--bg3);border-radius:8px;padding:5px 10px;font-size:12px;color:var(--text);display:flex;align-items:center;gap:6px;">' + v.naam + '<span onclick="verwijderUitVergelijking(' + v.id + ')" style="cursor:pointer;color:var(--text3);font-size:14px;">x</span></div>').join('') +
+  balk.innerHTML = '<div style="font-size:12px;font-weight:600;color:var(--text);flex-shrink:0;">Vergelijking:</div>' +
+    window._vergelijking.map(v => '<div style="background:var(--bg3);border-radius:8px;padding:5px 10px;font-size:12px;color:var(--text);display:flex;align-items:center;gap:6px;">' + v.naam + '<span onclick="verwijderUitVergelijking(' + v.id + ')" style="cursor:pointer;color:var(--text3);">x</span></div>').join('') +
     (window._vergelijking.length >= 2 ? '<button onclick="startVergelijking()" style="background:var(--merk-accent,#DAA520);color:#000;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:Barlow,sans-serif;margin-left:auto;">Vergelijk nu</button>' : '<span style="font-size:11px;color:var(--text3);">Voeg nog ' + (2 - window._vergelijking.length) + ' toe</span>') +
     '<span onclick="window._vergelijking=[];toonVergelijkBalk()" style="font-size:11px;color:var(--text3);cursor:pointer;margin-left:4px;">Wis alles</span>';
 }
@@ -856,21 +854,12 @@ async function startVergelijking() {
   window._vergelijkingActief = true;
   const ids = window._vergelijking.map(v => v.id).join(',');
   const uitvoeringen = await db('uitvoeringen', 'id=in.(' + ids + ')&select=*');
-  const velden = [
-    ['Vermogen', u => u.pk ? u.pk + ' pk' : '-'],['Koppel', u => u.nm ? u.nm + ' Nm' : '-'],
-    ['Topsnelheid', u => u.topsnelheid ? u.topsnelheid + ' km/h' : '-'],['0-100 km/h', u => u.nul100 ? u.nul100 + 's' : '-'],
-    ['Gewicht', u => u.gewicht ? u.gewicht + ' kg' : '-'],['Brandstof', u => u.brandstof || '-'],
-    ['Aandrijving', u => u.aandrijving || '-'],['Transmissie', u => u.transmissie || '-'],
-    ['Verbruik', u => u.verbruik ? u.verbruik + ' L/100km' : '-'],
-    ['Prijs', u => u.prijs && !isNaN(parseInt(u.prijs)) ? 'EUR ' + parseInt(u.prijs).toLocaleString('nl') : '-'],
-  ];
-  goTo('s-home');
-  setHomeTab('zoeken', document.querySelectorAll('.tab')[2]);
-  document.getElementById('res-count').textContent = 'Vergelijking van ' + uitvoeringen.length + ' voertuigen';
-  document.getElementById('res-list').innerHTML = '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr><th style="text-align:left;padding:8px;color:var(--text3);font-weight:500;border-bottom:1px solid var(--border);">Spec</th>' +
-    uitvoeringen.map(u => '<th style="text-align:center;padding:8px;color:var(--merk-accent,#DAA520);font-weight:600;border-bottom:1px solid var(--border);">' + u.naam + '</th>').join('') +
-    '</tr></thead><tbody>' +
-    velden.map(veld => '<tr><td style="padding:8px;color:var(--text2);border-bottom:1px solid var(--border);">' + veld[0] + '</td>' + uitvoeringen.map(u => '<td style="text-align:center;padding:8px;color:var(--text);border-bottom:1px solid var(--border);">' + veld[1](u) + '</td>').join('') + '</tr>').join('') +
+  const velden = [['Vermogen',u=>u.pk?u.pk+' pk':'-'],['Koppel',u=>u.nm?u.nm+' Nm':'-'],['Topsnelheid',u=>u.topsnelheid?u.topsnelheid+' km/h':'-'],['0-100',u=>u.nul100?u.nul100+'s':'-'],['Gewicht',u=>u.gewicht?u.gewicht+' kg':'-'],['Brandstof',u=>u.brandstof||'-'],['Prijs',u=>u.prijs&&!isNaN(parseInt(u.prijs))?'EUR '+parseInt(u.prijs).toLocaleString('nl'):'-']];
+  goTo('s-home'); setHomeTab('zoeken', document.querySelectorAll('.tab')[2]);
+  document.getElementById('res-count').textContent = 'Vergelijking';
+  document.getElementById('res-list').innerHTML = '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr><th style="text-align:left;padding:8px;color:var(--text3);border-bottom:1px solid var(--border);">Spec</th>' +
+    uitvoeringen.map(u => '<th style="text-align:center;padding:8px;color:var(--merk-accent,#DAA520);font-weight:600;border-bottom:1px solid var(--border);">' + u.naam + '</th>').join('') + '</tr></thead><tbody>' +
+    velden.map(v => '<tr><td style="padding:8px;color:var(--text2);border-bottom:1px solid var(--border);">' + v[0] + '</td>' + uitvoeringen.map(u => '<td style="text-align:center;padding:8px;border-bottom:1px solid var(--border);">' + v[1](u) + '</td>').join('') + '</tr>').join('') +
     '</tbody></table></div>';
 }
 
@@ -878,28 +867,15 @@ function renderMerken(filter) {
   const filtered = filter === 'all' ? merkenData : merkenData.filter(m => m.land === filter);
   document.getElementById('merk-grid').innerHTML = filtered.map(m => `
     <div class="merk-card" onclick="openMerk(${JSON.stringify(m).replace(/"/g,'&quot;')})">
-      <div class="merk-logo-box" style="background:${m.bg};">
-        <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:0.06em;font-size:18px;color:${m.fg};">${m.logo}</span>
-      </div>
-      <div class="merk-footer">
-        <div class="merk-naam">${m.naam}</div>
-        <div class="merk-sub">${m.db ? 'Volledig uitgewerkt' : 'Binnenkort'}</div>
-      </div>
+      <div class="merk-logo-box" style="background:${m.bg};"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:0.06em;font-size:18px;color:${m.fg};">${m.logo}</span></div>
+      <div class="merk-footer"><div class="merk-naam">${m.naam}</div><div class="merk-sub">${m.db ? 'Volledig uitgewerkt' : 'Binnenkort'}</div></div>
     </div>`).join('');
 }
 
-function openMerk(m) {
-  huidigMerk = m;
-  if (m.db) { openMerkPagina(m); } else { alert(`${m.naam} wordt binnenkort toegevoegd!`); }
-}
+function openMerk(m) { huidigMerk = m; if (m.db) { openMerkPagina(m); } else { alert(`${m.naam} wordt binnenkort toegevoegd!`); } }
 
 async function openMerkPagina(m) {
-  const vlagKleuren = {
-    'italiaans': ['#009246','#fff','#CE2B37'],
-    'japans': ['#fff','#BC002D','#fff'],
-    'duits': ['#000','#DD0000','#FFCE00'],
-    'amerikaans': ['#B22234','#fff','#3C3B6E'],
-  };
+  const vlagKleuren = {'italiaans':['#009246','#fff','#CE2B37'],'japans':['#fff','#BC002D','#fff'],'duits':['#000','#DD0000','#FFCE00'],'amerikaans':['#B22234','#fff','#3C3B6E']};
   const vlag = vlagKleuren[m.land] || ['#333','#666','#999'];
   document.getElementById('merk-title').textContent = m.naam;
   document.getElementById('merk-header').innerHTML = `
@@ -913,486 +889,38 @@ async function openMerkPagina(m) {
           <div class="ds"><div class="ds-val" id="stat-uitv">...</div><div class="ds-label">Uitvoeringen</div></div>
         </div>
       </div>
-      <div style="display:flex;height:8px;">
-        <div style="flex:1;background:${vlag[0]};"></div>
-        <div style="flex:1;background:${vlag[1]};"></div>
-        <div style="flex:1;background:${vlag[2]};"></div>
-      </div>
+      <div style="display:flex;height:8px;"><div style="flex:1;background:${vlag[0]};"></div><div style="flex:1;background:${vlag[1]};"></div><div style="flex:1;background:${vlag[2]};"></div></div>
     </div>`;
   document.getElementById('families-list').innerHTML = loading();
   goTo('s-ducati');
 
   try {
     const merkInfo = await db('merken', `id=eq.${m.id}`);
-    if (merkInfo[0]) {
-      m.accent = merkInfo[0].accent_kleur || m.bg;
-      document.documentElement.style.setProperty('--merk-accent', m.accent);
-      document.getElementById('merk-sub-tekst').textContent = `${merkInfo[0].land||''} · Opgericht ${merkInfo[0].opgericht||''}`;
-    }
-
+    if (merkInfo[0]) { m.accent = merkInfo[0].accent_kleur || m.bg; document.documentElement.style.setProperty('--merk-accent', m.accent); document.getElementById('merk-sub-tekst').textContent = `${merkInfo[0].land||''} · Opgericht ${merkInfo[0].opgericht||''}`; }
     const families = await db('families', `merk_id=eq.${m.id}&order=id`);
     document.getElementById('stat-fam').textContent = families.length;
-
     try {
       const famIds = families.map(f=>f.id).join(',');
       const alleGens = await db('generaties', `family_id=in.(${famIds})&select=id,family_id`);
-      const genIds = alleGens.map(g => g.id).join(',');
+      const genIds = alleGens.map(g=>g.id).join(',');
       const alleMods = genIds ? await db('modellen', `generatie_id=in.(${genIds})&select=id,generatie_id`) : [];
       document.getElementById('stat-mod').textContent = alleMods.length;
-      const modIds = alleMods.map(mo => mo.id).join(',');
-      if (modIds) {
-        const alleUitv = await db('uitvoeringen', `model_id=in.(${modIds})&select=id`);
-        document.getElementById('stat-uitv').textContent = alleUitv.length;
-      }
-    } catch(e2) { console.log('stats fout', e2); }
-
+      const modIds = alleMods.map(mo=>mo.id).join(',');
+      if (modIds) { const alleUitv = await db('uitvoeringen', `model_id=in.(${modIds})&select=id`); document.getElementById('stat-uitv').textContent = alleUitv.length; }
+    } catch(e2) {}
     const famIds2 = families.map(f=>f.id).join(',');
     const alleGens2 = await db('generaties', `family_id=in.(${famIds2})&select=id,family_id`);
     const genIds2 = alleGens2.map(g=>g.id).join(',');
     const alleMods2 = genIds2 ? await db('modellen', `generatie_id=in.(${genIds2})&select=id,generatie_id`) : [];
-
-    window._huidigeFamilies = families;
-    window._alleGens = alleGens2;
-    window._alleMods = alleMods2;
-    window._huidigMerkBg = m.bg;
-
+    window._huidigeFamilies = families; window._alleGens = alleGens2; window._alleMods = alleMods2;
     try {
       const modIds = alleMods2.map(mo=>mo.id).join(',');
-      if (modIds) {
-        const uitvBrand = await db('uitvoeringen', `model_id=in.(${modIds})&select=model_id,brandstof`);
-        window._uitvoeringenBrandstof = uitvBrand;
-      }
-    } catch(e2) { console.log('brandstof laden fout', e2); }
-
+      if (modIds) { window._uitvoeringenBrandstof = await db('uitvoeringen', `model_id=in.(${modIds})&select=model_id,brandstof`); }
+    } catch(e2) {}
     renderFamilyList(families, alleGens2, alleMods2);
     loadEvenementen(m.id);
-
     families.forEach(f => {
       const fGens = alleGens2.filter(g=>g.family_id===f.id);
-      const fGenIds = fGens.map(g=>g.id);
-      const fMods = alleMods2.filter(mo=>fGenIds.includes(mo.generatie_id));
-      const gEl = document.getElementById('gens-'+f.id);
-      const mEl = document.getElementById('mods-'+f.id);
-      if (gEl) gEl.innerHTML = `<div style="font-size:17px;font-weight:700;color:#DAA520;">${fGens.length}</div><div style="font-size:10px;color:var(--text2);margin-top:1px;">Generaties</div>`;
-      if (mEl) mEl.innerHTML = `<div style="font-size:17px;font-weight:700;color:#DAA520;">${fMods.length}</div><div style="font-size:10px;color:var(--text2);margin-top:1px;">Modellen</div>`;
-    });
-
-  } catch(e) { document.getElementById('families-list').innerHTML = error(e); }
-}
-
-function renderFamilyList(families, alleGens, alleMods, brandFilter) {
-  const gefilterd = brandFilter
-    ? families.filter(f => {
-        const fGenIds = alleGens.filter(g=>g.family_id===f.id).map(g=>g.id);
-        const fModIds = alleMods.filter(mo=>fGenIds.includes(mo.generatie_id)).map(mo=>mo.id);
-        if (!window._uitvoeringenBrandstof) return true;
-        return fModIds.some(mid => {
-          const uitvs = window._uitvoeringenBrandstof.filter(u => u.model_id === mid);
-          return uitvs.some(u => u.brandstof && u.brandstof.toLowerCase().includes(brandFilter.toLowerCase()));
-        });
-      })
-    : families;
-
-  const html = gefilterd.map(f => {
-    const fGens = alleGens.filter(g=>g.family_id===f.id);
-    const fGenIds = fGens.map(g=>g.id);
-    const fMods = alleMods.filter(mo=>fGenIds.includes(mo.generatie_id));
-    return `<div class="family-card" data-id="${f.id}" data-naam="${(f.naam||'').replace(/"/g,'&quot;')}" data-intro="${(f.intro||'').replace(/"/g,'&quot;')}" data-emoji="${f.emoji||''}" data-tag="${f.tag||''}" data-tagkleur="${f.tag_kleur||'#CC0000'}" onclick="openFamilyEl(this)">
-      <div style="display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:14px;padding:13px 14px;">
-        <div>
-          <div style="font-size:16px;font-weight:600;color:var(--text);">${f.naam}</div>
-          <div style="font-size:12px;color:var(--text2);margin-top:2px;">${f.type||''} · <span style="color:${f.tag_kleur||'#CC0000'};">${f.tag||''}</span></div>
-        </div>
-        <div style="text-align:center;padding:7px 13px;border-radius:8px;background:rgba(218,165,32,0.1);" id="gens-${f.id}">
-          <div style="font-size:17px;font-weight:700;color:#DAA520;">${fGens.length}</div>
-          <div style="font-size:10px;color:var(--text2);margin-top:1px;">Generaties</div>
-        </div>
-        <div style="text-align:center;padding:7px 13px;border-radius:8px;background:rgba(218,165,32,0.1);" id="mods-${f.id}">
-          <div style="font-size:17px;font-weight:700;color:#DAA520;">${fMods.length}</div>
-          <div style="font-size:10px;color:var(--text2);margin-top:1px;">Modellen</div>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-
-  document.getElementById('families-list').innerHTML = `
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;" id="brand-filter-bar">
-      <button class="fb ${!brandFilter?'active':''}" onclick="filterFamiliesBrandstof(null,this)">Alle</button>
-      <button class="fb ${brandFilter==='benzine'?'active':''}" onclick="filterFamiliesBrandstof('benzine',this)">Benzine</button>
-      <button class="fb ${brandFilter==='elektrisch'?'active':''}" onclick="filterFamiliesBrandstof('elektrisch',this)">Elektrisch</button>
-      <button class="fb ${brandFilter==='hybride'?'active':''}" onclick="filterFamiliesBrandstof('hybride',this)">Hybride</button>
-      <button class="fb ${brandFilter==='diesel'?'active':''}" onclick="filterFamiliesBrandstof('diesel',this)">Diesel</button>
-    </div>
-    ${html}
-    <div id="evenementen-section"></div>`;
-}
-
-function filterFamiliesBrandstof(brand, btn) {
-  document.querySelectorAll('#brand-filter-bar .fb').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderFamilyList(window._huidigeFamilies, window._alleGens, window._alleMods, brand);
-  loadEvenementen(huidigMerk.id);
-}
-
-function openFamilyEl(el) {
-  openFamily(parseInt(el.dataset.id), el.dataset.naam, el.dataset.intro, el.dataset.emoji, el.dataset.tag, el.dataset.tagkleur);
-}
-
-async function openFamily(fid, naam, intro, emoji, tag, tagKleur) {
-  huidigFamily = {id: fid, naam, intro, emoji};
-  document.getElementById('gen-title').textContent = naam;
-  document.getElementById('bc-gen').innerHTML = bc([huidigMerk.naam, naam]);
-  document.getElementById('gen-intro').textContent = intro;
-  document.getElementById('gen-list').innerHTML = loading();
-  document.getElementById('back-gen').onclick = () => goTo('s-ducati');
-  goTo('s-generaties');
-
-  try {
-    const gens = await db('generaties', `family_id=eq.${fid}&order=id`);
-    const sorted = [...gens].reverse();
-    document.getElementById('gen-list').innerHTML = sorted.map(g => `
-      <div class="gen-item">
-        <div class="gen-dot${g.huidig?' current':''}"></div>
-        <div class="gen-card${g.huidig?' current':''}" onclick="openGeneratie(${g.id},'${g.naam.replace(/'/g,"\\'")}','${(g.beschrijving||'').replace(/'/g,"\\'").replace(/\n/g,' ')}',${g.huidig})">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:3px;">
-            <div class="gen-periode${g.huidig?' current':''}">${g.periode}</div>
-            <span style="font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500;background:${g.huidig?'#27AE6018':'#CC000018'};color:${g.huidig?'#27AE60':'#CC0000'};">${g.huidig?'Huidig':'Historisch'}</span>
-          </div>
-          <div class="gen-name">${g.naam}</div>
-          <div style="font-size:12px;color:var(--text2);line-height:1.5;">${(g.beschrijving||'').substring(0,100)}...</div>
-        </div>
-      </div>`).join('');
-  } catch(e) { document.getElementById('gen-list').innerHTML = error(e); }
-}
-
-async function openGeneratie(gid, naam, beschrijving, huidig) {
-  huidigGen = {id: gid, naam, beschrijving, huidig};
-  document.getElementById('mod-title').textContent = naam;
-  document.getElementById('bc-mod').innerHTML = bc([huidigMerk.naam, huidigFamily.naam, naam]);
-  document.getElementById('gen-uitleg').textContent = beschrijving;
-  document.getElementById('mod-list').innerHTML = loading();
-  document.getElementById('back-mod').onclick = () => goTo('s-generaties');
-  goTo('s-modellen');
-
-  try {
-    const mods = await db('modellen', `generatie_id=eq.${gid}&order=id&select=*`);
-    document.getElementById('mod-list').innerHTML = mods.map(m => `
-      <div class="list-row" onclick="openModel(${m.id},'${m.naam.replace(/'/g,"\\'")}','${(m.sub||'').replace(/'/g,"\\'")}')">
-        <div style="flex:1;">
-          <div class="list-row-name">${m.naam}</div>
-          <div class="list-row-sub">${m.sub||''}</div>
-        </div>
-        <div style="font-size:13px;color:var(--text3);">›</div>
-      </div>`).join('');
-  } catch(e) { document.getElementById('mod-list').innerHTML = error(e); }
-}
-
-async function openModel(mid, naam, sub) {
-  huidigModel = {id: mid, naam, sub, foto_url: ''};
-
-  try {
-    const uitv = await db('uitvoeringen', `model_id=eq.${mid}&order=id`);
-
-    // Als er maar 1 uitvoering is, direct naar specs
-    if (uitv.length === 1) {
-      openSpecs(uitv[0].id);
-      setTimeout(() => {
-        const backBtn = document.getElementById('back-spec');
-        if (backBtn) {
-          backBtn.textContent = '← modellen';
-          backBtn.onclick = () => goTo('s-modellen');
-        }
-      }, 100);
-      return;
-    }
-
-    // Meerdere uitvoeringen: toon de tussenpagina
-    document.getElementById('uitv-title').textContent = naam;
-    document.getElementById('bc-uitv').innerHTML = bc([huidigMerk.naam, huidigFamily.naam, huidigGen.naam, naam]);
-    document.getElementById('uitv-list').innerHTML = uitv.map(u => `
-      <div class="uitv-row${u.special?' special':''}" onclick="openSpecs(${u.id})">
-        <div class="uitv-header">
-          <div>
-            <div class="uitv-name">${u.naam}${u.special?'<span class="special-badge">Speciaal</span>':''}</div>
-            <div class="uitv-meta">${u.jaar} · ${u.cilinderinhoud}cc</div>
-          </div>
-          <div class="uitv-prijs">${u.prijs||''}</div>
-        </div>
-        <div class="pill-row">
-          <span class="pill red">${u.pk} pk</span>
-          <span class="pill">${u.nm} Nm</span>
-          <span class="pill">${u.topsnelheid} km/h</span>
-          <span class="pill">${u.gewicht} kg</span>
-          <span class="pill">0-100 in ${u.nul100}s</span>
-          ${u.special?'<span class="pill gold">Speciale editie</span>':''}
-        </div>
-      </div>`).join('');
-    document.getElementById('back-uitv').onclick = () => goTo('s-modellen');
-    goTo('s-uitvoeringen');
-
-  } catch(e) { document.getElementById('uitv-list').innerHTML = error(e); }
-}
-
-let _fotos = [];
-let _fotoIndex = 0;
-
-function fotoGaNaar(idx) {
-  if (!_fotos.length) return;
-  _fotoIndex = ((idx % _fotos.length) + _fotos.length) % _fotos.length;
-  const img = document.getElementById('foto-main');
-  if (img) {
-    img.style.opacity = '0';
-    setTimeout(() => { img.src = _fotos[_fotoIndex]; img.style.opacity = '1'; }, 150);
-  }
-  _fotos.forEach((f, i) => {
-    const dot = document.getElementById('foto-dot-' + i);
-    if (dot) dot.style.background = i === _fotoIndex ? '#fff' : 'rgba(255,255,255,0.4)';
-  });
-}
-
-function fotoVolgende() { fotoGaNaar(_fotoIndex + 1); }
-function fotoVorige() { fotoGaNaar(_fotoIndex - 1); }
-
-async function openSpecs(uid) {
-  document.getElementById('spec-title').textContent = '...';
-  document.getElementById('spec-content').innerHTML = loading();
-  document.getElementById('back-spec').onclick = () => goTo('s-uitvoeringen');
-  goTo('s-specs');
-
-  try {
-    const [uitvArr, proscons, ervaringen] = await Promise.all([
-      db('uitvoeringen', `id=eq.${uid}&select=*`),
-      db('pros_cons', `uitvoering_id=eq.${uid}&order=type,id`),
-      db('ervaringen', `uitvoering_id=eq.${uid}&order=stemmen.desc`)
-    ]);
-
-    const u = uitvArr[0];
-
-    if (u.model_id) {
-      try {
-        const modData = await db('modellen', `id=eq.${u.model_id}&select=foto_url,foto_url_2,foto_url_3,naam`);
-        if (modData[0]) {
-          huidigModel = {...(huidigModel||{}), naam: modData[0].naam||huidigModel?.naam||'', foto_url: modData[0].foto_url||'', foto_url_2: modData[0].foto_url_2||'', foto_url_3: modData[0].foto_url_3||''};
-        }
-      } catch(e2) { console.log('foto laden fout', e2); }
-    }
-
-    document.getElementById('spec-title').textContent = u.naam;
-    document.getElementById('bc-spec').innerHTML = bc([huidigMerk.naam, huidigFamily.naam, huidigGen.naam, huidigModel?.naam||'', u.naam]);
-
-    const pros = proscons.filter(p => p.type === 'pro');
-    const cons = proscons.filter(p => p.type === 'con');
-    const heroBg = huidigGen.huidig ? '#27AE60' : '#CC0000';
-
-    const ervaringHtml = ervaringen.length === 0
-      ? '<p style="font-size:13px;color:var(--text3);padding:8px 0;">Nog geen ervaringen - wees de eerste!</p>'
-      : ervaringen.map(e => `
-        <div class="comment-box">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
-            <div style="font-size:12px;font-weight:600;color:var(--text2);">${e.auteur}</div>
-            <div style="display:flex;align-items:center;gap:6px;">
-              <button class="vote-btn" onclick="stemOp(${e.id},this)">${e.gestemd?'✓ Nuttig':'Nuttig'}</button>
-              <span style="font-size:12px;font-weight:600;color:var(--text2);" id="vc-${e.id}">${e.stemmen}</span>
-            </div>
-          </div>
-          <div style="font-size:13px;">${e.tekst}</div>
-        </div>`).join('');
-
-    const kw = Math.round(u.pk * 0.7355);
-    const gew = u.gewicht;
-    let wbLaag, wbHoog;
-    const isMotorVoertuig = huidigMerk && (huidigMerk.id === 1 || huidigMerk.id === 2);
-    if (isMotorVoertuig) {
-      wbLaag = 32; wbHoog = 42;
-    } else {
-      const isElek = u.brandstof && u.brandstof.includes('elektrisch');
-      const isDiesel = u.brandstof && u.brandstof.includes('diesel');
-      if (isElek) {
-        if (gew <= 1300) { wbLaag = 50; wbHoog = 70; }
-        else if (gew <= 1700) { wbLaag = 100; wbHoog = 140; }
-        else if (gew <= 2100) { wbLaag = 160; wbHoog = 220; }
-        else { wbLaag = 210; wbHoog = 290; }
-      } else if (isDiesel) {
-        wbLaag = Math.round((gew * 0.22) / 4);
-        wbHoog = Math.round((gew * 0.28) / 4);
-      } else {
-        if (gew <= 900) { wbLaag = 45; wbHoog = 65; }
-        else if (gew <= 1100) { wbLaag = 85; wbHoog = 120; }
-        else if (gew <= 1300) { wbLaag = 130; wbHoog = 180; }
-        else if (gew <= 1500) { wbLaag = 175; wbHoog = 240; }
-        else if (gew <= 1700) { wbLaag = 220; wbHoog = 305; }
-        else if (gew <= 1900) { wbLaag = 265; wbHoog = 365; }
-        else if (gew <= 2100) { wbLaag = 310; wbHoog = 430; }
-        else { wbLaag = 360; wbHoog = 500; }
-      }
-    }
-
-    const specCardColored = (label, value, unit='', bg='rgba(218,165,32,0.1)', kleur='#B8860B') =>
-      value !== null && value !== undefined && value !== '' && value !== 0
-      ? `<div style="background:${bg};border-radius:10px;padding:10px 12px;">
-          <div style="font-size:10px;color:${kleur};text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">${label}</div>
-          <div><span style="font-size:${String(value).length > 8 ? '15' : '20'}px;font-weight:500;color:${kleur};">${value}</span>${unit ? `<span style="font-size:11px;color:${kleur};margin-left:3px;">${unit}</span>` : ''}</div>
-        </div>` : '';
-    const prestCard = (label, value, unit='') => specCardColored(label, value, unit, 'rgba(232,56,61,0.1)', '#e8383d');
-    const motorCard = (label, value, unit='') => specCardColored(label, value, unit, 'rgba(218,165,32,0.1)', '#B8860B');
-    const afmCard = (label, value, unit='') => specCardColored(label, value, unit, 'rgba(52,152,219,0.1)', '#2980b9');
-    const milieuCard = (label, value, unit='') => specCardColored(label, value, unit, 'rgba(39,174,96,0.1)', '#27AE60');
-    const isElektrisch = u.brandstof && u.brandstof.includes('elektrisch');
-
-    document.getElementById('spec-content').innerHTML = `
-      ${(() => {
-        const fotos = [huidigModel?.foto_url, huidigModel?.foto_url_2, huidigModel?.foto_url_3].filter(Boolean);
-        _fotos = fotos;
-        _fotoIndex = 0;
-        if (fotos.length > 0) {
-          return `<div style="position:relative;width:100%;height:220px;border-radius:var(--radius-lg);overflow:hidden;margin-bottom:14px;border-bottom:3px solid var(--merk-accent,#DAA520);" id="foto-gallery">
-            <img id="foto-main" src="${fotos[0]}" style="width:100%;height:100%;object-fit:contain;background:#111;transition:opacity 0.15s;" onerror="this.style.display='none'">
-            ${fotos.length > 1 ? `
-            <button onclick="fotoVorige()" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.5);border:none;color:#fff;font-size:20px;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;">‹</button>
-            <button onclick="fotoVolgende()" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.5);border:none;color:#fff;font-size:20px;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;">›</button>
-            <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:5px;">
-              ${fotos.map((f,i) => `<div id="foto-dot-${i}" style="width:8px;height:8px;border-radius:50%;background:${i===0?'#fff':'rgba(255,255,255,0.4)'};cursor:pointer;" onclick="fotoGaNaar(${i})"></div>`).join('')}
-            </div>` : ''}
-          </div>
-          <div style="margin-bottom:14px;">
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:700;color:var(--text);">${u.naam}</div>
-            <div style="font-size:12px;color:var(--text2);margin-top:2px;">${u.jaar} · ${u.prijs && !isNaN(parseInt(u.prijs)) ? '€ '+parseInt(u.prijs).toLocaleString('nl') : u.prijs||''}</div>
-          </div>`;
-        } else {
-          return `<div class="hero-band" style="background:${heroBg};margin-bottom:14px;">
-            <div style="font-size:36px;width:64px;height:64px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.15);border-radius:var(--radius);flex-shrink:0;">${huidigFamily.emoji||'🏍'}</div>
-            <div>
-              <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;color:#fff;">${u.naam}</div>
-              <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:3px;">${u.jaar} · ${u.prijs && !isNaN(parseInt(u.prijs)) ? '€ '+parseInt(u.prijs).toLocaleString('nl') : u.prijs||''}</div>
-            </div>
-          </div>`;
-        }
-      })()}
-      <div style="margin-bottom:12px;">
-        ${u.cilinders && u.cilinderinhoud ? `<span class="spec-badge">${u.cilinders} · ${u.cilinderinhoud}cc</span>` : ''}
-        ${u.brandstof ? `<span class="spec-badge" style="background:${isElektrisch ? '#3498db20' : 'rgba(204,0,0,0.15)'};color:${isElektrisch ? '#2980b9' : '#CC0000'};border-color:${isElektrisch ? '#3498db40' : 'rgba(204,0,0,0.3)'};">${u.brandstof}</span>` : ''}
-        ${u.carrosserie ? `<span class="spec-badge">${u.carrosserie}</span>` : ''}
-        ${huidigGen.huidig ? '<span class="spec-badge" style="background:#27AE6015;color:#27AE60;border-color:#27AE6030;">Huidige generatie</span>' : ''}
-        ${u.special ? '<span class="spec-badge" style="background:rgba(218,165,32,0.15);color:#B8860B;border-color:rgba(218,165,32,0.3);">Speciale editie</span>' : ''}
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
-        <button style="background:none;border:1px solid var(--merk-accent,#DAA520);border-radius:8px;padding:6px 13px;font-size:12px;color:var(--merk-accent,#DAA520);cursor:pointer;font-family:'Barlow',sans-serif;" onclick="voegToeAanVergelijking(${uid},'${u.naam.replace(/'/g,'')}')">+ Vergelijken</button>
-        <button style="background:none;border:1px solid #e67e22;border-radius:8px;padding:6px 13px;font-size:12px;color:#e67e22;cursor:pointer;font-family:'Barlow',sans-serif;" onclick="document.getElementById('rf').classList.toggle('open')">Fout melden</button>
-      </div>
-      <div class="report-form" id="rf">
-        <div style="font-size:12px;font-weight:600;color:#e67e22;margin-bottom:8px;">Fout melden voor ${u.naam}</div>
-        <div class="add-form">
-          <select id="r-type"><option>Verkeerde spec</option><option>Ontbrekende info</option><option>Anders</option></select>
-          <textarea id="r-tekst" placeholder="Beschrijf wat er niet klopt..."></textarea>
-          <button class="submit-btn" onclick="stuurFoutmelding(${uid})">Versturen</button>
-          <button class="cancel-btn" onclick="document.getElementById('rf').classList.remove('open')">Annuleren</button>
-        </div>
-      </div>
-      <div class="sec" style="background:linear-gradient(90deg,rgba(232,56,61,0.15),transparent);border-left:3px solid #e8383d;padding-left:10px;border-radius:0;">Prestaties</div>
-      <div class="spec-grid">
-        ${prestCard('Vermogen', u.pk ? u.pk + ' pk / ' + kw + ' kW' : null)}
-        ${prestCard('Koppel', u.nm, 'Nm')}
-        ${prestCard('Topsnelheid', u.topsnelheid, 'km/h')}
-        ${prestCard('0-100 km/h', u.nul100, 's')}
-        ${u.actieradius ? prestCard('Actieradius', u.actieradius, 'km') : ''}
-      </div>
-      <div class="sec" style="background:linear-gradient(90deg,rgba(218,165,32,0.15),transparent);border-left:3px solid #DAA520;padding-left:10px;border-radius:0;">Motor & Aandrijving</div>
-      <div class="spec-grid">
-        ${u.cilinderinhoud ? motorCard('Cilinderinhoud', u.cilinderinhoud, 'cc') : ''}
-        ${u.cilinders ? motorCard('Cilinders', u.cilinders) : ''}
-        ${u.brandstof ? motorCard('Brandstof', u.brandstof) : ''}
-        ${u.aandrijving ? motorCard('Aandrijving', u.aandrijving) : ''}
-        ${u.transmissie ? motorCard('Transmissie', u.transmissie) : ''}
-        ${u.accu_capaciteit ? motorCard('Accu capaciteit', u.accu_capaciteit, 'kWh') : ''}
-        ${u.accu_laadtijd ? motorCard('Laadtijd AC', u.accu_laadtijd) : ''}
-        ${u.accu_laadsnelheid ? motorCard('Laadsnelheid DC', u.accu_laadsnelheid, 'kW') : ''}
-      </div>
-      <div class="sec" style="background:linear-gradient(90deg,rgba(52,152,219,0.15),transparent);border-left:3px solid #3498db;padding-left:10px;border-radius:0;">Afmetingen & Gewicht</div>
-      <div class="spec-grid">
-        ${afmCard('Gewicht', u.gewicht, 'kg')}
-        ${u.carrosserie ? afmCard('Carrosserie', u.carrosserie) : ''}
-        ${u.deuren ? afmCard('Deuren', u.deuren) : ''}
-        ${u.stoelen ? afmCard('Zitplaatsen', u.stoelen) : ''}
-        ${u.kofferbak ? afmCard('Kofferbak', u.kofferbak, 'liter') : ''}
-        ${u.trekgewicht_geremd ? afmCard('Trekgewicht geremd', u.trekgewicht_geremd, 'kg') : ''}
-        ${u.trekgewicht_ongeremd ? afmCard('Trekgewicht ongeremd', u.trekgewicht_ongeremd, 'kg') : ''}
-      </div>
-      <div class="sec" style="background:linear-gradient(90deg,rgba(39,174,96,0.15),transparent);border-left:3px solid #27AE60;padding-left:10px;border-radius:0;">Verbruik & Milieu</div>
-      <div class="spec-grid">
-        ${u.verbruik ? milieuCard('Verbruik', u.verbruik, isElektrisch ? 'kWh/100km' : 'L/100km') : ''}
-        ${u.co2_uitstoot ? milieuCard('CO2 uitstoot', u.co2_uitstoot, 'g/km') : milieuCard('CO2 uitstoot', isElektrisch ? '0' : null, 'g/km')}
-        ${u.energielabel ? milieuCard('Energielabel', u.energielabel) : ''}
-        ${milieuCard('Wegenbelasting', '€'+wbLaag+' – €'+wbHoog, '/kwartaal')}
-      </div>
-      <p class="beschrijving">${u.beschrijving||''}</p>
-      <div class="sec">Voordelen</div>
-      ${pros.map(p=>`<div class="pro-con"><div class="pro-dot" style="background:#27AE60;"></div><span>${p.tekst}</span></div>`).join('')}
-      <div class="sec">Nadelen</div>
-      ${cons.map(c=>`<div class="pro-con"><div class="pro-dot" style="background:#e67e22;"></div><span>${c.tekst}</span></div>`).join('')}
-      <div class="sec">Ervaringen (${ervaringen.length})</div>
-      <div id="erv-list">${ervaringHtml}</div>
-      <div class="add-form" style="margin-top:12px;">
-        <div class="sec">Voeg jouw ervaring toe</div>
-        <input id="c-naam" placeholder="Jouw naam"/>
-        <textarea id="c-tekst" placeholder="Jouw ervaring..."></textarea>
-        <button class="submit-btn" onclick="voegErvaringToe(${uid})">Toevoegen</button>
-      </div>`;
-
-  } catch(e) { document.getElementById('spec-content').innerHTML = error(e); }
-}
-
-async function stemOp(eid, btn) {
-  const span = document.getElementById('vc-' + eid);
-  const huidig = parseInt(span.textContent);
-  if (btn.classList.contains('voted')) {
-    await dbPatch('ervaringen', eid, {stemmen: huidig - 1});
-    span.textContent = huidig - 1; btn.textContent = 'Nuttig'; btn.classList.remove('voted');
-  } else {
-    await dbPatch('ervaringen', eid, {stemmen: huidig + 1});
-    span.textContent = huidig + 1; btn.textContent = '✓ Nuttig'; btn.classList.add('voted');
-  }
-}
-
-async function voegErvaringToe(uid) {
-  const naam = document.getElementById('c-naam').value.trim();
-  const tekst = document.getElementById('c-tekst').value.trim();
-  if (!naam || !tekst) return;
-  const ok = await dbPost('ervaringen', {uitvoering_id: uid, auteur: naam, tekst, stemmen: 0});
-  if (ok) {
-    document.getElementById('erv-list').innerHTML += `
-      <div class="comment-box">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
-          <div style="font-size:12px;font-weight:600;color:var(--text2);">${naam}</div>
-          <div style="display:flex;align-items:center;gap:6px;"><button class="vote-btn">Nuttig</button><span style="font-size:12px;font-weight:600;color:var(--text2);">0</span></div>
-        </div>
-        <div style="font-size:13px;">${tekst}</div>
-      </div>`;
-    document.getElementById('c-naam').value = '';
-    document.getElementById('c-tekst').value = '';
-  }
-}
-
-async function stuurFoutmelding(uid) {
-  const type = document.getElementById('r-type').value;
-  const tekst = document.getElementById('r-tekst').value.trim();
-  if (!tekst) return;
-  await dbPost('foutmeldingen', {uitvoering_id: uid, type, beschrijving: tekst});
-  alert('Bedankt! Je melding is ontvangen.');
-  document.getElementById('r-tekst').value = '';
-  document.getElementById('rf').classList.remove('open');
-}
-
-function bc(items) {
-  return items.map((item,i) => i < items.length-1
-    ? `<span>${item}</span><span style="color:var(--text3);">›</span>`
-    : `<span style="color:var(--text);font-weight:500;">${item}</span>`
-  ).join('');
-}
-
-function loading() { return `<div class="loading"><div class="spinner"></div>Laden...</div>`; }
-function error(e) { return `<div class="error-box">Er ging iets mis: ${e.message}</div>`; }
-
-renderMerken('all');
-</script>
-</body>
-</html>
+      const fMods = alleMods2.filter(mo=>fGens.map(g=>g.id).includes(mo.generatie_id));
+      const gEl = document.getElementById('gens-'+f.id); const mEl = document.getElementById('mods-'+f.id);
+      if (g
