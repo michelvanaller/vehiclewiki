@@ -130,6 +130,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
     <div class="tab" onclick="setHomeTab('zoeken',this)">Zoeken</div>
     <div class="tab" onclick="setHomeTab('kenteken',this)">Kenteken</div>
     <div class="tab" onclick="setHomeTab('admin',this)">Admin</div>
+    <div class="tab" onclick="setHomeTab('snelheid',this)">⚡ Snelheid</div>
   </div>
   <div id="ht-zoeken" style="display:none;">
     <div style="position:relative;margin-bottom:10px;">
@@ -256,6 +257,54 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
       </div>
     </div>
   </div>
+  <div id="ht-snelheid" style="display:none;">
+    <div style="text-align:center;padding:20px 0 10px;">
+      <div style="font-size:13px;color:var(--text2);margin-bottom:20px;">GPS-gebaseerde snelheidsmeter</div>
+
+      <!-- Snelheidsmeter -->
+      <div style="position:relative;width:220px;height:220px;margin:0 auto 20px;">
+        <svg viewBox="0 0 220 220" style="width:100%;height:100%;">
+          <circle cx="110" cy="110" r="100" fill="none" stroke="var(--bg3)" stroke-width="14"/>
+          <circle id="speed-arc" cx="110" cy="110" r="100" fill="none" stroke="var(--accent)" stroke-width="14"
+            stroke-dasharray="0 628" stroke-dashoffset="157" stroke-linecap="round"
+            style="transition:stroke-dasharray 0.3s ease;"/>
+        </svg>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;">
+          <div id="snelheid-getal" style="font-family:'Barlow Condensed',sans-serif;font-size:64px;font-weight:700;color:var(--text);line-height:1;">0</div>
+          <div style="font-size:14px;color:var(--text2);margin-top:2px;">km/h</div>
+        </div>
+      </div>
+
+      <!-- Stats rij -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px;">
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 8px;">
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Topsnelheid</div>
+          <div id="top-snelheid" style="font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:700;color:var(--accent);">0</div>
+          <div style="font-size:10px;color:var(--text3);">km/h</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 8px;">
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">0-100</div>
+          <div id="nul-honderd" style="font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:700;color:#DAA520;">--</div>
+          <div style="font-size:10px;color:var(--text3);">seconden</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 8px;">
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Status</div>
+          <div id="timer-status" style="font-size:12px;font-weight:600;color:var(--text2);margin-top:6px;">Wacht</div>
+        </div>
+      </div>
+
+      <!-- Knoppen -->
+      <div style="display:flex;gap:10px;justify-content:center;margin-bottom:20px;">
+        <button id="start-btn" onclick="startSnelheidsMeter()" style="background:var(--accent);color:#fff;border:none;border-radius:var(--radius);padding:12px 24px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Barlow',sans-serif;">Start GPS</button>
+        <button onclick="resetSnelheidsMeter()" style="background:none;border:1px solid var(--border2);border-radius:var(--radius);padding:12px 24px;font-size:14px;color:var(--text2);cursor:pointer;font-family:'Barlow',sans-serif;">Reset</button>
+      </div>
+
+      <div id="snelheid-melding" style="font-size:12px;color:var(--text3);padding:8px;background:var(--bg2);border-radius:var(--radius);border:1px solid var(--border);">
+        Druk op Start GPS om te beginnen. Vereist locatietoestemming.
+      </div>
+    </div>
+  </div>
+
   <div id="ht-merken" style="display:none;">
     <div class="filter-bar">
       <button class="fb active" onclick="filterMerk('all',this)">Alle</button>
@@ -392,8 +441,108 @@ function setHomeTab(tab, el) {
   document.getElementById('ht-zoeken').style.display = tab==='zoeken' ? 'block' : 'none';
   document.getElementById('ht-kenteken').style.display = tab==='kenteken' ? 'block' : 'none';
   document.getElementById('ht-admin').style.display = tab==='admin' ? 'block' : 'none';
+  document.getElementById('ht-snelheid').style.display = tab==='snelheid' ? 'block' : 'none';
   if (tab === 'zoeken' && !window._vergelijkingActief) doSearch();
-  if (tab === 'merken') renderMerken('all');
+  if (tab === 'merken') 
+// ===== SNELHEIDSMETER =====
+let _gpsWatcher = null;
+let _topSnelheid = 0;
+let _nulHonderdStart = null;
+let _nulHonderdTijd = null;
+let _nulHonderdKlaar = false;
+
+function startSnelheidsMeter() {
+  if (!navigator.geolocation) {
+    document.getElementById('snelheid-melding').textContent = 'GPS niet beschikbaar op dit apparaat.';
+    return;
+  }
+  const btn = document.getElementById('start-btn');
+  btn.textContent = 'GPS actief';
+  btn.style.background = '#27AE60';
+  document.getElementById('snelheid-melding').textContent = 'GPS actief — rij en zie je snelheid!';
+
+  _gpsWatcher = navigator.geolocation.watchPosition(
+    pos => updateSnelheid(pos),
+    err => {
+      document.getElementById('snelheid-melding').textContent = 'GPS fout: ' + err.message;
+    },
+    {enableHighAccuracy: true, maximumAge: 500, timeout: 5000}
+  );
+}
+
+function updateSnelheid(pos) {
+  const mps = pos.coords.speed || 0;
+  const kmh = Math.round(mps * 3.6);
+
+  // Update display
+  document.getElementById('snelheid-getal').textContent = kmh;
+
+  // Topsnelheid
+  if (kmh > _topSnelheid) {
+    _topSnelheid = kmh;
+    document.getElementById('top-snelheid').textContent = _topSnelheid;
+  }
+
+  // Arc update (max 200 km/h = volle cirkel)
+  const maxKmh = 200;
+  const circumference = 628;
+  const filled = Math.min(kmh / maxKmh, 1) * circumference;
+  document.getElementById('speed-arc').setAttribute('stroke-dasharray', filled + ' ' + circumference);
+
+  // Kleur op snelheid
+  const arc = document.getElementById('speed-arc');
+  if (kmh < 50) arc.setAttribute('stroke', '#27AE60');
+  else if (kmh < 100) arc.setAttribute('stroke', '#DAA520');
+  else arc.setAttribute('stroke', '#e8383d');
+
+  // 0-100 timer
+  if (!_nulHonderdKlaar) {
+    if (kmh >= 3 && _nulHonderdStart === null) {
+      _nulHonderdStart = Date.now();
+      document.getElementById('timer-status').textContent = 'Meten...';
+      document.getElementById('timer-status').style.color = '#DAA520';
+    }
+    if (_nulHonderdStart !== null && kmh < 3) {
+      // Reset als je stopt voor 100
+      _nulHonderdStart = null;
+      document.getElementById('timer-status').textContent = 'Opnieuw';
+      document.getElementById('timer-status').style.color = 'var(--text2)';
+      document.getElementById('nul-honderd').textContent = '--';
+    }
+    if (_nulHonderdStart !== null && kmh >= 100) {
+      _nulHonderdTijd = ((Date.now() - _nulHonderdStart) / 1000).toFixed(2);
+      _nulHonderdKlaar = true;
+      document.getElementById('nul-honderd').textContent = _nulHonderdTijd;
+      document.getElementById('timer-status').textContent = 'Klaar!';
+      document.getElementById('timer-status').style.color = '#27AE60';
+    }
+    // Live timer
+    if (_nulHonderdStart !== null && !_nulHonderdKlaar) {
+      document.getElementById('nul-honderd').textContent = ((Date.now() - _nulHonderdStart) / 1000).toFixed(1);
+    }
+  }
+}
+
+function resetSnelheidsMeter() {
+  if (_gpsWatcher) { navigator.geolocation.clearWatch(_gpsWatcher); _gpsWatcher = null; }
+  _topSnelheid = 0;
+  _nulHonderdStart = null;
+  _nulHonderdTijd = null;
+  _nulHonderdKlaar = false;
+  document.getElementById('snelheid-getal').textContent = '0';
+  document.getElementById('top-snelheid').textContent = '0';
+  document.getElementById('nul-honderd').textContent = '--';
+  document.getElementById('timer-status').textContent = 'Wacht';
+  document.getElementById('timer-status').style.color = 'var(--text2)';
+  document.getElementById('speed-arc').setAttribute('stroke-dasharray', '0 628');
+  document.getElementById('speed-arc').setAttribute('stroke', 'var(--accent)');
+  const btn = document.getElementById('start-btn');
+  btn.textContent = 'Start GPS';
+  btn.style.background = 'var(--accent)';
+  document.getElementById('snelheid-melding').textContent = 'Druk op Start GPS om te beginnen.';
+}
+
+renderMerken('all');
 }
 
 function filterMerkCategorie(cat) {
