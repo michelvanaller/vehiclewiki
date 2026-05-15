@@ -443,106 +443,7 @@ function setHomeTab(tab, el) {
   document.getElementById('ht-admin').style.display = tab==='admin' ? 'block' : 'none';
   document.getElementById('ht-snelheid').style.display = tab==='snelheid' ? 'block' : 'none';
   if (tab === 'zoeken' && !window._vergelijkingActief) doSearch();
-  if (tab === 'merken') 
-// ===== SNELHEIDSMETER =====
-let _gpsWatcher = null;
-let _topSnelheid = 0;
-let _nulHonderdStart = null;
-let _nulHonderdTijd = null;
-let _nulHonderdKlaar = false;
-
-function startSnelheidsMeter() {
-  if (!navigator.geolocation) {
-    document.getElementById('snelheid-melding').textContent = 'GPS niet beschikbaar op dit apparaat.';
-    return;
-  }
-  const btn = document.getElementById('start-btn');
-  btn.textContent = 'GPS actief';
-  btn.style.background = '#27AE60';
-  document.getElementById('snelheid-melding').textContent = 'GPS actief — rij en zie je snelheid!';
-
-  _gpsWatcher = navigator.geolocation.watchPosition(
-    pos => updateSnelheid(pos),
-    err => {
-      document.getElementById('snelheid-melding').textContent = 'GPS fout: ' + err.message;
-    },
-    {enableHighAccuracy: true, maximumAge: 500, timeout: 5000}
-  );
-}
-
-function updateSnelheid(pos) {
-  const mps = pos.coords.speed || 0;
-  const kmh = Math.round(mps * 3.6);
-
-  // Update display
-  document.getElementById('snelheid-getal').textContent = kmh;
-
-  // Topsnelheid
-  if (kmh > _topSnelheid) {
-    _topSnelheid = kmh;
-    document.getElementById('top-snelheid').textContent = _topSnelheid;
-  }
-
-  // Arc update (max 200 km/h = volle cirkel)
-  const maxKmh = 200;
-  const circumference = 628;
-  const filled = Math.min(kmh / maxKmh, 1) * circumference;
-  document.getElementById('speed-arc').setAttribute('stroke-dasharray', filled + ' ' + circumference);
-
-  // Kleur op snelheid
-  const arc = document.getElementById('speed-arc');
-  if (kmh < 50) arc.setAttribute('stroke', '#27AE60');
-  else if (kmh < 100) arc.setAttribute('stroke', '#DAA520');
-  else arc.setAttribute('stroke', '#e8383d');
-
-  // 0-100 timer
-  if (!_nulHonderdKlaar) {
-    if (kmh >= 3 && _nulHonderdStart === null) {
-      _nulHonderdStart = Date.now();
-      document.getElementById('timer-status').textContent = 'Meten...';
-      document.getElementById('timer-status').style.color = '#DAA520';
-    }
-    if (_nulHonderdStart !== null && kmh < 3) {
-      // Reset als je stopt voor 100
-      _nulHonderdStart = null;
-      document.getElementById('timer-status').textContent = 'Opnieuw';
-      document.getElementById('timer-status').style.color = 'var(--text2)';
-      document.getElementById('nul-honderd').textContent = '--';
-    }
-    if (_nulHonderdStart !== null && kmh >= 100) {
-      _nulHonderdTijd = ((Date.now() - _nulHonderdStart) / 1000).toFixed(2);
-      _nulHonderdKlaar = true;
-      document.getElementById('nul-honderd').textContent = _nulHonderdTijd;
-      document.getElementById('timer-status').textContent = 'Klaar!';
-      document.getElementById('timer-status').style.color = '#27AE60';
-    }
-    // Live timer
-    if (_nulHonderdStart !== null && !_nulHonderdKlaar) {
-      document.getElementById('nul-honderd').textContent = ((Date.now() - _nulHonderdStart) / 1000).toFixed(1);
-    }
-  }
-}
-
-function resetSnelheidsMeter() {
-  if (_gpsWatcher) { navigator.geolocation.clearWatch(_gpsWatcher); _gpsWatcher = null; }
-  _topSnelheid = 0;
-  _nulHonderdStart = null;
-  _nulHonderdTijd = null;
-  _nulHonderdKlaar = false;
-  document.getElementById('snelheid-getal').textContent = '0';
-  document.getElementById('top-snelheid').textContent = '0';
-  document.getElementById('nul-honderd').textContent = '--';
-  document.getElementById('timer-status').textContent = 'Wacht';
-  document.getElementById('timer-status').style.color = 'var(--text2)';
-  document.getElementById('speed-arc').setAttribute('stroke-dasharray', '0 628');
-  document.getElementById('speed-arc').setAttribute('stroke', 'var(--accent)');
-  const btn = document.getElementById('start-btn');
-  btn.textContent = 'Start GPS';
-  btn.style.background = 'var(--accent)';
-  document.getElementById('snelheid-melding').textContent = 'Druk op Start GPS om te beginnen.';
-}
-
-renderMerken('all');
+  if (tab === 'merken') renderMerken('all');
 }
 
 function filterMerkCategorie(cat) {
@@ -1634,6 +1535,106 @@ async function dienFotoVoorstelIn(modelId, modelNaam) {
     document.getElementById('foto-upload-form-' + modelId).classList.remove('open');
   } catch(e) { alert('Upload mislukt: ' + e.message); }
   finally { btn.textContent = 'Foto indienen'; btn.disabled = false; }
+}
+
+
+
+// ===== SNELHEIDSMETER =====
+let _gpsWatcher = null;
+let _topSnelheid = 0;
+let _nulHonderdStart = null;
+let _nulHonderdTijd = null;
+let _nulHonderdKlaar = false;
+
+function startSnelheidsMeter() {
+  if (!navigator.geolocation) {
+    document.getElementById('snelheid-melding').textContent = 'GPS niet beschikbaar op dit apparaat.';
+    return;
+  }
+  const btn = document.getElementById('start-btn');
+  btn.textContent = 'GPS actief';
+  btn.style.background = '#27AE60';
+  document.getElementById('snelheid-melding').textContent = 'GPS actief — rij en zie je snelheid!';
+
+  _gpsWatcher = navigator.geolocation.watchPosition(
+    pos => updateSnelheid(pos),
+    err => {
+      document.getElementById('snelheid-melding').textContent = 'GPS fout: ' + err.message;
+    },
+    {enableHighAccuracy: true, maximumAge: 500, timeout: 5000}
+  );
+}
+
+function updateSnelheid(pos) {
+  const mps = pos.coords.speed || 0;
+  const kmh = Math.round(mps * 3.6);
+
+  // Update display
+  document.getElementById('snelheid-getal').textContent = kmh;
+
+  // Topsnelheid
+  if (kmh > _topSnelheid) {
+    _topSnelheid = kmh;
+    document.getElementById('top-snelheid').textContent = _topSnelheid;
+  }
+
+  // Arc update (max 200 km/h = volle cirkel)
+  const maxKmh = 200;
+  const circumference = 628;
+  const filled = Math.min(kmh / maxKmh, 1) * circumference;
+  document.getElementById('speed-arc').setAttribute('stroke-dasharray', filled + ' ' + circumference);
+
+  // Kleur op snelheid
+  const arc = document.getElementById('speed-arc');
+  if (kmh < 50) arc.setAttribute('stroke', '#27AE60');
+  else if (kmh < 100) arc.setAttribute('stroke', '#DAA520');
+  else arc.setAttribute('stroke', '#e8383d');
+
+  // 0-100 timer
+  if (!_nulHonderdKlaar) {
+    if (kmh >= 3 && _nulHonderdStart === null) {
+      _nulHonderdStart = Date.now();
+      document.getElementById('timer-status').textContent = 'Meten...';
+      document.getElementById('timer-status').style.color = '#DAA520';
+    }
+    if (_nulHonderdStart !== null && kmh < 3) {
+      // Reset als je stopt voor 100
+      _nulHonderdStart = null;
+      document.getElementById('timer-status').textContent = 'Opnieuw';
+      document.getElementById('timer-status').style.color = 'var(--text2)';
+      document.getElementById('nul-honderd').textContent = '--';
+    }
+    if (_nulHonderdStart !== null && kmh >= 100) {
+      _nulHonderdTijd = ((Date.now() - _nulHonderdStart) / 1000).toFixed(2);
+      _nulHonderdKlaar = true;
+      document.getElementById('nul-honderd').textContent = _nulHonderdTijd;
+      document.getElementById('timer-status').textContent = 'Klaar!';
+      document.getElementById('timer-status').style.color = '#27AE60';
+    }
+    // Live timer
+    if (_nulHonderdStart !== null && !_nulHonderdKlaar) {
+      document.getElementById('nul-honderd').textContent = ((Date.now() - _nulHonderdStart) / 1000).toFixed(1);
+    }
+  }
+}
+
+function resetSnelheidsMeter() {
+  if (_gpsWatcher) { navigator.geolocation.clearWatch(_gpsWatcher); _gpsWatcher = null; }
+  _topSnelheid = 0;
+  _nulHonderdStart = null;
+  _nulHonderdTijd = null;
+  _nulHonderdKlaar = false;
+  document.getElementById('snelheid-getal').textContent = '0';
+  document.getElementById('top-snelheid').textContent = '0';
+  document.getElementById('nul-honderd').textContent = '--';
+  document.getElementById('timer-status').textContent = 'Wacht';
+  document.getElementById('timer-status').style.color = 'var(--text2)';
+  document.getElementById('speed-arc').setAttribute('stroke-dasharray', '0 628');
+  document.getElementById('speed-arc').setAttribute('stroke', 'var(--accent)');
+  const btn = document.getElementById('start-btn');
+  btn.textContent = 'Start GPS';
+  btn.style.background = 'var(--accent)';
+  document.getElementById('snelheid-melding').textContent = 'Druk op Start GPS om te beginnen.';
 }
 
 
