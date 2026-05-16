@@ -277,7 +277,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
       <!-- Emblemen -->
       <div id="emblemen-rij" style="display:flex;gap:12px;justify-content:center;margin-bottom:16px;">
         <div id="embl-200" style="opacity:0.2;text-align:center;transition:opacity 0.4s;">
-          <div style="font-size:28px;">🥇</div>
+          <div style="font-size:28px;">🥉</div>
           <div style="font-size:10px;color:var(--text3);margin-top:2px;">200 km/h</div>
         </div>
         <div id="embl-250" style="opacity:0.2;text-align:center;transition:opacity 0.4s;">
@@ -285,7 +285,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
           <div style="font-size:10px;color:var(--text3);margin-top:2px;">250 km/h</div>
         </div>
         <div id="embl-300" style="opacity:0.2;text-align:center;transition:opacity 0.4s;">
-          <div style="font-size:28px;">🥉</div>
+          <div style="font-size:28px;">🥇</div>
           <div style="font-size:10px;color:var(--text3);margin-top:2px;">300 km/h</div>
         </div>
       </div>
@@ -1780,8 +1780,8 @@ function toggleHelling(aan) {
   sectie.style.display = aan ? 'block' : 'none';
   if (aan) {
     _hellingNulpunt = lsGet(LS_HELLING_NUL);
-    startHelling();
     renderTop3Helling();
+    startHelling();
   } else {
     stopHelling();
   }
@@ -1792,7 +1792,23 @@ function startHelling() {
     document.getElementById('helling-kalibr-melding').textContent = 'Hellingsmeter niet beschikbaar op dit apparaat.';
     return;
   }
-  window.addEventListener('deviceorientation', updateHelling);
+  // iOS 13+ vereist expliciete toestemming
+  if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+    DeviceOrientationEvent.requestPermission().then(state => {
+      if (state === 'granted') {
+        window.addEventListener('deviceorientation', updateHelling);
+        document.getElementById('helling-kalibr-melding').textContent = 'Toestemming verleend — hellingsmeter actief!';
+      } else {
+        document.getElementById('helling-kalibr-melding').textContent = 'Toestemming geweigerd. Sta bewegingssensoren toe in Safari instellingen.';
+      }
+    }).catch(err => {
+      document.getElementById('helling-kalibr-melding').textContent = 'Fout: ' + err.message;
+    });
+  } else {
+    // Android / desktop
+    window.addEventListener('deviceorientation', updateHelling);
+    document.getElementById('helling-kalibr-melding').textContent = 'Hellingsmeter actief!';
+  }
 }
 
 function stopHelling() {
@@ -1800,8 +1816,9 @@ function stopHelling() {
 }
 
 function updateHelling(e) {
-  const gamma = e.gamma || 0; // links/rechts kanteling
-  const nulpunt = _hellingNulpunt !== null ? _hellingNulpunt : 0;
+  // gamma = links/rechts (telefoon op stuur rechtop gemonteerd)
+  const gamma = e.gamma !== null ? e.gamma : 0;
+  const nulpunt = _hellingNulpunt !== null ? _hellingNulpunt : gamma;
   const helling = gamma - nulpunt;
   const absHelling = Math.abs(helling);
 
@@ -1818,15 +1835,15 @@ function updateHelling(e) {
 }
 
 function kalibreeHelling() {
-  // Vraag huidige waarde op
   const tijdelijk = (e) => {
-    _hellingNulpunt = e.gamma || 0;
+    const gamma = e.gamma !== null ? e.gamma : 0;
+    _hellingNulpunt = gamma;
     _maxHelling = 0;
     lsSet(LS_HELLING_NUL, _hellingNulpunt);
-    document.getElementById('helling-kalibr-melding').textContent = 'Nulpunt ingesteld op ' + _hellingNulpunt.toFixed(1) + '° — bewaard!';
+    document.getElementById('helling-kalibr-melding').textContent = 'Nulpunt ingesteld (' + gamma.toFixed(1) + '°) — bewaard!';
     window.removeEventListener('deviceorientation', tijdelijk);
   };
-  window.addEventListener('deviceorientation', tijdelijk);
+  window.addEventListener('deviceorientation', tijdelijk, {once: true});
 }
 
 function resetHellingTop3() {
