@@ -1632,12 +1632,13 @@ function renderTop3Helling() {
 }
 
 function voegToeTop3NH(tijd) {
+  const t = parseFloat(tijd);
+  if (isNaN(t) || t <= 0 || t > 60) return; // sanity check
   let lijst = lsGet(LS_TOP3_NH) || [];
-  lijst.push(parseFloat(tijd));
+  lijst.push(t);
   lijst.sort((a,b) => a - b); // laagste = snelste
   lijst = lijst.slice(0, 3);
   lsSet(LS_TOP3_NH, lijst);
-  renderTop3NH();
 }
 
 function voegToeTop3TS(kmh) {
@@ -1650,9 +1651,13 @@ function voegToeTop3TS(kmh) {
 }
 
 function voegToeTop3Helling(graden) {
+  const g = parseFloat(Math.abs(graden).toFixed(1));
+  if (isNaN(g) || g > 90) return; // sanity check, max 90 graden
   let lijst = lsGet(LS_TOP3_HELLING) || [];
-  lijst.push(parseFloat(graden.toFixed(1)));
-  lijst.sort((a,b) => b - a); // hoogste hoek eerst
+  // Alleen opslaan als beter dan huidige top 3
+  if (lijst.length >= 3 && g <= lijst[lijst.length - 1]) return;
+  lijst.push(g);
+  lijst.sort((a,b) => b - a);
   lijst = lijst.slice(0, 3);
   lsSet(LS_TOP3_HELLING, lijst);
   renderTop3Helling();
@@ -1732,12 +1737,13 @@ function updateSnelheid(pos) {
     document.getElementById('nul-honderd').textContent = '--';
   }
   if (_nulHonderdStart !== null && kmh >= 100 && !_nulHonderdKlaar) {
-    const tijd = ((Date.now() - _nulHonderdStart) / 1000).toFixed(2);
+    const eindTijd = ((Date.now() - _nulHonderdStart) / 1000).toFixed(2);
     _nulHonderdKlaar = true;
-    document.getElementById('nul-honderd').textContent = tijd + 's';
-    document.getElementById('timer-status').textContent = 'Klaar! Herstart...';
+    document.getElementById('nul-honderd').textContent = eindTijd + 's';
+    document.getElementById('timer-status').textContent = 'Klaar! ' + eindTijd + 's';
     document.getElementById('timer-status').style.color = '#27AE60';
-    voegToeTop3NH(tijd);
+    voegToeTop3NH(parseFloat(eindTijd));
+    renderTop3NH();
     // Automatisch herstarten na 3 seconden
     setTimeout(() => {
       _nulHonderdStart = null;
@@ -1828,7 +1834,7 @@ function updateHelling(e) {
   const kleur = absHelling < 15 ? '#27AE60' : absHelling < 30 ? '#DAA520' : '#e8383d';
   document.getElementById('helling-getal').style.color = kleur;
 
-  if (absHelling > _maxHelling) {
+  if (absHelling > _maxHelling + 0.5) {
     _maxHelling = absHelling;
     voegToeTop3Helling(absHelling);
   }
