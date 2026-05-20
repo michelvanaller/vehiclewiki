@@ -168,6 +168,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
             <option value="8">KTM</option>
             <option value="9">Aprilia</option>
             <option value="10">Triumph</option>
+            <option value="11">Harley-Davidson</option>
           </select>
         </div>
         <div><label style="font-size:10px;color:var(--text3);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.06em;">Min. vermogen: <span id="pk-val">0</span> pk</label>
@@ -249,7 +250,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
       <div class="cat-card" onclick="setHomeTab('merken',document.querySelectorAll('.tab')[1])">
         <div style="font-size:32px;margin-bottom:8px;">🏍</div>
         <div style="font-size:13px;font-weight:600;">Motoren</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:3px;">12 merken</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:3px;">11 merken</div>
       </div>
       <div class="cat-card" onclick="setHomeTab('merken',document.querySelectorAll('.tab')[1]);filterMerkCategorie('auto')">
         <div style="font-size:32px;margin-bottom:8px;">🚗</div>
@@ -473,7 +474,7 @@ const merkenData = [
   {id:8, naam:'KTM', land:'duits', bg:'#FF6600', fg:'#fff', logo:'KTM', db:true},
   {id:9, naam:'Aprilia', land:'italiaans', bg:'#1A1A1A', fg:'#fff', logo:'APRILIA', db:true},
   {id:10, naam:'Triumph', land:'brits', bg:'#FFCB00', fg:'#1A1A1A', logo:'TRIUMPH', db:true},
-  {id:null, naam:'Harley-Davidson', land:'amerikaans', bg:'#FF6600', fg:'#fff', logo:'H-D', db:false},
+  {id:11, naam:'Harley-Davidson', land:'amerikaans', bg:'#FF6600', fg:'#fff', logo:'H-D', db:true},
   {id:null, naam:'Suzuki', land:'japans', bg:'#1A1A1A', fg:'#fff', logo:'SUZUKI', db:false},
   {id:null, naam:'MV Agusta', land:'italiaans', bg:'#C41E3A', fg:'#fff', logo:'MV', db:false},
   {id:null, naam:'Indian', land:'amerikaans', bg:'#8B0000', fg:'#fff', logo:'INDIAN', db:false},
