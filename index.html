@@ -1211,6 +1211,8 @@ async function openGeneratie(gid, naam, beschrijving, huidig) {
 
 async function openModel(mid, naam, sub) {
   huidigModel = {id: mid, naam, sub, foto_url: ''};
+  if (!huidigGen) huidigGen = {id: null, naam: '', huidig: false};
+  if (!huidigFamily) huidigFamily = {id: null, naam: '', emoji: ''};
 
   try {
     const uitv = await db('uitvoeringen', `model_id=eq.${mid}&order=id`);
@@ -1300,11 +1302,11 @@ async function openSpecs(uid) {
     }
 
     document.getElementById('spec-title').textContent = u.naam;
-    document.getElementById('bc-spec').innerHTML = bc([huidigMerk.naam, huidigFamily.naam, huidigGen.naam, huidigModel?.naam||'', u.naam]);
+    document.getElementById('bc-spec').innerHTML = bc([huidigMerk?.naam||'', huidigFamily?.naam||'', huidigGen?.naam||'', huidigModel?.naam||'', u.naam]);
 
     const pros = proscons.filter(p => p.type === 'pro');
     const cons = proscons.filter(p => p.type === 'con');
-    const heroBg = huidigGen.huidig ? '#27AE60' : '#CC0000';
+    const heroBg = huidigGen?.huidig ? '#27AE60' : '#CC0000';
 
     const ervaringHtml = ervaringen.length === 0
       ? '<p style="font-size:13px;color:var(--text3);padding:8px 0;">Nog geen ervaringen - wees de eerste!</p>'
@@ -1323,7 +1325,7 @@ async function openSpecs(uid) {
     const kw = Math.round(u.pk * 0.7355);
     const gew = u.gewicht;
     let wbLaag, wbHoog;
-    const isMotorVoertuig = huidigMerk && (huidigMerk.categorie === 'motor' || [1,2,5,6,7,8,9,10,11,12,13].includes(huidigMerk.id));
+    const isMotorVoertuig = huidigMerk ? (huidigMerk.categorie === 'motor' || [1,2,5,6,7,8,9,10,11,12,13].includes(huidigMerk.id)) : true;
     if (isMotorVoertuig) {
       wbLaag = 32; wbHoog = 42;
     } else {
@@ -1408,7 +1410,7 @@ async function openSpecs(uid) {
         ${u.cilinders && u.cilinderinhoud ? `<span class="spec-badge">${u.cilinders} · ${u.cilinderinhoud}cc</span>` : ''}
         ${u.brandstof ? `<span class="spec-badge" style="background:${isElektrisch ? '#3498db20' : 'rgba(204,0,0,0.15)'};color:${isElektrisch ? '#2980b9' : '#CC0000'};border-color:${isElektrisch ? '#3498db40' : 'rgba(204,0,0,0.3)'};">${u.brandstof}</span>` : ''}
         ${u.carrosserie ? `<span class="spec-badge">${u.carrosserie}</span>` : ''}
-        ${huidigGen.huidig ? '<span class="spec-badge" style="background:#27AE6015;color:#27AE60;border-color:#27AE6030;">Huidige generatie</span>' : ''}
+        ${huidigGen?.huidig ? '<span class="spec-badge" style="background:#27AE6015;color:#27AE60;border-color:#27AE6030;">Huidige generatie</span>' : ''}
         ${u.special ? '<span class="spec-badge" style="background:rgba(218,165,32,0.15);color:#B8860B;border-color:rgba(218,165,32,0.3);">Speciale editie</span>' : ''}
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
