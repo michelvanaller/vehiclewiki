@@ -468,18 +468,18 @@ async function dbPost(table, data) {
 }
 
 const merkenData = [
-  {id:1, naam:'Ducati', land:'italiaans', bg:'#CC0000', fg:'#fff', logo:'DUCATI', db:true},
-  {id:5, naam:'Yamaha', land:'japans', bg:'#002F6C', fg:'#fff', logo:'YAMAHA', db:true},
-  {id:2, naam:'Kawasaki', land:'japans', bg:'#009A44', fg:'#fff', logo:'KAWASAKI', db:true},
-  {id:6, naam:'Honda', land:'japans', bg:'#CC0000', fg:'#fff', logo:'HONDA', db:true},
-  {id:7, naam:'BMW', land:'duits', bg:'#1C69D4', fg:'#fff', logo:'BMW', db:true},
-  {id:8, naam:'KTM', land:'duits', bg:'#FF6600', fg:'#fff', logo:'KTM', db:true},
-  {id:9, naam:'Aprilia', land:'italiaans', bg:'#1A1A1A', fg:'#fff', logo:'APRILIA', db:true},
-  {id:10, naam:'Triumph', land:'brits', bg:'#FFCB00', fg:'#1A1A1A', logo:'TRIUMPH', db:true},
-  {id:11, naam:'Harley-Davidson', land:'amerikaans', bg:'#FF6600', fg:'#fff', logo:'H-D', db:true},
-  {id:12, naam:'Suzuki', land:'japans', bg:'#1A1A1A', fg:'#fff', logo:'SUZUKI', db:true},
-  {id:13, naam:'MV Agusta', land:'italiaans', bg:'#C41E3A', fg:'#fff', logo:'MV', db:true},
-  {id:null, naam:'Indian', land:'amerikaans', bg:'#8B0000', fg:'#fff', logo:'INDIAN', db:false},
+  {id:1, naam:'Ducati', land:'italiaans', bg:'#CC0000', fg:'#fff', logo:'DUCATI', db:true, categorie:'motor'},
+  {id:5, naam:'Yamaha', land:'japans', bg:'#002F6C', fg:'#fff', logo:'YAMAHA', db:true, categorie:'motor'},
+  {id:2, naam:'Kawasaki', land:'japans', bg:'#009A44', fg:'#fff', logo:'KAWASAKI', db:true, categorie:'motor'},
+  {id:6, naam:'Honda', land:'japans', bg:'#CC0000', fg:'#fff', logo:'HONDA', db:true, categorie:'motor'},
+  {id:7, naam:'BMW', land:'duits', bg:'#1C69D4', fg:'#fff', logo:'BMW', db:true, categorie:'motor'},
+  {id:8, naam:'KTM', land:'duits', bg:'#FF6600', fg:'#fff', logo:'KTM', db:true, categorie:'motor'},
+  {id:9, naam:'Aprilia', land:'italiaans', bg:'#1A1A1A', fg:'#fff', logo:'APRILIA', db:true, categorie:'motor'},
+  {id:10, naam:'Triumph', land:'brits', bg:'#FFCB00', fg:'#1A1A1A', logo:'TRIUMPH', db:true, categorie:'motor'},
+  {id:11, naam:'Harley-Davidson', land:'amerikaans', bg:'#FF6600', fg:'#fff', logo:'H-D', db:true, categorie:'motor'},
+  {id:12, naam:'Suzuki', land:'japans', bg:'#1A1A1A', fg:'#fff', logo:'SUZUKI', db:true, categorie:'motor'},
+  {id:13, naam:'MV Agusta', land:'italiaans', bg:'#C41E3A', fg:'#fff', logo:'MV', db:true, categorie:'motor'},
+  {id:null, naam:'Indian', land:'amerikaans', bg:'#8B0000', fg:'#fff', logo:'INDIAN', db:false, categorie:'motor'},
   {id:3, naam:'Ford', land:'amerikaans', bg:'#003478', fg:'#fff', logo:'FORD', db:true, categorie:'auto'},
   {id:4, naam:'Lamborghini', land:'italiaans', bg:'#1a1a1a', fg:'#FFD700', logo:'LAMBORGHINI', db:true, categorie:'auto'},
 ];
@@ -510,9 +510,7 @@ function setHomeTab(tab, el) {
 
 function filterMerkCategorie(cat) {
   const grid = document.getElementById('merk-grid');
-  const filtered = cat === 'auto'
-    ? merkenData.filter(m => m.categorie === 'auto')
-    : merkenData.filter(m => m.categorie !== 'auto');
+  const filtered = merkenData.filter(m => m.categorie === cat);
   grid.innerHTML = filtered.map(m => `
     <div class="merk-card" onclick="openMerk(${JSON.stringify(m).replace(/"/g,'&quot;')})">
       <div class="merk-logo-box" style="background:${m.bg};">
@@ -930,7 +928,7 @@ async function openUitvoeringDirect(uid) {
     const merken = await db('merken', `id=eq.${fam.merk_id}&select=*`);
     if (!merken || merken.length === 0) return;
     const merk = merken[0];
-    huidigMerk = {id: merk.id, naam: merk.naam, bg: merk.bg_kleur, fg: merk.fg_kleur, logo: merk.logo, db: true, land: merk.land};
+    huidigMerk = {id: merk.id, naam: merk.naam, bg: merk.bg_kleur||'#333', fg: merk.fg_kleur||'#fff', logo: merk.logo, db: true, land: merk.land};
     huidigFamily = {id: fam.id, naam: fam.naam, emoji: fam.emoji};
     huidigGen = {id: gen.id, naam: gen.naam, huidig: gen.huidig};
     huidigModel = {id: mod.id, naam: mod.naam, foto_url: mod.foto_url||''};
@@ -1046,9 +1044,12 @@ async function openMerkPagina(m) {
   try {
     const merkInfo = await db('merken', `id=eq.${m.id}`);
     if (merkInfo[0]) {
-      m.accent = merkInfo[0].accent_kleur || m.bg;
+      m.accent = merkInfo[0].accent_kleur || merkInfo[0].bg_kleur || m.bg;
       document.documentElement.style.setProperty('--merk-accent', m.accent);
       document.getElementById('merk-sub-tekst').textContent = `${merkInfo[0].land||''} · Opgericht ${merkInfo[0].opgericht||''}`;
+    } else {
+      document.documentElement.style.setProperty('--merk-accent', m.bg);
+      document.getElementById('merk-sub-tekst').textContent = '';
     }
 
     const families = await db('families', `merk_id=eq.${m.id}&order=id`);
@@ -1322,7 +1323,7 @@ async function openSpecs(uid) {
     const kw = Math.round(u.pk * 0.7355);
     const gew = u.gewicht;
     let wbLaag, wbHoog;
-    const isMotorVoertuig = huidigMerk && (huidigMerk.id === 1 || huidigMerk.id === 2);
+    const isMotorVoertuig = huidigMerk && (huidigMerk.categorie === 'motor' || [1,2,5,6,7,8,9,10,11,12,13].includes(huidigMerk.id));
     if (isMotorVoertuig) {
       wbLaag = 32; wbHoog = 42;
     } else {
