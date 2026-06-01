@@ -2257,26 +2257,33 @@ renderMerken('all');
     try {
       let gevonden = null;
 
-      // Stap 1: probeer eerste 2 woorden van model
-      if (modelWoorden.length >= 2) {
+      // Stap 1: merk + eerste 2 woorden model + bouwjaar
+      if (modelWoorden.length >= 2 && v.bouwjaar) {
         const zoek = modelWoorden.slice(0,2).join(' ');
-        const r = await db('uitvoeringen', `naam=ilike.*${zoek}*&limit=5`);
+        const r = await db('uitvoeringen', `naam=ilike.*${merkWoord}*${zoek}*&jaar=eq.${v.bouwjaar}&limit=5`);
         if (r && r.length > 0) gevonden = r[0];
       }
 
-      // Stap 2: probeer eerste woord van model
-      if (!gevonden && modelWoorden.length >= 1) {
-        const r = await db('uitvoeringen', `naam=ilike.*${modelWoorden[0]}*&limit=10`);
+      // Stap 2: merk + eerste 2 woorden model
+      if (!gevonden && modelWoorden.length >= 2) {
+        const zoek = modelWoorden.slice(0,2).join(' ');
+        const r = await db('uitvoeringen', `naam=ilike.*${merkWoord}*&naam=ilike.*${zoek}*&limit=5`);
         if (r && r.length > 0) gevonden = r[0];
       }
 
-      // Stap 3: probeer bouwjaar + merk combinatie
+      // Stap 3: merk + eerste woord model + bouwjaar
+      if (!gevonden && modelWoorden.length >= 1 && v.bouwjaar) {
+        const r = await db('uitvoeringen', `naam=ilike.*${merkWoord}*&naam=ilike.*${modelWoorden[0]}*&jaar=eq.${v.bouwjaar}&limit=5`);
+        if (r && r.length > 0) gevonden = r[0];
+      }
+
+      // Stap 4: merk + bouwjaar
       if (!gevonden && v.bouwjaar) {
         const r = await db('uitvoeringen', `naam=ilike.*${merkWoord}*&jaar=eq.${v.bouwjaar}&limit=5`);
         if (r && r.length > 0) gevonden = r[0];
       }
 
-      // Stap 4: zoek alleen op merk
+      // Stap 5: alleen merk
       if (!gevonden) {
         const r = await db('uitvoeringen', `naam=ilike.*${merkWoord}*&limit=5`);
         if (r && r.length > 0) gevonden = r[0];
