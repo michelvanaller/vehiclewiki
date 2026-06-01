@@ -937,7 +937,7 @@ async function zoekKenteken() {
           <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;grid-column:1/-1;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Wegenbelasting (per kwartaal)</div><div style="font-size:16px;font-weight:600;">€${wbLaag} – €${wbHoog}</div></div>
         </div>
       </div>
-      <button onclick="spotVoertuigMet('${input}','${merk}','${model}','${bouwjaar}','${brandstof}','${kleur}','${type}',${kwVal||0})" style="width:100%;padding:14px;background:linear-gradient(135deg,#FFD700,#FFA500);color:#000;border:none;border-radius:12px;font-size:16px;font-weight:800;cursor:pointer;letter-spacing:0.5px;margin-top:4px;">
+      <button onclick="spotVoertuigMet('${input}','${merk}','${model}','${bouwjaar}','${brandstof}','${kleur}','${type}',${kwVal||0},${cil||0},'${cc}',${gewicht||0},${topsnelheid||0},'${catalogus||0}','${apk}')" style="width:100%;padding:14px;background:linear-gradient(135deg,#FFD700,#FFA500);color:#000;border:none;border-radius:12px;font-size:16px;font-weight:800;cursor:pointer;letter-spacing:0.5px;margin-top:4px;">
         ⭐ Spot dit voertuig!
       </button>`;
   } catch(e) {
@@ -2139,10 +2139,10 @@ renderMerken('all');
     return '⭐';
   }
 
-  async function spotVoertuigMet(kenteken, merk, model, bouwjaar, brandstof, kleur, type, kw) {
+  async function spotVoertuigMet(kenteken, merk, model, bouwjaar, brandstof, kleur, type, kw, cilinders, cc, gewicht, topsnelheid, catalogus, apk) {
     const pk = kw ? Math.round(kw / 0.7355) : 0;
     const ster = bepaalSterKleur(pk, false, false);
-    await spotVoertuig({kenteken, merk, model, bouwjaar, brandstof, kleur, type, pk, ster});
+    await spotVoertuig({kenteken, merk, model, bouwjaar, brandstof, kleur, type, pk, ster, cilinders, cc, gewicht, topsnelheid, catalogus, apk});
   }
 
   async function spotVoertuig(voertuig) {
@@ -2195,38 +2195,52 @@ renderMerken('all');
     }
   }
 
-  async function toonGarageDetail(index) {
+  function toonGarageDetail(index) {
     const garage = JSON.parse(localStorage.getItem('vehiclewiki_garage') || '[]');
     const v = garage[index];
     if (!v) return;
 
-    // Toon detail modal
     const bestaand = document.getElementById('garage-modal');
     if (bestaand) bestaand.remove();
 
     const modal = document.createElement('div');
     modal.id = 'garage-modal';
-    modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9998;display:flex;align-items:center;justify-content:center;';
-    
+    modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9998;display:flex;align-items:center;justify-content:center;padding:16px;';
+
     const s = v.ster || '⭐';
     const naam = `${v.merk||''} ${v.model||''}`.trim();
     const parts = naam.split(' ');
     const r1 = parts.slice(0, Math.ceil(parts.length/2)).join(' ');
     const r2 = parts.length > 1 ? parts.slice(Math.ceil(parts.length/2)).join(' ') : '';
 
+    const specs = [
+      v.cilinders ? `<div class="spec-row"><span>Cilinders</span><span>${v.cilinders}</span></div>` : '',
+      v.cc ? `<div class="spec-row"><span>Cilinderinhoud</span><span>${v.cc}cc</span></div>` : '',
+      v.gewicht ? `<div class="spec-row"><span>Gewicht</span><span>${v.gewicht} kg</span></div>` : '',
+      v.topsnelheid ? `<div class="spec-row"><span>Topsnelheid</span><span>${v.topsnelheid} km/h</span></div>` : '',
+      v.pk ? `<div class="spec-row"><span>Vermogen</span><span>${v.pk} pk</span></div>` : '',
+      v.brandstof ? `<div class="spec-row"><span>Brandstof</span><span>${v.brandstof}</span></div>` : '',
+      v.kleur ? `<div class="spec-row"><span>Kleur</span><span>${v.kleur}</span></div>` : '',
+      v.catalogus ? `<div class="spec-row"><span>Catalogusprijs</span><span>${v.catalogus}</span></div>` : '',
+      v.apk ? `<div class="spec-row"><span>APK</span><span>${v.apk}</span></div>` : '',
+    ].filter(Boolean).join('');
+
     modal.innerHTML = `
-      <div style="background:var(--bg2);border-radius:16px;padding:24px;max-width:320px;width:90%;text-align:center;border:1px solid var(--border);">
-        <div style="display:flex;justify-content:center;margin-bottom:12px;">
-          ${maakSterSVG(s, 120, r1, r2)}
+      <div style="background:var(--bg2);border-radius:16px;padding:20px;max-width:340px;width:100%;border:1px solid var(--border);max-height:90vh;overflow-y:auto;">
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
+          ${maakSterSVG(s, 80, r1, r2)}
+          <div style="flex:1;text-align:left;">
+            <div style="font-size:16px;font-weight:800;">${naam}</div>
+            <div style="background:#F5C518;color:#000;font-weight:900;border-radius:4px;padding:2px 8px;display:inline-block;margin-top:4px;letter-spacing:1px;font-size:13px;">${v.kenteken}</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:4px;">${v.bouwjaar||''} · Gespott ${new Date(v.gespott).toLocaleDateString('nl-NL')}</div>
+          </div>
         </div>
-        <div style="font-size:18px;font-weight:800;margin-bottom:4px;">${naam}</div>
-        <div style="background:#F5C518;color:#000;font-weight:900;border-radius:6px;padding:4px 12px;display:inline-block;margin-bottom:8px;letter-spacing:1px;">${v.kenteken}</div>
-        <div style="font-size:13px;color:var(--text3);margin-bottom:4px;">${v.bouwjaar||''} · ${v.brandstof||''} · ${v.kleur||''}</div>
-        <div style="font-size:11px;color:var(--text3);margin-bottom:16px;">Gespott op ${new Date(v.gespott).toLocaleDateString('nl-NL')}</div>
-        <div style="display:flex;gap:8px;flex-direction:column;">
-          <button onclick="zoekEnOpenSpecs(${index})" style="background:var(--accent);color:#fff;border:none;border-radius:10px;padding:12px;font-weight:700;cursor:pointer;font-size:14px;">🔍 Bekijk specificaties</button>
-          <button onclick="deelGespott(${index})" style="background:var(--bg3);color:var(--text);border:none;border-radius:10px;padding:12px;font-weight:700;cursor:pointer;font-size:14px;">📤 Delen</button>
-          <button onclick="document.getElementById('garage-modal').remove()" style="background:none;color:var(--text3);border:none;padding:8px;cursor:pointer;font-size:13px;">Sluiten</button>
+        <div style="background:var(--bg3);border-radius:10px;padding:12px;margin-bottom:14px;">
+          ${specs || '<div style="color:var(--text3);font-size:12px;">Geen extra data beschikbaar</div>'}
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="deelGespott(${index})" style="flex:1;background:var(--bg3);color:var(--text);border:none;border-radius:10px;padding:11px;font-weight:700;cursor:pointer;font-size:13px;">📤 Delen</button>
+          <button onclick="document.getElementById('garage-modal').remove()" style="flex:1;background:none;color:var(--text3);border:1px solid var(--border);border-radius:10px;padding:11px;cursor:pointer;font-size:13px;">Sluiten</button>
         </div>
       </div>`;
 
