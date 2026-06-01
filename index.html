@@ -2200,41 +2200,90 @@ renderMerken('all');
     const v = garage[index];
     if (!v) return;
 
-    // Als uitvoering_id al opgeslagen is direct naar specs
+    // Toon detail modal
+    const bestaand = document.getElementById('garage-modal');
+    if (bestaand) bestaand.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'garage-modal';
+    modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9998;display:flex;align-items:center;justify-content:center;';
+    
+    const s = v.ster || '⭐';
+    const naam = `${v.merk||''} ${v.model||''}`.trim();
+    const parts = naam.split(' ');
+    const r1 = parts.slice(0, Math.ceil(parts.length/2)).join(' ');
+    const r2 = parts.length > 1 ? parts.slice(Math.ceil(parts.length/2)).join(' ') : '';
+
+    modal.innerHTML = `
+      <div style="background:var(--bg2);border-radius:16px;padding:24px;max-width:320px;width:90%;text-align:center;border:1px solid var(--border);">
+        <div style="display:flex;justify-content:center;margin-bottom:12px;">
+          ${maakSterSVG(s, 120, r1, r2)}
+        </div>
+        <div style="font-size:18px;font-weight:800;margin-bottom:4px;">${naam}</div>
+        <div style="background:#F5C518;color:#000;font-weight:900;border-radius:6px;padding:4px 12px;display:inline-block;margin-bottom:8px;letter-spacing:1px;">${v.kenteken}</div>
+        <div style="font-size:13px;color:var(--text3);margin-bottom:4px;">${v.bouwjaar||''} · ${v.brandstof||''} · ${v.kleur||''}</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:16px;">Gespott op ${new Date(v.gespott).toLocaleDateString('nl-NL')}</div>
+        <div style="display:flex;gap:8px;flex-direction:column;">
+          <button onclick="zoekEnOpenSpecs(${index})" style="background:var(--accent);color:#fff;border:none;border-radius:10px;padding:12px;font-weight:700;cursor:pointer;font-size:14px;">🔍 Bekijk specificaties</button>
+          <button onclick="deelGespott(${index})" style="background:var(--bg3);color:var(--text);border:none;border-radius:10px;padding:12px;font-weight:700;cursor:pointer;font-size:14px;">📤 Delen</button>
+          <button onclick="document.getElementById('garage-modal').remove()" style="background:none;color:var(--text3);border:none;padding:8px;cursor:pointer;font-size:13px;">Sluiten</button>
+        </div>
+      </div>`;
+
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+    document.body.appendChild(modal);
+  }
+
+  async function zoekEnOpenSpecs(index) {
+    const garage = JSON.parse(localStorage.getItem('vehiclewiki_garage') || '[]');
+    const v = garage[index];
+    if (!v) return;
+
+    document.getElementById('garage-modal')?.remove();
+
+    // Als uitvoering_id al bekend
     if (v.uitvoering_id) {
-      setHomeTab('kenteken', document.querySelectorAll('.tab')[3]);
-      // Navigeer naar specs via huidigMerk instellen
       openSpecs(v.uitvoering_id);
-      goTo('s-specs');
       return;
     }
 
-    // Zoek uitvoering op basis van modelnaam
-    const zoekNaam = `${v.model||''}`.trim();
-    if (zoekNaam) {
-      try {
-        const results = await db('uitvoeringen', `naam=ilike.*${encodeURIComponent(zoekNaam)}*&limit=1`);
-        if (results && results[0]) {
-          // Sla uitvoering_id op voor volgende keer
-          v.uitvoering_id = results[0].id;
-          garage[index] = v;
-          localStorage.setItem('vehiclewiki_garage', JSON.stringify(garage));
-          openSpecs(results[0].id);
-          goTo('s-specs');
-          return;
-        }
-      } catch(e) { console.log('Zoek fout:', e); }
-    }
+    // Zoek op merk + model woorden
+    const merkNaam = (v.merk||'').split(' ')[0];
+    const modelWoorden = (v.model||'').split(' ').slice(0,2).join(' ');
+    
+    try {
+      // Zoek eerst op modelnaam
+      let results = await db('uitvoeringen', `naam=ilike.*${modelWoorden}*&limit=5`);
+      
+      if (!results || results.length === 0) {
+        // Probeer op merk
+        results = await db('uitvoeringen', `naam=ilike.*${merkNaam}*&limit=5`);
+      }
 
-    // Fallback: toon info popup met deel optie
-    const info = `🚗 ${v.kenteken}\n${v.merk||''} ${v.model||''}\n${v.bouwjaar||''} · ${v.brandstof||''} · ${v.kleur||''}`;
+      if (results && results[0]) {
+        v.uitvoering_id = results[0].id;
+        garage[index] = v;
+        localStorage.setItem('vehiclewiki_garage', JSON.stringify(garage));
+        openSpecs(results[0].id);
+      } else {
+        alert('Kon geen specificaties vinden voor dit voertuig in de database.');
+      }
+    } catch(e) {
+      console.log('Fout:', e);
+      alert('Fout bij zoeken naar specificaties.');
+    }
+  }
+
+  function deelGespott(index) {
+    const garage = JSON.parse(localStorage.getItem('vehiclewiki_garage') || '[]');
+    const v = garage[index];
+    if (!v) return;
+    document.getElementById('garage-modal')?.remove();
+    const tekst = `Ik heb ${v.kenteken} gespott! ${v.merk||''} ${v.model||''} (${v.bouwjaar||''}) via VehicleWiki`;
     if (navigator.share) {
-      navigator.share({
-        title: `Gespott: ${v.kenteken}`,
-        text: `Ik heb ${v.kenteken} gespott op VehicleWiki! ${v.merk} ${v.model||''} (${v.bouwjaar||''})`,
-      });
+      navigator.share({ title: `Gespott: ${v.kenteken}`, text: tekst });
     } else {
-      alert(info);
+      navigator.clipboard?.writeText(tekst).then(() => alert('Gekopieerd!'));
     }
   }
 
