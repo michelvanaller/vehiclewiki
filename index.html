@@ -2257,35 +2257,50 @@ renderMerken('all');
     try {
       let gevonden = null;
 
-      // Stap 1: merk + eerste 2 woorden model + bouwjaar
-      if (modelWoorden.length >= 2 && v.bouwjaar) {
-        const zoek = modelWoorden.slice(0,2).join(' ');
-        const r = await db('uitvoeringen', `naam=ilike.*${merkWoord}*${zoek}*&jaar=eq.${v.bouwjaar}&limit=5`);
+      // RDW geeft "STREETFIGHTER V4S" → normaliseer naar "streetfighter v4 s"
+      // Database heeft "Streetfighter V4 S 2021"
+      // Splits op letters/cijfers grenzen ook: V4S → v4 s
+      const modelGenorm = (v.model||'').toLowerCase()
+        .replace(/([a-z])([0-9])/g, '$1 $2')
+        .replace(/([0-9])([a-z])/g, '$1 $2')
+        .replace(/[-\/]/g, ' ')
+        .trim();
+      const modelDelen = modelGenorm.split(/\s+/).filter(w => w.length > 1);
+      
+      console.log('Zoek merk:', merkWoord, 'model delen:', modelDelen, 'jaar:', v.bouwjaar);
+
+      // Stap 1: merk + eerste woord model + bouwjaar
+      if (!gevonden && modelDelen.length >= 1 && v.bouwjaar) {
+        const r = await db('uitvoeringen', `naam=ilike.*${merkWoord}*&naam=ilike.*${modelDelen[0]}*&jaar=eq.${v.bouwjaar}&limit=5`);
+        console.log('Stap 1 resultaat:', r);
         if (r && r.length > 0) gevonden = r[0];
       }
 
-      // Stap 2: merk + eerste 2 woorden model
-      if (!gevonden && modelWoorden.length >= 2) {
-        const zoek = modelWoorden.slice(0,2).join(' ');
-        const r = await db('uitvoeringen', `naam=ilike.*${merkWoord}*&naam=ilike.*${zoek}*&limit=5`);
+      // Stap 2: merk + eerste woord model
+      if (!gevonden && modelDelen.length >= 1) {
+        const r = await db('uitvoeringen', `naam=ilike.*${merkWoord}*&naam=ilike.*${modelDelen[0]}*&limit=5`);
+        console.log('Stap 2 resultaat:', r);
         if (r && r.length > 0) gevonden = r[0];
       }
 
-      // Stap 3: merk + eerste woord model + bouwjaar
-      if (!gevonden && modelWoorden.length >= 1 && v.bouwjaar) {
-        const r = await db('uitvoeringen', `naam=ilike.*${merkWoord}*&naam=ilike.*${modelWoorden[0]}*&jaar=eq.${v.bouwjaar}&limit=5`);
+      // Stap 3: alleen eerste woord model + bouwjaar
+      if (!gevonden && modelDelen.length >= 1 && v.bouwjaar) {
+        const r = await db('uitvoeringen', `naam=ilike.*${modelDelen[0]}*&jaar=eq.${v.bouwjaar}&limit=5`);
+        console.log('Stap 3 resultaat:', r);
         if (r && r.length > 0) gevonden = r[0];
       }
 
       // Stap 4: merk + bouwjaar
       if (!gevonden && v.bouwjaar) {
         const r = await db('uitvoeringen', `naam=ilike.*${merkWoord}*&jaar=eq.${v.bouwjaar}&limit=5`);
+        console.log('Stap 4 resultaat:', r);
         if (r && r.length > 0) gevonden = r[0];
       }
 
       // Stap 5: alleen merk
       if (!gevonden) {
-        const r = await db('uitvoeringen', `naam=ilike.*${merkWoord}*&limit=5`);
+        const r = await db('uitvoeringen', `naam=ilike.*${merkWoord}*&limit=3`);
+        console.log('Stap 5 resultaat:', r);
         if (r && r.length > 0) gevonden = r[0];
       }
 
@@ -2295,14 +2310,12 @@ renderMerken('all');
         localStorage.setItem('vehiclewiki_garage', JSON.stringify(garage));
         openSpecs(gevonden.id);
       } else {
-        // Toon zoekscherm als laatste redmiddel
-        setHomeTab('zoeken', document.querySelectorAll('.tab')[2]);
-        document.getElementById('zoek-input').value = v.merk || '';
-        zoekVoertuigen();
+          console.log('Geen match gevonden voor:', v.merk, v.model);
+        alert(`Geen specificaties gevonden voor ${v.merk} ${v.model||''}. Zoek handmatig via de Zoeken tab.`);
       }
     } catch(e) {
       console.log('Fout:', e);
-      setHomeTab('zoeken', document.querySelectorAll('.tab')[2]);
+      alert('Er ging iets mis bij het zoeken.');
     }
   }
 
