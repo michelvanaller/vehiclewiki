@@ -2247,30 +2247,55 @@ renderMerken('all');
       return;
     }
 
-    // Zoek op merk + model woorden
-    const merkNaam = (v.merk||'').split(' ')[0];
-    const modelWoorden = (v.model||'').split(' ').slice(0,2).join(' ');
+    // RDW geeft bijv. merk="DUCATI" model="STREETFIGHTER V4 S"
+    // Database heeft bijv. "Streetfighter V4 S 2021"
+    // Strategie: zoek op elk woord van het model apart
+
+    const modelWoorden = (v.model||'').toLowerCase().split(/[\s\-\/]+/).filter(w => w.length > 2);
+    const merkWoord = (v.merk||'').toLowerCase().split(' ')[0];
     
     try {
-      // Zoek eerst op modelnaam
-      let results = await db('uitvoeringen', `naam=ilike.*${modelWoorden}*&limit=5`);
-      
-      if (!results || results.length === 0) {
-        // Probeer op merk
-        results = await db('uitvoeringen', `naam=ilike.*${merkNaam}*&limit=5`);
+      let gevonden = null;
+
+      // Stap 1: probeer eerste 2 woorden van model
+      if (modelWoorden.length >= 2) {
+        const zoek = modelWoorden.slice(0,2).join(' ');
+        const r = await db('uitvoeringen', `naam=ilike.*${zoek}*&limit=5`);
+        if (r && r.length > 0) gevonden = r[0];
       }
 
-      if (results && results[0]) {
-        v.uitvoering_id = results[0].id;
+      // Stap 2: probeer eerste woord van model
+      if (!gevonden && modelWoorden.length >= 1) {
+        const r = await db('uitvoeringen', `naam=ilike.*${modelWoorden[0]}*&limit=10`);
+        if (r && r.length > 0) gevonden = r[0];
+      }
+
+      // Stap 3: probeer bouwjaar + merk combinatie
+      if (!gevonden && v.bouwjaar) {
+        const r = await db('uitvoeringen', `naam=ilike.*${merkWoord}*&jaar=eq.${v.bouwjaar}&limit=5`);
+        if (r && r.length > 0) gevonden = r[0];
+      }
+
+      // Stap 4: zoek alleen op merk
+      if (!gevonden) {
+        const r = await db('uitvoeringen', `naam=ilike.*${merkWoord}*&limit=5`);
+        if (r && r.length > 0) gevonden = r[0];
+      }
+
+      if (gevonden) {
+        v.uitvoering_id = gevonden.id;
         garage[index] = v;
         localStorage.setItem('vehiclewiki_garage', JSON.stringify(garage));
-        openSpecs(results[0].id);
+        openSpecs(gevonden.id);
       } else {
-        alert('Kon geen specificaties vinden voor dit voertuig in de database.');
+        // Toon zoekscherm als laatste redmiddel
+        setHomeTab('zoeken', document.querySelectorAll('.tab')[2]);
+        document.getElementById('zoek-input').value = v.merk || '';
+        zoekVoertuigen();
       }
     } catch(e) {
       console.log('Fout:', e);
-      alert('Fout bij zoeken naar specificaties.');
+      setHomeTab('zoeken', document.querySelectorAll('.tab')[2]);
     }
   }
 
