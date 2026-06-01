@@ -173,26 +173,54 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
     justify-content: center;
     z-index: 9999;
     pointer-events: none;
+    flex-direction: column;
   }
-  .spot-star {
-    font-size: 80px;
-    animation: spotAnim 1.5s ease-out forwards;
+  .spot-star-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: spotAnim 2.5s ease-out forwards;
+  }
+  .spot-star-emoji {
+    font-size: 160px;
+    filter: drop-shadow(0 0 20px rgba(255,215,0,0.8));
+  }
+  .spot-star-label {
+    position: absolute;
+    font-size: 13px;
+    font-weight: 900;
+    color: #000;
+    text-align: center;
+    max-width: 120px;
+    line-height: 1.2;
+    opacity: 0;
+    animation: spotLabelAnim 2.5s ease-out forwards;
   }
   @keyframes spotAnim {
     0% { transform: scale(0) rotate(0deg); opacity: 1; }
-    50% { transform: scale(1.5) rotate(180deg); opacity: 1; }
-    100% { transform: scale(0.5) rotate(360deg) translateY(-100px); opacity: 0; }
+    40% { transform: scale(1.2) rotate(360deg); opacity: 1; }
+    70% { transform: scale(1.0) rotate(360deg); opacity: 1; }
+    90% { transform: scale(1.0) rotate(360deg); opacity: 1; }
+    100% { transform: scale(0.3) rotate(360deg) translateY(-150px); opacity: 0; }
+  }
+  @keyframes spotLabelAnim {
+    0% { opacity: 0; }
+    45% { opacity: 0; }
+    60% { opacity: 1; }
+    85% { opacity: 1; }
+    100% { opacity: 0; }
   }
   .spot-tekst {
     position: fixed;
-    top: 55%;
+    top: 72%;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 800;
     color: #FFD700;
     text-shadow: 0 2px 8px rgba(0,0,0,0.8);
-    animation: spotTekstAnim 1.5s ease-out forwards;
+    animation: spotTekstAnim 2.5s ease-out forwards;
     z-index: 9999;
     pointer-events: none;
     white-space: nowrap;
@@ -202,6 +230,37 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
     30% { opacity: 1; transform: translateX(-50%) translateY(0); }
     80% { opacity: 1; }
     100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+  }
+  /* Garage ster kaartjes */
+  .ster-kaart {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+    aspect-ratio: 1;
+  }
+  .ster-kaart:hover { transform: scale(1.08); }
+  .ster-kaart-emoji {
+    font-size: 80px;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+  }
+  .ster-kaart-label {
+    position: absolute;
+    font-size: 9px;
+    font-weight: 900;
+    color: #000;
+    text-align: center;
+    max-width: 70px;
+    line-height: 1.2;
+    pointer-events: none;
+  }
+  .ster-kaart-datum {
+    font-size: 9px;
+    color: var(--text3);
+    text-align: center;
+    margin-top: 4px;
   }
 
 </style>
@@ -1994,6 +2053,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 renderMerken('all');
   // ===== GARAGE SYSTEEM =====
+  function sterLabel(ster) {
+    if (ster === '💎') return 'Legendarisch';
+    if (ster === '🥇') return 'Goud';
+    if (ster === '🥈') return 'Zilver';
+    if (ster === '🥉') return 'Brons';
+    return 'Standaard';
+  }
+
   function laadGarage() {
     const garage = JSON.parse(localStorage.getItem('vehiclewiki_garage') || '[]');
     const grid = document.getElementById('garage-grid');
@@ -2009,37 +2076,50 @@ renderMerken('all');
     }
     
     grid.innerHTML = garage.map((v, i) => `
-      <div class="garage-card" onclick="toonGarageDetail(${i})">
-        <button class="delete-btn" onclick="event.stopPropagation();verwijderUitGarage(${i})">✕</button>
-        <div class="kenteken-plaat">${v.kenteken}</div>
-        <div class="voertuig-naam">${v.merk} ${v.model||''}</div>
-        <div class="voertuig-sub">${v.bouwjaar||''} · ${v.brandstof||''}</div>
-        <div style="font-size:10px;color:var(--text3);margin-top:6px;">${new Date(v.gespott).toLocaleDateString('nl-NL')}</div>
+      <div style="text-align:center;" onclick="toonGarageDetail(${i})">
+        <div class="ster-kaart">
+          <span class="ster-kaart-emoji">${v.ster || '⭐'}</span>
+          <span class="ster-kaart-label">${v.merk||''} ${v.model||v.kenteken}</span>
+          <button style="position:absolute;top:-4px;right:-4px;background:var(--bg3);border:none;color:var(--text3);cursor:pointer;font-size:11px;border-radius:50%;width:20px;height:20px;line-height:20px;padding:0;" onclick="event.stopPropagation();verwijderUitGarage(${i})">✕</button>
+        </div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px;">${v.kenteken}</div>
+        <div style="font-size:9px;color:var(--text3);">${new Date(v.gespott).toLocaleDateString('nl-NL')}</div>
       </div>
     `).join('');
   }
 
-  function spotVoertuig(voertuig) {
+  function bepaalSterKleur(pk, zeldzaam, legendarisch) {
+    if (legendarisch) return '💎';
+    if (zeldzaam || pk >= 200) return '🥇';
+    if (pk >= 150) return '🥈';
+    if (pk >= 100) return '🥉';
+    return '⭐';
+  }
+
+  async function spotVoertuig(voertuig) {
     const garage = JSON.parse(localStorage.getItem('vehiclewiki_garage') || '[]');
-    
-    // Check of al in garage
     const bestaat = garage.find(v => v.kenteken === voertuig.kenteken);
     if (bestaat) {
-      toonSpotAnimatie(false, voertuig.kenteken);
+      toonSpotAnimatie(false, voertuig.kenteken, '⭐', voertuig.model || voertuig.kenteken);
       return;
     }
     
+    // Bepaal ster kleur op basis van pk (kenteken heeft geen pk info)
+    voertuig.ster = '⭐';
     voertuig.gespott = new Date().toISOString();
     garage.push(voertuig);
     localStorage.setItem('vehiclewiki_garage', JSON.stringify(garage));
-    toonSpotAnimatie(true, voertuig.kenteken);
+    toonSpotAnimatie(true, voertuig.kenteken, voertuig.ster, voertuig.model || voertuig.kenteken);
     laadGarage();
   }
 
-  function toonSpotAnimatie(nieuw, kenteken) {
+  function toonSpotAnimatie(nieuw, kenteken, ster, modelnaam) {
     const overlay = document.createElement('div');
     overlay.className = 'spot-overlay';
-    overlay.innerHTML = '<div class="spot-star">⭐</div>';
+    overlay.innerHTML = `<div class="spot-star-wrap">
+      <span class="spot-star-emoji">${ster || '⭐'}</span>
+      <span class="spot-star-label">${modelnaam || kenteken}</span>
+    </div>`;
     document.body.appendChild(overlay);
     
     const tekst = document.createElement('div');
@@ -2050,7 +2130,7 @@ renderMerken('all');
     setTimeout(() => {
       overlay.remove();
       tekst.remove();
-    }, 1500);
+    }, 2500);
   }
 
   function verwijderUitGarage(index) {
@@ -2122,7 +2202,7 @@ renderMerken('all');
         </div>
       </div>
     </div>
-    <div id="garage-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;max-width:600px;margin:0 auto;">
+    <div id="garage-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:16px;max-width:600px;margin:0 auto;">
       <div style="color:var(--text3);font-size:13px;text-align:center;padding:40px;grid-column:1/-1;">
         Nog geen voertuigen gespott.<br>Zoek een kenteken op en spot het! 🌟
       </div>
