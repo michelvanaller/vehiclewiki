@@ -2269,39 +2269,51 @@ renderMerken('all');
       
       console.log('Zoek merk:', merkWoord, 'model delen:', modelDelen, 'jaar:', v.bouwjaar);
 
-      // Stap 1: merk + eerste woord model + bouwjaar
-      if (!gevonden && modelDelen.length >= 1 && v.bouwjaar) {
-        const r = await db('uitvoeringen', `naam=ilike.*${merkWoord}*&naam=ilike.*${modelDelen[0]}*&jaar=eq.${v.bouwjaar}&limit=5`);
-        console.log('Stap 1 resultaat:', r);
-        if (r && r.length > 0) gevonden = r[0];
+      // Gebruik Supabase join via select met merk filter
+      const SUPA_URL = 'https://adwxdumziwfqvklwjnvp.supabase.co';
+      const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkd3hkdW16aXdmcXZrbHdqbnZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MDA1NDUsImV4cCI6MjA5MDQ3NjU0NX0.5s2boF_P5gH7UTG9x8f9e4Lyz2l4CJ5VClNw7DHXOO4';
+
+      async function zoekMetMerk(modelZoek, jaar, merkId) {
+        let url = `${SUPA_URL}/rest/v1/uitvoeringen?select=id,naam,jaar,modellen(generaties(families(merk_id)))&naam=ilike.*${modelZoek}*&limit=20`;
+        if (jaar) url += `&jaar=eq.${jaar}`;
+        const r = await fetch(url, {headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}});
+        const data = await r.json();
+        if (!data || !data.length) return null;
+        // Filter op merk_id
+        const match = data.find(u => u.modellen?.generaties?.families?.merk_id === merkId);
+        return match || null;
       }
 
-      // Stap 2: merk + eerste woord model
+      // Zoek merk_id op basis van merknaam
+      const merken = await db('merken', `naam=ilike.*${merkWoord}*&limit=3`);
+      const merkId = merken?.[0]?.id;
+      console.log('Merk ID:', merkId, 'voor:', merkWoord);
+
+      // Stap 1: model eerste woord + jaar + merk
       if (!gevonden && modelDelen.length >= 1) {
-        const r = await db('uitvoeringen', `naam=ilike.*${merkWoord}*&naam=ilike.*${modelDelen[0]}*&limit=5`);
-        console.log('Stap 2 resultaat:', r);
-        if (r && r.length > 0) gevonden = r[0];
+        gevonden = await zoekMetMerk(modelDelen[0], v.bouwjaar, merkId);
+        console.log('Stap 1:', gevonden?.naam);
       }
 
-      // Stap 3: alleen eerste woord model + bouwjaar
-      if (!gevonden && modelDelen.length >= 1 && v.bouwjaar) {
-        const r = await db('uitvoeringen', `naam=ilike.*${modelDelen[0]}*&jaar=eq.${v.bouwjaar}&limit=5`);
-        console.log('Stap 3 resultaat:', r);
-        if (r && r.length > 0) gevonden = r[0];
+      // Stap 2: model eerste woord zonder jaar
+      if (!gevonden && modelDelen.length >= 1) {
+        gevonden = await zoekMetMerk(modelDelen[0], null, merkId);
+        console.log('Stap 2:', gevonden?.naam);
       }
 
-      // Stap 4: merk + bouwjaar
-      if (!gevonden && v.bouwjaar) {
-        const r = await db('uitvoeringen', `naam=ilike.*${merkWoord}*&jaar=eq.${v.bouwjaar}&limit=5`);
-        console.log('Stap 4 resultaat:', r);
-        if (r && r.length > 0) gevonden = r[0];
+      // Stap 3: tweede woord model + jaar
+      if (!gevonden && modelDelen.length >= 2) {
+        gevonden = await zoekMetMerk(modelDelen[1], v.bouwjaar, merkId);
+        console.log('Stap 3:', gevonden?.naam);
       }
 
-      // Stap 5: alleen merk
-      if (!gevonden) {
-        const r = await db('uitvoeringen', `naam=ilike.*${merkWoord}*&limit=3`);
-        console.log('Stap 5 resultaat:', r);
-        if (r && r.length > 0) gevonden = r[0];
+      // Stap 4: merk + jaar zonder model filter
+      if (!gevonden && merkId && v.bouwjaar) {
+        const url = `${SUPA_URL}/rest/v1/uitvoeringen?select=id,naam,jaar,modellen(generaties(families(merk_id)))&jaar=eq.${v.bouwjaar}&limit=50`;
+        const r = await fetch(url, {headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}});
+        const data = await r.json();
+        gevonden = data?.find(u => u.modellen?.generaties?.families?.merk_id === merkId) || null;
+        console.log('Stap 4:', gevonden?.naam);
       }
 
       if (gevonden) {
