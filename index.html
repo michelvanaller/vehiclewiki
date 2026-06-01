@@ -937,7 +937,7 @@ async function zoekKenteken() {
           <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;grid-column:1/-1;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Wegenbelasting (per kwartaal)</div><div style="font-size:16px;font-weight:600;">€${wbLaag} – €${wbHoog}</div></div>
         </div>
       </div>
-      <button onclick="spotVoertuig({kenteken:'${input}',merk:'${merk}',model:'${model}',bouwjaar:'${bouwjaar}',brandstof:'${brandstof}',kleur:'${kleur}',type:'${type}'})" style="width:100%;padding:14px;background:linear-gradient(135deg,#FFD700,#FFA500);color:#000;border:none;border-radius:12px;font-size:16px;font-weight:800;cursor:pointer;letter-spacing:0.5px;margin-top:4px;">
+      <button onclick="spotVoertuigMet('${input}','${merk}','${model}','${bouwjaar}','${brandstof}','${kleur}','${type}',${kwVal||0})" style="width:100%;padding:14px;background:linear-gradient(135deg,#FFD700,#FFA500);color:#000;border:none;border-radius:12px;font-size:16px;font-weight:800;cursor:pointer;letter-spacing:0.5px;margin-top:4px;">
         ⭐ Spot dit voertuig!
       </button>`;
   } catch(e) {
@@ -2075,25 +2075,74 @@ renderMerken('all');
       return;
     }
     
-    grid.innerHTML = garage.map((v, i) => `
-      <div style="text-align:center;" onclick="toonGarageDetail(${i})">
-        <div class="ster-kaart">
-          <span class="ster-kaart-emoji">${v.ster || '⭐'}</span>
-          <span class="ster-kaart-label">${v.merk||''} ${v.model||v.kenteken}</span>
-          <button style="position:absolute;top:-4px;right:-4px;background:var(--bg3);border:none;color:var(--text3);cursor:pointer;font-size:11px;border-radius:50%;width:20px;height:20px;line-height:20px;padding:0;" onclick="event.stopPropagation();verwijderUitGarage(${i})">✕</button>
+    grid.innerHTML = garage.map((v, i) => {
+      const s = v.ster || '⭐';
+      const naam = `${v.merk||''} ${v.model||''}`.trim();
+      const parts = naam.split(' ');
+      const r1 = parts.slice(0, Math.ceil(parts.length/2)).join(' ');
+      const r2 = parts.length > 1 ? parts.slice(Math.ceil(parts.length/2)).join(' ') : '';
+      return `<div style="text-align:center;cursor:pointer;position:relative;" onclick="toonGarageDetail(${i})">
+        <div style="position:relative;display:inline-block;">
+          ${maakSterSVG(s, 90, r1, r2)}
+          <button style="position:absolute;top:-2px;right:-2px;background:var(--bg3);border:none;color:var(--text3);cursor:pointer;font-size:10px;border-radius:50%;width:18px;height:18px;line-height:18px;padding:0;z-index:2;" onclick="event.stopPropagation();verwijderUitGarage(${i})">✕</button>
         </div>
         <div style="font-size:10px;color:var(--text3);margin-top:2px;">${v.kenteken}</div>
         <div style="font-size:9px;color:var(--text3);">${new Date(v.gespott).toLocaleDateString('nl-NL')}</div>
-      </div>
-    `).join('');
+      </div>`;
+    }).join('');
   }
 
+
+  function maakSterSVG(kleur, grootte, label, sublabel) {
+    const kleuren = {
+      '💎': {grad1:'#a8edea', grad2:'#fed6e3', glow:'#a8edea', ring:'#fff'},
+      '🥇': {grad1:'#FFD700', grad2:'#FF8C00', glow:'#FFD700', ring:'#FFA500'},
+      '🥈': {grad1:'#C0C0C0', grad2:'#808080', glow:'#C0C0C0', ring:'#A0A0A0'},
+      '🥉': {grad1:'#CD7F32', grad2:'#8B4513', glow:'#CD7F32', ring:'#A0522D'},
+      '⭐': {grad1:'#FFE066', grad2:'#FFA500', glow:'#FFE066', ring:'#FFD700'},
+    };
+    const k = kleuren[kleur] || kleuren['⭐'];
+    const s = grootte || 120;
+    const id = 'sg' + Math.random().toString(36).substr(2,6);
+    return `<svg width="${s}" height="${s}" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="g${id}" cx="40%" cy="30%">
+          <stop offset="0%" stop-color="${k.grad1}"/>
+          <stop offset="100%" stop-color="${k.grad2}"/>
+        </radialGradient>
+        <filter id="f${id}" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="3" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="glow${id}">
+          <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+          <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <!-- Glow ring -->
+      <circle cx="60" cy="60" r="54" fill="none" stroke="${k.grad1}" stroke-width="2" opacity="0.4" filter="url(#glow${id})"/>
+      <!-- Ster shape -->
+      <polygon points="60,8 74,45 113,45 82,68 93,105 60,83 27,105 38,68 7,45 46,45"
+        fill="url(#g${id})" filter="url(#f${id})"
+        stroke="${k.ring}" stroke-width="1.5"/>
+      <!-- Shine -->
+      <ellipse cx="50" cy="38" rx="12" ry="7" fill="white" opacity="0.25" transform="rotate(-20,50,38)"/>
+      ${label ? `<text x="60" y="64" text-anchor="middle" font-family="Barlow,sans-serif" font-weight="900" font-size="${label.length > 10 ? '7' : '8'}" fill="#000" opacity="0.85">${label}</text>` : ''}
+      ${sublabel ? `<text x="60" y="74" text-anchor="middle" font-family="Barlow,sans-serif" font-weight="700" font-size="6" fill="#000" opacity="0.7">${sublabel}</text>` : ''}
+    </svg>`;
+  }
   function bepaalSterKleur(pk, zeldzaam, legendarisch) {
     if (legendarisch) return '💎';
     if (zeldzaam || pk >= 200) return '🥇';
     if (pk >= 150) return '🥈';
     if (pk >= 100) return '🥉';
     return '⭐';
+  }
+
+  async function spotVoertuigMet(kenteken, merk, model, bouwjaar, brandstof, kleur, type, kw) {
+    const pk = kw ? Math.round(kw / 0.7355) : 0;
+    const ster = bepaalSterKleur(pk, false, false);
+    await spotVoertuig({kenteken, merk, model, bouwjaar, brandstof, kleur, type, pk, ster});
   }
 
   async function spotVoertuig(voertuig) {
@@ -2105,7 +2154,7 @@ renderMerken('all');
     }
     
     // Bepaal ster kleur op basis van pk (kenteken heeft geen pk info)
-    voertuig.ster = '⭐';
+    // ster is al bepaald bij spotVoertuigMet
     voertuig.gespott = new Date().toISOString();
     garage.push(voertuig);
     localStorage.setItem('vehiclewiki_garage', JSON.stringify(garage));
@@ -2116,21 +2165,20 @@ renderMerken('all');
   function toonSpotAnimatie(nieuw, kenteken, ster, modelnaam) {
     const overlay = document.createElement('div');
     overlay.className = 'spot-overlay';
-    overlay.innerHTML = `<div class="spot-star-wrap">
-      <span class="spot-star-emoji">${ster || '⭐'}</span>
-      <span class="spot-star-label">${modelnaam || kenteken}</span>
-    </div>`;
+    const s = ster || '⭐';
+    // Korte modelnaam voor in ster
+    const parts = (modelnaam||kenteken).split(' ');
+    const regel1 = parts.slice(0, Math.ceil(parts.length/2)).join(' ');
+    const regel2 = parts.length > 1 ? parts.slice(Math.ceil(parts.length/2)).join(' ') : '';
+    overlay.innerHTML = `<div class="spot-star-wrap">${maakSterSVG(s, 200, regel1, regel2)}</div>`;
     document.body.appendChild(overlay);
     
     const tekst = document.createElement('div');
     tekst.className = 'spot-tekst';
-    tekst.textContent = nieuw ? `🌟 ${kenteken} gespott!` : `${kenteken} staat al in je garage!`;
+    tekst.textContent = nieuw ? `${sterLabel(s)} · ${kenteken} gespott!` : `${kenteken} staat al in je garage!`;
     document.body.appendChild(tekst);
     
-    setTimeout(() => {
-      overlay.remove();
-      tekst.remove();
-    }, 2500);
+    setTimeout(() => { overlay.remove(); tekst.remove(); }, 2800);
   }
 
   function verwijderUitGarage(index) {
