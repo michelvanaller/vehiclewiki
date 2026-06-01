@@ -2195,29 +2195,46 @@ renderMerken('all');
     }
   }
 
-  function toonGarageDetail(index) {
+  async function toonGarageDetail(index) {
     const garage = JSON.parse(localStorage.getItem('vehiclewiki_garage') || '[]');
     const v = garage[index];
     if (!v) return;
-    
-    const tekst = [
-      `🚗 ${v.kenteken}`,
-      `Merk: ${v.merk||'-'}`,
-      `Model: ${v.model||'-'}`,
-      `Bouwjaar: ${v.bouwjaar||'-'}`,
-      `Brandstof: ${v.brandstof||'-'}`,
-      `Kleur: ${v.kleur||'-'}`,
-      `Gespott: ${new Date(v.gespott).toLocaleDateString('nl-NL')}`,
-    ].join('\n');
-    
-    // Deel opties
+
+    // Als uitvoering_id al opgeslagen is direct naar specs
+    if (v.uitvoering_id) {
+      setHomeTab('kenteken', document.querySelectorAll('.tab')[3]);
+      // Navigeer naar specs via huidigMerk instellen
+      openSpecs(v.uitvoering_id);
+      goTo('s-specs');
+      return;
+    }
+
+    // Zoek uitvoering op basis van modelnaam
+    const zoekNaam = `${v.model||''}`.trim();
+    if (zoekNaam) {
+      try {
+        const results = await db('uitvoeringen', `naam=ilike.*${encodeURIComponent(zoekNaam)}*&limit=1`);
+        if (results && results[0]) {
+          // Sla uitvoering_id op voor volgende keer
+          v.uitvoering_id = results[0].id;
+          garage[index] = v;
+          localStorage.setItem('vehiclewiki_garage', JSON.stringify(garage));
+          openSpecs(results[0].id);
+          goTo('s-specs');
+          return;
+        }
+      } catch(e) { console.log('Zoek fout:', e); }
+    }
+
+    // Fallback: toon info popup met deel optie
+    const info = `🚗 ${v.kenteken}\n${v.merk||''} ${v.model||''}\n${v.bouwjaar||''} · ${v.brandstof||''} · ${v.kleur||''}`;
     if (navigator.share) {
       navigator.share({
         title: `Gespott: ${v.kenteken}`,
         text: `Ik heb ${v.kenteken} gespott op VehicleWiki! ${v.merk} ${v.model||''} (${v.bouwjaar||''})`,
       });
     } else {
-      alert(tekst);
+      alert(info);
     }
   }
 
