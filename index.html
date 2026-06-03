@@ -1580,7 +1580,7 @@ async function openSpecs(uid) {
   try {
     const [uitvArr, proscons, ervaringen] = await Promise.all([
       db('uitvoeringen', `id=eq.${uid}&select=*`),
-      db('pros_cons', `uitvoering_id=eq.${uid}&order=type,id`),
+      db('pros_cons', `generatie_id=eq.${huidigGen?.id || 0}&order=type,id`),
       db('ervaringen', `uitvoering_id=eq.${uid}&order=stemmen.desc`)
     ]);
 
