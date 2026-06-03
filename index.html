@@ -263,6 +263,129 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
     margin-top: 4px;
   }
 
+
+  /* Carbon fiber texture */
+  .stat-blok {
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px;
+    padding: 14px;
+  }
+  .stat-blok::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+      repeating-linear-gradient(
+        45deg,
+        rgba(255,255,255,0.015) 0px,
+        rgba(255,255,255,0.015) 1px,
+        transparent 1px,
+        transparent 8px
+      ),
+      repeating-linear-gradient(
+        -45deg,
+        rgba(255,255,255,0.015) 0px,
+        rgba(255,255,255,0.015) 1px,
+        transparent 1px,
+        transparent 8px
+      );
+    pointer-events: none;
+  }
+  .stat-rood {
+    background: linear-gradient(135deg, #1a0a0a, #0f0808);
+    border: 1px solid rgba(220,50,50,0.6);
+    box-shadow: 0 0 20px rgba(220,50,50,0.2), inset 0 1px 0 rgba(255,100,100,0.1);
+  }
+  .stat-oranje {
+    background: linear-gradient(135deg, #1a0e0a, #0f0a08);
+    border: 1px solid rgba(220,140,50,0.6);
+    box-shadow: 0 0 20px rgba(220,140,50,0.2), inset 0 1px 0 rgba(255,180,80,0.1);
+  }
+  .stat-blauw {
+    background: linear-gradient(135deg, #0a0e1a, #08090f);
+    border: 1px solid rgba(50,130,220,0.6);
+    box-shadow: 0 0 20px rgba(50,130,220,0.2), inset 0 1px 0 rgba(80,150,255,0.1);
+  }
+  .stat-groen {
+    background: linear-gradient(135deg, #0a1a0e, #080f0a);
+    border: 1px solid rgba(50,200,100,0.6);
+    box-shadow: 0 0 20px rgba(50,200,100,0.2), inset 0 1px 0 rgba(80,255,120,0.1);
+  }
+  .stat-goud {
+    background: linear-gradient(135deg, #1a160a, #0f0e08);
+    border: 1px solid rgba(218,165,32,0.6);
+    box-shadow: 0 0 20px rgba(218,165,32,0.15), inset 0 1px 0 rgba(255,200,50,0.1);
+  }
+  .stat-label {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    opacity: 0.8;
+  }
+  .stat-waarde {
+    font-size: 26px;
+    font-weight: 900;
+    line-height: 1;
+    font-family: 'Barlow Condensed', sans-serif;
+  }
+  .stat-eenheid {
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0.7;
+  }
+  .stat-sub {
+    font-size: 11px;
+    opacity: 0.5;
+    margin-top: 2px;
+  }
+  /* Pros cons */
+  .pros-cons-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .pros-box {
+    background: linear-gradient(135deg, #0a1a0e, #080f0a);
+    border: 1px solid rgba(50,200,100,0.5);
+    box-shadow: 0 0 15px rgba(50,200,100,0.15);
+    border-radius: 10px;
+    padding: 12px;
+  }
+  .cons-box {
+    background: linear-gradient(135deg, #1a0a0a, #0f0808);
+    border: 1px solid rgba(220,50,50,0.5);
+    box-shadow: 0 0 15px rgba(220,50,50,0.15);
+    border-radius: 10px;
+    padding: 12px;
+  }
+  .spec-hero {
+    width: 100%;
+    height: 220px;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 16px;
+    position: relative;
+    background: linear-gradient(135deg, #111, #1a1a1a);
+    border: 1px solid var(--border);
+  }
+  .spec-hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .spec-hero-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+  }
+
 </style>
 </head>
 <body>
@@ -1575,66 +1698,66 @@ async function openSpecs(uid) {
 
       <!-- 4 grote stat blokken -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
-        <div style="background:var(--bg2);border:1px solid rgba(220,50,50,0.5);border-radius:10px;padding:12px;box-shadow:0 0 12px rgba(220,50,50,0.15);">
-          <div style="font-size:10px;font-weight:700;color:#e05555;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;">Vermogen</div>
-          <div style="font-size:22px;font-weight:900;color:#ff6b6b;">${u.pk || '—'} <span style="font-size:13px;font-weight:600;">pk</span></div>
-          <div style="font-size:11px;color:var(--text3);">${u.pk ? Math.round(u.pk * 0.7355) + ' kW' : ''}</div>
+        <div class="stat-blok stat-rood">
+          <div class="stat-label" style="color:#ff6b6b;">Vermogen</div>
+          <div class="stat-waarde" style="color:#ff6b6b;">${u.pk || '—'} <span class="stat-eenheid">pk</span></div>
+          <div class="stat-sub">${u.pk ? Math.round(u.pk * 0.7355) + ' kW' : ''}</div>
         </div>
-        <div style="background:var(--bg2);border:1px solid rgba(220,150,50,0.5);border-radius:10px;padding:12px;box-shadow:0 0 12px rgba(220,150,50,0.15);">
-          <div style="font-size:10px;font-weight:700;color:#e0a055;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;">Koppel</div>
-          <div style="font-size:22px;font-weight:900;color:#ffb347;">${u.nm || '—'} <span style="font-size:13px;font-weight:600;">Nm</span></div>
+        <div class="stat-blok stat-oranje">
+          <div class="stat-label" style="color:#ffb347;">Koppel</div>
+          <div class="stat-waarde" style="color:#ffb347;">${u.nm || '—'} <span class="stat-eenheid">Nm</span></div>
         </div>
-        <div style="background:var(--bg2);border:1px solid rgba(50,150,220,0.5);border-radius:10px;padding:12px;box-shadow:0 0 12px rgba(50,150,220,0.15);">
-          <div style="font-size:10px;font-weight:700;color:#5599e0;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;">Topsnelheid</div>
-          <div style="font-size:22px;font-weight:900;color:#66aaff;">${u.topsnelheid || '—'} <span style="font-size:13px;font-weight:600;">km/h</span></div>
+        <div class="stat-blok stat-blauw">
+          <div class="stat-label" style="color:#66aaff;">Topsnelheid</div>
+          <div class="stat-waarde" style="color:#66aaff;">${u.topsnelheid || '—'} <span class="stat-eenheid">km/h</span></div>
         </div>
-        <div style="background:var(--bg2);border:1px solid rgba(50,200,100,0.5);border-radius:10px;padding:12px;box-shadow:0 0 12px rgba(50,200,100,0.15);">
-          <div style="font-size:10px;font-weight:700;color:#55c080;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;">0-100 km/u</div>
-          <div style="font-size:22px;font-weight:900;color:#66dd99;">${u.nul100 || '—'} <span style="font-size:13px;font-weight:600;">s</span></div>
+        <div class="stat-blok stat-groen">
+          <div class="stat-label" style="color:#66dd99;">0-100 km/u</div>
+          <div class="stat-waarde" style="color:#66dd99;">${u.nul100 || '—'} <span class="stat-eenheid">s</span></div>
         </div>
       </div>
 
       <!-- Specs grid -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
-        ${u.cilinderinhoud ? `<div style="background:var(--bg2);border:1px solid rgba(218,165,32,0.4);border-radius:10px;padding:10px;box-shadow:0 0 8px rgba(218,165,32,0.1);">
-          <div style="font-size:9px;font-weight:700;color:#DAA520;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:3px;">Cilinderinhoud</div>
-          <div style="font-size:18px;font-weight:800;">${u.cilinderinhoud} <span style="font-size:11px;color:var(--text3);">cc</span></div>
+        ${u.cilinderinhoud ? `<div class="stat-blok stat-goud">
+          <div class="stat-label" style="color:#DAA520;">Cilinderinhoud</div>
+          <div class="stat-waarde" style="font-size:20px;">${u.cilinderinhoud} <span style="font-size:11px;color:var(--text3);">cc</span></div>
         </div>` : ''}
-        ${u.cilinders ? `<div style="background:var(--bg2);border:1px solid rgba(218,165,32,0.4);border-radius:10px;padding:10px;box-shadow:0 0 8px rgba(218,165,32,0.1);">
-          <div style="font-size:9px;font-weight:700;color:#DAA520;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:3px;">Cilinders</div>
-          <div style="font-size:18px;font-weight:800;">${u.cilinders === 1 ? '1' : u.cilinders === 2 ? 'V2 / Twin' : u.cilinders === 3 ? 'Triple' : u.cilinders === 4 ? 'V4 / Inline-4' : u.cilinders === 6 ? 'Inline-6' : u.cilinders}</div>
+        ${u.cilinders ? `<div class="stat-blok stat-goud">
+          <div class="stat-label" style="color:#DAA520;">Cilinders</div>
+          <div class="stat-waarde" style="font-size:20px;">${u.cilinders === 1 ? '1' : u.cilinders === 2 ? 'V2 / Twin' : u.cilinders === 3 ? 'Triple' : u.cilinders === 4 ? 'V4 / Inline-4' : u.cilinders === 6 ? 'Inline-6' : u.cilinders}</div>
         </div>` : ''}
-        ${u.gewicht ? `<div style="background:var(--bg2);border:1px solid rgba(218,165,32,0.4);border-radius:10px;padding:10px;box-shadow:0 0 8px rgba(218,165,32,0.1);">
-          <div style="font-size:9px;font-weight:700;color:#DAA520;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:3px;">Gewicht</div>
-          <div style="font-size:18px;font-weight:800;">${u.gewicht} <span style="font-size:11px;color:var(--text3);">kg</span></div>
+        ${u.gewicht ? `<div class="stat-blok stat-goud">
+          <div class="stat-label" style="color:#DAA520;">Gewicht</div>
+          <div class="stat-waarde" style="font-size:20px;">${u.gewicht} <span style="font-size:11px;color:var(--text3);">kg</span></div>
         </div>` : ''}
-        ${u.brandstof ? `<div style="background:var(--bg2);border:1px solid rgba(218,165,32,0.4);border-radius:10px;padding:10px;box-shadow:0 0 8px rgba(218,165,32,0.1);">
-          <div style="font-size:9px;font-weight:700;color:#DAA520;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:3px;">Brandstof</div>
+        ${u.brandstof ? `<div class="stat-blok stat-goud">
+          <div class="stat-label" style="color:#DAA520;">Brandstof</div>
           <div style="font-size:16px;font-weight:800;">${u.brandstof}</div>
         </div>` : ''}
       </div>
 
       <!-- Verbruik + Wegenbelasting -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
-        ${u.verbruik ? `<div style="background:var(--bg2);border:1px solid rgba(50,200,100,0.4);border-radius:10px;padding:10px;box-shadow:0 0 8px rgba(50,200,100,0.1);">
-          <div style="font-size:9px;font-weight:700;color:#55c080;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:3px;">Verbruik</div>
-          <div style="font-size:18px;font-weight:800;color:#66dd99;">${u.verbruik} <span style="font-size:11px;color:var(--text3);">L/100km</span></div>
+        ${u.verbruik ? `<div class="stat-blok stat-groen">
+          <div class="stat-label" style="color:#66dd99;">Verbruik</div>
+          <div class="stat-waarde" style="font-size:20px;color:#66dd99;">${u.verbruik} <span style="font-size:11px;color:var(--text3);">L/100km</span></div>
         </div>` : ''}
-        <div style="background:var(--bg2);border:1px solid rgba(50,200,100,0.4);border-radius:10px;padding:10px;box-shadow:0 0 8px rgba(50,200,100,0.1);">
-          <div style="font-size:9px;font-weight:700;color:#55c080;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:3px;">Wegenbelasting</div>
-          <div style="font-size:16px;font-weight:800;color:#66dd99;">€${wbLaag} – €${wbHoog} <span style="font-size:10px;color:var(--text3);">/ kwartaal</span></div>
+        <div class="stat-blok stat-groen">
+          <div class="stat-label" style="color:#66dd99;">Wegenbelasting</div>
+          <div class="stat-waarde" style="font-size:18px;color:#66dd99;">€${wbLaag} – €${wbHoog} <span style="font-size:10px;color:var(--text3);">/ kwartaal</span></div>
         </div>
       </div>
 
       <!-- Pros / Cons -->
       ${pros.length || cons.length ? `
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
-        <div style="background:var(--bg2);border:1px solid rgba(50,200,100,0.4);border-radius:10px;padding:12px;box-shadow:0 0 8px rgba(50,200,100,0.1);">
-          <div style="font-size:10px;font-weight:700;color:#55c080;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Voordelen</div>
+        <div class="pros-box">
+          <div class="stat-label" style="color:#66dd99;margin-bottom:8px;">Voordelen</div>
           ${pros.map(p => `<div style="display:flex;gap:6px;margin-bottom:5px;"><span style="color:#55c080;font-size:13px;flex-shrink:0;">✓</span><span style="font-size:12px;font-weight:600;">${p.tekst}</span></div>`).join('')}
         </div>
-        <div style="background:var(--bg2);border:1px solid rgba(220,50,50,0.4);border-radius:10px;padding:12px;box-shadow:0 0 8px rgba(220,50,50,0.1);">
-          <div style="font-size:10px;font-weight:700;color:#e05555;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Nadelen</div>
+        <div class="cons-box">
+          <div class="stat-label" style="color:#ff6b6b;margin-bottom:8px;">Nadelen</div>
           ${cons.map(c => `<div style="display:flex;gap:6px;margin-bottom:5px;"><span style="color:#e05555;font-size:13px;flex-shrink:0;">⚠</span><span style="font-size:12px;font-weight:600;">${c.tekst}</span></div>`).join('')}
         </div>
       </div>` : ''}
