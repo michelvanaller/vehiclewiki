@@ -2093,44 +2093,28 @@ renderMerken('all');
   }
 
 
+  const STER_IMGS = {
+    '💎': 'https://adwxdumziwfqvklwjnvp.supabase.co/storage/v1/object/public/fotos/ster_diamant.png',
+    '🥇': 'https://adwxdumziwfqvklwjnvp.supabase.co/storage/v1/object/public/fotos/ster_goud.png',
+    '🥈': 'https://adwxdumziwfqvklwjnvp.supabase.co/storage/v1/object/public/fotos/ster_zilver.png',
+    '🥉': 'https://adwxdumziwfqvklwjnvp.supabase.co/storage/v1/object/public/fotos/ster_brons.png',
+    '⭐': 'https://adwxdumziwfqvklwjnvp.supabase.co/storage/v1/object/public/fotos/ster_brons.png',
+  };
+
   function maakSterSVG(kleur, grootte, label, sublabel) {
-    const kleuren = {
-      '💎': {grad1:'#a8edea', grad2:'#fed6e3', glow:'#a8edea', ring:'#fff'},
-      '🥇': {grad1:'#FFD700', grad2:'#FF8C00', glow:'#FFD700', ring:'#FFA500'},
-      '🥈': {grad1:'#C0C0C0', grad2:'#808080', glow:'#C0C0C0', ring:'#A0A0A0'},
-      '🥉': {grad1:'#CD7F32', grad2:'#8B4513', glow:'#CD7F32', ring:'#A0522D'},
-      '⭐': {grad1:'#FFE066', grad2:'#FFA500', glow:'#FFE066', ring:'#FFD700'},
-    };
-    const k = kleuren[kleur] || kleuren['⭐'];
+    const src = STER_IMGS[kleur] || STER_IMGS['⭐'];
     const s = grootte || 120;
-    const id = 'sg' + Math.random().toString(36).substr(2,6);
-    return `<svg width="${s}" height="${s}" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <radialGradient id="g${id}" cx="40%" cy="30%">
-          <stop offset="0%" stop-color="${k.grad1}"/>
-          <stop offset="100%" stop-color="${k.grad2}"/>
-        </radialGradient>
-        <filter id="f${id}" x="-30%" y="-30%" width="160%" height="160%">
-          <feGaussianBlur stdDeviation="3" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-        <filter id="glow${id}">
-          <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-          <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-      </defs>
-      <!-- Glow ring -->
-      <circle cx="60" cy="60" r="54" fill="none" stroke="${k.grad1}" stroke-width="2" opacity="0.4" filter="url(#glow${id})"/>
-      <!-- Ster shape -->
-      <polygon points="60,8 74,45 113,45 82,68 93,105 60,83 27,105 38,68 7,45 46,45"
-        fill="url(#g${id})" filter="url(#f${id})"
-        stroke="${k.ring}" stroke-width="1.5"/>
-      <!-- Shine -->
-      <ellipse cx="50" cy="38" rx="12" ry="7" fill="white" opacity="0.25" transform="rotate(-20,50,38)"/>
-      ${label ? `<text x="60" y="64" text-anchor="middle" font-family="Barlow,sans-serif" font-weight="900" font-size="${label.length > 10 ? '7' : '8'}" fill="#000" opacity="0.85">${label}</text>` : ''}
-      ${sublabel ? `<text x="60" y="74" text-anchor="middle" font-family="Barlow,sans-serif" font-weight="700" font-size="6" fill="#000" opacity="0.7">${sublabel}</text>` : ''}
-    </svg>`;
+    const fontSize1 = label && label.length > 10 ? '11px' : '13px';
+    const fontSize2 = '10px';
+    return `<div style="position:relative;width:${s}px;height:${s}px;display:inline-flex;align-items:center;justify-content:center;">
+      <img src="${src}" style="width:${s}px;height:${s}px;object-fit:contain;" />
+      <div style="position:absolute;text-align:center;padding:0 8px;pointer-events:none;">
+        ${label ? `<div style="font-size:${fontSize1};font-weight:900;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.9),0 0 6px rgba(0,0,0,0.8);line-height:1.2;">${label}</div>` : ''}
+        ${sublabel ? `<div style="font-size:${fontSize2};font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.9);line-height:1.2;">${sublabel}</div>` : ''}
+      </div>
+    </div>`;
   }
+
   function bepaalSterKleur(pk, zeldzaam, legendarisch) {
     if (legendarisch) return '💎';
     if (zeldzaam || pk >= 200) return '🥇';
