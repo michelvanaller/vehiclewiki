@@ -1652,7 +1652,9 @@ async function openSpecs(uid) {
           <button class="submit-btn" onclick="voegErvaringToe(${uid})">Toevoegen</button>
         </div>
       </div>
-} catch(e) { document.getElementById('spec-content').innerHTML = error(e); }
+`;
+
+  } catch(e) { document.getElementById('spec-content').innerHTML = error(e); }
 }
 
 async function stemOp(eid, btn) {
