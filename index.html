@@ -1540,114 +1540,119 @@ async function openSpecs(uid) {
         _fotos = fotos;
         _fotoIndex = 0;
         if (fotos.length > 0) {
-          return `<div style="position:relative;width:100%;height:220px;border-radius:var(--radius-lg);overflow:hidden;margin-bottom:14px;border-bottom:3px solid var(--merk-accent,#DAA520);" id="foto-gallery">
-            <img id="foto-main" src="${fotos[0]}" style="width:100%;height:100%;object-fit:contain;background:#111;transition:opacity 0.15s;" onerror="this.style.display='none'">
+          return `<div style="position:relative;width:100%;height:240px;border-radius:12px;overflow:hidden;margin-bottom:16px;" id="foto-gallery">
+            <img id="foto-main" src="${fotos[0]}" style="width:100%;height:100%;object-fit:cover;display:block;" />
             ${fotos.length > 1 ? `
-            <button onclick="fotoVorige()" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.5);border:none;color:#fff;font-size:20px;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;">‹</button>
-            <button onclick="fotoVolgende()" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.5);border:none;color:#fff;font-size:20px;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;">›</button>
-            <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:5px;">
-              ${fotos.map((f,i) => `<div id="foto-dot-${i}" style="width:8px;height:8px;border-radius:50%;background:${i===0?'#fff':'rgba(255,255,255,0.4)'};cursor:pointer;" onclick="fotoGaNaar(${i})"></div>`).join('')}
-            </div>` : ''}
-          </div>
-          <div style="margin-bottom:14px;">
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:700;color:var(--text);">${u.naam}</div>
-            <div style="font-size:12px;color:var(--text2);margin-top:2px;">${u.jaar} · ${u.prijs && !isNaN(parseInt(u.prijs)) ? '€ '+parseInt(u.prijs).toLocaleString('nl') : u.prijs||''}</div>
-          </div>`;
-        } else {
-          return `<div class="foto-placeholder" onclick="document.getElementById('foto-upload-form-${u.model_id}').classList.toggle('open')">
-            <div style="font-size:32px;">📷</div>
-            <div style="font-size:14px;font-weight:600;color:var(--text);">Nog geen foto beschikbaar</div>
-            <div style="font-size:12px;color:var(--text2);">Heb jij een foto van dit voertuig?</div>
-            <div style="font-size:12px;color:var(--merk-accent,#DAA520);font-weight:600;margin-top:4px;">📤 Foto voorstellen →</div>
-          </div>
-          <div id="foto-upload-form-${u.model_id}" class="foto-upload-form">
-            <div style="font-size:12px;font-weight:600;color:#3498db;margin-bottom:8px;">📷 Foto voorstellen voor ${huidigModel?.naam||''}</div>
-            <div style="font-size:11px;color:var(--text3);margin-bottom:8px;">Gebruik alleen eigen fotos of Wikimedia Commons.</div>
-            <div class="add-form" id="foto-form-${u.model_id}">
-              <input id="foto-naam-${u.model_id}" placeholder="Jouw naam (optioneel)" />
-              <textarea id="foto-opm-${u.model_id}" placeholder="Bron van de foto..." style="height:48px;"></textarea>
-              <input type="file" id="foto-bestand-${u.model_id}" accept="image/*" style="margin-bottom:7px;" />
-              <button class="submit-btn" onclick="dienFotoVoorstelIn(${u.model_id},'${(huidigModel?.naam||'').replace(/'/g,'')}')">Foto indienen</button>
-              <button class="cancel-btn" onclick="document.getElementById('foto-upload-form-${u.model_id}').classList.remove('open')">Annuleren</button>
-            </div>
-          </div>
-          <div style="margin-bottom:14px;">
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:700;color:var(--text);">${u.naam}</div>
-            <div style="font-size:12px;color:var(--text2);margin-top:2px;">${u.jaar} · ${u.prijs && !isNaN(parseInt(u.prijs)) ? '€ '+parseInt(u.prijs).toLocaleString('nl') : u.prijs||''}</div>
+            <button onclick="prevFoto()" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.6);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;">‹</button>
+            <button onclick="nextFoto()" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.6);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;">›</button>
+            <div style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.6);color:#fff;font-size:11px;padding:3px 8px;border-radius:10px;">${fotos.length} foto's</div>` : ''}
           </div>`;
         }
+        return `<div style="width:100%;height:160px;border-radius:12px;background:linear-gradient(135deg,var(--bg2),var(--bg3));display:flex;align-items:center;justify-content:center;margin-bottom:16px;border:1px solid var(--border);">
+          <div style="text-align:center;">
+            <div style="font-size:40px;margin-bottom:8px;">📷</div>
+            <label style="cursor:pointer;font-size:12px;color:var(--accent);font-weight:600;">
+              + Foto toevoegen
+              <input type="file" accept="image/*" style="display:none;" onchange="uploadFoto(this,${u.model_id})">
+            </label>
+          </div>
+        </div>`;
       })()}
-      <div style="margin-bottom:12px;">
-        ${u.cilinders && u.cilinderinhoud ? `<span class="spec-badge">${u.cilinders} · ${u.cilinderinhoud}cc</span>` : ''}
-        ${u.brandstof ? `<span class="spec-badge" style="background:${isElektrisch ? '#3498db20' : 'rgba(204,0,0,0.15)'};color:${isElektrisch ? '#2980b9' : '#CC0000'};border-color:${isElektrisch ? '#3498db40' : 'rgba(204,0,0,0.3)'};">${u.brandstof}</span>` : ''}
-        ${u.carrosserie ? `<span class="spec-badge">${u.carrosserie}</span>` : ''}
-        ${huidigGen?.huidig ? '<span class="spec-badge" style="background:#27AE6015;color:#27AE60;border-color:#27AE6030;">Huidige generatie</span>' : ''}
-        ${u.special ? '<span class="spec-badge" style="background:rgba(218,165,32,0.15);color:#B8860B;border-color:rgba(218,165,32,0.3);">Speciale editie</span>' : ''}
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
-        <button style="background:none;border:1px solid var(--merk-accent,#DAA520);border-radius:8px;padding:6px 13px;font-size:12px;color:var(--merk-accent,#DAA520);cursor:pointer;font-family:'Barlow',sans-serif;" onclick="voegToeAanVergelijking(${uid},'${u.naam.replace(/'/g,'')}')">+ Vergelijken</button>
-        <button style="background:none;border:1px solid #e67e22;border-radius:8px;padding:6px 13px;font-size:12px;color:#e67e22;cursor:pointer;font-family:'Barlow',sans-serif;" onclick="document.getElementById('rf').classList.toggle('open')">Fout melden</button>
-      </div>
-      <div class="report-form" id="rf">
-        <div style="font-size:12px;font-weight:600;color:#e67e22;margin-bottom:8px;">Fout melden voor ${u.naam}</div>
-        <div class="add-form">
-          <select id="r-type"><option>Verkeerde spec</option><option>Ontbrekende info</option><option>Anders</option></select>
-          <textarea id="r-tekst" placeholder="Beschrijf wat er niet klopt..."></textarea>
-          <button class="submit-btn" onclick="stuurFoutmelding(${uid})">Versturen</button>
-          <button class="cancel-btn" onclick="document.getElementById('rf').classList.remove('open')">Annuleren</button>
+
+      <!-- Titel + badges -->
+      <div style="margin-bottom:16px;">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;">
+          <h2 style="font-size:22px;font-weight:900;margin:0;">${u.naam}</h2>
+          ${huidigGen?.huidig ? '<span style="background:#27AE60;color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;">HUIDIG MODEL</span>' : ''}
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <span style="font-size:13px;color:var(--text3);">${u.jaar || ''}</span>
+          ${u.prijs ? `<span style="font-size:13px;color:var(--text3);">· Vanaf € ${u.prijs.toLocaleString('nl-NL')}</span>` : ''}
+          <button onclick="vergelijkToevoegen()" style="background:var(--bg3);border:1px solid var(--border);color:var(--text2);padding:4px 10px;border-radius:20px;cursor:pointer;font-size:11px;font-weight:600;">+ Vergelijk</button>
+          <button onclick="meldFout(${u.id})" style="background:var(--bg3);border:1px solid var(--border);color:var(--text2);padding:4px 10px;border-radius:20px;cursor:pointer;font-size:11px;">Fout melden</button>
         </div>
       </div>
-      <div class="sec" style="background:linear-gradient(90deg,rgba(232,56,61,0.15),transparent);border-left:3px solid #e8383d;padding-left:10px;border-radius:0;">Prestaties</div>
-      <div class="spec-grid">
-        ${prestCard('Vermogen', u.pk ? u.pk + ' pk / ' + kw + ' kW' : null)}
-        ${prestCard('Koppel', u.nm, 'Nm')}
-        ${prestCard('Topsnelheid', u.topsnelheid, 'km/h')}
-        ${prestCard('0-100 km/h', u.nul100, 's')}
-        ${u.actieradius ? prestCard('Actieradius', u.actieradius, 'km') : ''}
-      </div>
-      <div class="sec" style="background:linear-gradient(90deg,rgba(218,165,32,0.15),transparent);border-left:3px solid #DAA520;padding-left:10px;border-radius:0;">Motor & Aandrijving</div>
-      <div class="spec-grid">
-        ${u.cilinderinhoud ? motorCard('Cilinderinhoud', u.cilinderinhoud, 'cc') : ''}
-        ${u.cilinders ? motorCard('Cilinders', u.cilinders) : ''}
-        ${u.brandstof ? motorCard('Brandstof', u.brandstof) : ''}
-        ${u.aandrijving ? motorCard('Aandrijving', u.aandrijving) : ''}
-        ${u.transmissie ? motorCard('Transmissie', u.transmissie) : ''}
-        ${u.accu_capaciteit ? motorCard('Accu capaciteit', u.accu_capaciteit, 'kWh') : ''}
-        ${u.accu_laadtijd ? motorCard('Laadtijd AC', u.accu_laadtijd) : ''}
-        ${u.accu_laadsnelheid ? motorCard('Laadsnelheid DC', u.accu_laadsnelheid, 'kW') : ''}
-      </div>
-      <div class="sec" style="background:linear-gradient(90deg,rgba(52,152,219,0.15),transparent);border-left:3px solid #3498db;padding-left:10px;border-radius:0;">Afmetingen & Gewicht</div>
-      <div class="spec-grid">
-        ${afmCard('Gewicht', u.gewicht, 'kg')}
-        ${u.carrosserie ? afmCard('Carrosserie', u.carrosserie) : ''}
-        ${u.deuren ? afmCard('Deuren', u.deuren) : ''}
-        ${u.stoelen ? afmCard('Zitplaatsen', u.stoelen) : ''}
-        ${u.kofferbak ? afmCard('Kofferbak', u.kofferbak, 'liter') : ''}
-        ${u.trekgewicht_geremd ? afmCard('Trekgewicht geremd', u.trekgewicht_geremd, 'kg') : ''}
-        ${u.trekgewicht_ongeremd ? afmCard('Trekgewicht ongeremd', u.trekgewicht_ongeremd, 'kg') : ''}
-      </div>
-      <div class="sec" style="background:linear-gradient(90deg,rgba(39,174,96,0.15),transparent);border-left:3px solid #27AE60;padding-left:10px;border-radius:0;">Verbruik & Milieu</div>
-      <div class="spec-grid">
-        ${u.verbruik ? milieuCard('Verbruik', u.verbruik, isElektrisch ? 'kWh/100km' : 'L/100km') : ''}
-        ${u.co2_uitstoot ? milieuCard('CO2 uitstoot', u.co2_uitstoot, 'g/km') : milieuCard('CO2 uitstoot', isElektrisch ? '0' : null, 'g/km')}
-        ${u.energielabel ? milieuCard('Energielabel', u.energielabel) : ''}
-        ${milieuCard('Wegenbelasting', '€'+wbLaag+' – €'+wbHoog, '/kwartaal')}
-      </div>
-      <p class="beschrijving">${u.beschrijving||''}</p>
-      <div class="sec">Voordelen</div>
-      ${pros.map(p=>`<div class="pro-con"><div class="pro-dot" style="background:#27AE60;"></div><span>${p.tekst}</span></div>`).join('')}
-      <div class="sec">Nadelen</div>
-      ${cons.map(c=>`<div class="pro-con"><div class="pro-dot" style="background:#e67e22;"></div><span>${c.tekst}</span></div>`).join('')}
-      <div class="sec">Ervaringen (${ervaringen.length})</div>
-      <div id="erv-list">${ervaringHtml}</div>
-      <div class="add-form" style="margin-top:12px;">
-        <div class="sec">Voeg jouw ervaring toe</div>
-        <input id="c-naam" placeholder="Jouw naam"/>
-        <textarea id="c-tekst" placeholder="Jouw ervaring..."></textarea>
-        <button class="submit-btn" onclick="voegErvaringToe(${uid})">Toevoegen</button>
-      </div>`;
 
-  } catch(e) { document.getElementById('spec-content').innerHTML = error(e); }
+      <!-- 4 grote stat blokken -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+        <div style="background:var(--bg2);border:1px solid rgba(220,50,50,0.5);border-radius:10px;padding:12px;box-shadow:0 0 12px rgba(220,50,50,0.15);">
+          <div style="font-size:10px;font-weight:700;color:#e05555;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;">Vermogen</div>
+          <div style="font-size:22px;font-weight:900;color:#ff6b6b;">${u.pk || '—'} <span style="font-size:13px;font-weight:600;">pk</span></div>
+          <div style="font-size:11px;color:var(--text3);">${u.pk ? Math.round(u.pk * 0.7355) + ' kW' : ''}</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid rgba(220,150,50,0.5);border-radius:10px;padding:12px;box-shadow:0 0 12px rgba(220,150,50,0.15);">
+          <div style="font-size:10px;font-weight:700;color:#e0a055;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;">Koppel</div>
+          <div style="font-size:22px;font-weight:900;color:#ffb347;">${u.nm || '—'} <span style="font-size:13px;font-weight:600;">Nm</span></div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid rgba(50,150,220,0.5);border-radius:10px;padding:12px;box-shadow:0 0 12px rgba(50,150,220,0.15);">
+          <div style="font-size:10px;font-weight:700;color:#5599e0;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;">Topsnelheid</div>
+          <div style="font-size:22px;font-weight:900;color:#66aaff;">${u.topsnelheid || '—'} <span style="font-size:13px;font-weight:600;">km/h</span></div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid rgba(50,200,100,0.5);border-radius:10px;padding:12px;box-shadow:0 0 12px rgba(50,200,100,0.15);">
+          <div style="font-size:10px;font-weight:700;color:#55c080;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;">0-100 km/u</div>
+          <div style="font-size:22px;font-weight:900;color:#66dd99;">${u.nul100 || '—'} <span style="font-size:13px;font-weight:600;">s</span></div>
+        </div>
+      </div>
+
+      <!-- Specs grid -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+        ${u.cilinderinhoud ? `<div style="background:var(--bg2);border:1px solid rgba(218,165,32,0.4);border-radius:10px;padding:10px;box-shadow:0 0 8px rgba(218,165,32,0.1);">
+          <div style="font-size:9px;font-weight:700;color:#DAA520;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:3px;">Cilinderinhoud</div>
+          <div style="font-size:18px;font-weight:800;">${u.cilinderinhoud} <span style="font-size:11px;color:var(--text3);">cc</span></div>
+        </div>` : ''}
+        ${u.cilinders ? `<div style="background:var(--bg2);border:1px solid rgba(218,165,32,0.4);border-radius:10px;padding:10px;box-shadow:0 0 8px rgba(218,165,32,0.1);">
+          <div style="font-size:9px;font-weight:700;color:#DAA520;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:3px;">Cilinders</div>
+          <div style="font-size:18px;font-weight:800;">${u.cilinders === 1 ? '1' : u.cilinders === 2 ? 'V2 / Twin' : u.cilinders === 3 ? 'Triple' : u.cilinders === 4 ? 'V4 / Inline-4' : u.cilinders === 6 ? 'Inline-6' : u.cilinders}</div>
+        </div>` : ''}
+        ${u.gewicht ? `<div style="background:var(--bg2);border:1px solid rgba(218,165,32,0.4);border-radius:10px;padding:10px;box-shadow:0 0 8px rgba(218,165,32,0.1);">
+          <div style="font-size:9px;font-weight:700;color:#DAA520;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:3px;">Gewicht</div>
+          <div style="font-size:18px;font-weight:800;">${u.gewicht} <span style="font-size:11px;color:var(--text3);">kg</span></div>
+        </div>` : ''}
+        ${u.brandstof ? `<div style="background:var(--bg2);border:1px solid rgba(218,165,32,0.4);border-radius:10px;padding:10px;box-shadow:0 0 8px rgba(218,165,32,0.1);">
+          <div style="font-size:9px;font-weight:700;color:#DAA520;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:3px;">Brandstof</div>
+          <div style="font-size:16px;font-weight:800;">${u.brandstof}</div>
+        </div>` : ''}
+      </div>
+
+      <!-- Verbruik + Wegenbelasting -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+        ${u.verbruik ? `<div style="background:var(--bg2);border:1px solid rgba(50,200,100,0.4);border-radius:10px;padding:10px;box-shadow:0 0 8px rgba(50,200,100,0.1);">
+          <div style="font-size:9px;font-weight:700;color:#55c080;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:3px;">Verbruik</div>
+          <div style="font-size:18px;font-weight:800;color:#66dd99;">${u.verbruik} <span style="font-size:11px;color:var(--text3);">L/100km</span></div>
+        </div>` : ''}
+        <div style="background:var(--bg2);border:1px solid rgba(50,200,100,0.4);border-radius:10px;padding:10px;box-shadow:0 0 8px rgba(50,200,100,0.1);">
+          <div style="font-size:9px;font-weight:700;color:#55c080;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:3px;">Wegenbelasting</div>
+          <div style="font-size:16px;font-weight:800;color:#66dd99;">€${wbLaag} – €${wbHoog} <span style="font-size:10px;color:var(--text3);">/ kwartaal</span></div>
+        </div>
+      </div>
+
+      <!-- Pros / Cons -->
+      ${pros.length || cons.length ? `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+        <div style="background:var(--bg2);border:1px solid rgba(50,200,100,0.4);border-radius:10px;padding:12px;box-shadow:0 0 8px rgba(50,200,100,0.1);">
+          <div style="font-size:10px;font-weight:700;color:#55c080;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Voordelen</div>
+          ${pros.map(p => `<div style="display:flex;gap:6px;margin-bottom:5px;"><span style="color:#55c080;font-size:13px;flex-shrink:0;">✓</span><span style="font-size:12px;font-weight:600;">${p.tekst}</span></div>`).join('')}
+        </div>
+        <div style="background:var(--bg2);border:1px solid rgba(220,50,50,0.4);border-radius:10px;padding:12px;box-shadow:0 0 8px rgba(220,50,50,0.1);">
+          <div style="font-size:10px;font-weight:700;color:#e05555;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Nadelen</div>
+          ${cons.map(c => `<div style="display:flex;gap:6px;margin-bottom:5px;"><span style="color:#e05555;font-size:13px;flex-shrink:0;">⚠</span><span style="font-size:12px;font-weight:600;">${c.tekst}</span></div>`).join('')}
+        </div>
+      </div>` : ''}
+
+      <!-- Beschrijving -->
+      ${u.beschrijving ? `<div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:12px;font-size:13px;color:var(--text2);line-height:1.6;">${u.beschrijving}</div>` : ''}
+
+      <!-- Ervaringen -->
+      <div style="margin-bottom:8px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);">Ervaringen</div>
+        ${ervaringHtml}
+        <div style="margin-top:12px;">
+          <input id="erv-naam" placeholder="Jouw naam" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:9px 11px;font-size:13px;margin-bottom:8px;box-sizing:border-box;" />
+          <textarea id="erv-tekst" placeholder="Deel je ervaring..." rows="3" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:9px 11px;font-size:13px;resize:none;box-sizing:border-box;"></textarea>
+          <button class="submit-btn" onclick="voegErvaringToe(${uid})">Toevoegen</button>
+        </div>
+      </div>
+} catch(e) { document.getElementById('spec-content').innerHTML = error(e); }
 }
 
 async function stemOp(eid, btn) {
