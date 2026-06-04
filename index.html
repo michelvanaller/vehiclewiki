@@ -2518,6 +2518,78 @@ renderMerken('all');
     }
   }
 
+
+  // ===== AI WEETJE GENERATOR =====
+  let aiGeneraties = [];
+
+  async function initAIMerkSelect() {
+    const sel = document.getElementById('ai-merk-select');
+    if (!sel || sel.options.length > 1) return;
+    try {
+      const merken = await db('merken', 'select=id,naam&order=naam');
+      if (!merken) return;
+      merken.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m.id;
+        opt.textContent = m.naam;
+        sel.appendChild(opt);
+      });
+    } catch(e) { console.log('Merken fout:', e); }
+  }
+
+  async function laadAIMerkGeneraties() {
+    const merkId = document.getElementById('ai-merk-select').value;
+    if (!merkId) { alert('Kies eerst een merk'); return; }
+    const voortgang = document.getElementById('ai-voortgang');
+    voortgang.style.display = 'block';
+    voortgang.innerHTML = 'Laden...';
+    try {
+      const merkRes = await db('merken', 'select=naam&id=eq.' + merkId);
+      const merkNaam = merkRes?.[0]?.naam || '';
+      const famRes = await db('families', 'select=id&merk_id=eq.' + merkId);
+      const famIds = famRes ? famRes.map(f => f.id) : [];
+      if (famIds.length === 0) { voortgang.innerHTML = 'Geen families gevonden'; return; }
+      const genRes = await db('generaties', 'select=id,naam,family_id&family_id=in.(' + famIds.join(',') + ')&weetje=is.null&order=id');
+      aiGeneraties = (genRes || []).map(g => ({...g, merkNaam, familieNaam: famRes.find(f=>f.id===g.family_id)?.naam||''}));
+      voortgang.innerHTML = aiGeneraties.length + ' generaties zonder weetje voor ' + merkNaam + '. Klik Start.';
+    } catch(e) { voortgang.innerHTML = 'Fout: ' + e.message; }
+  }
+
+  async function startAIWeetjes() {
+    if (aiGeneraties.length === 0) { alert('Laad eerst generaties'); return; }
+    const voortgang = document.getElementById('ai-voortgang');
+    for (let i = 0; i < aiGeneraties.length; i++) {
+      const gen = aiGeneraties[i];
+      voortgang.innerHTML = '\u23F3 ' + (i+1) + '/' + aiGeneraties.length + ': ' + gen.merkNaam + ' ' + gen.naam + '...';
+      try {
+        const resp = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-20250514',
+            max_tokens: 150,
+            messages: [{role:'user', content:'Schrijf een kort interessant weetje (max 2 zinnen) over de ' + gen.merkNaam + ' ' + gen.naam + '. Alleen het weetje in het Nederlands, geen inleiding.'}]
+          })
+        });
+        const data = await resp.json();
+        const weetje = data.content?.[0]?.text?.trim();
+        if (weetje) {
+          await fetch('https://adwxdumziwfqvklwjnvp.supabase.co/rest/v1/generaties?id=eq.' + gen.id, {
+            method: 'PATCH',
+            headers: {'apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkd3hkdW16aXdmcXZrbHdqbnZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MDA1NDUsImV4cCI6MjA5MDQ3NjU0NX0.5s2boF_P5gH7UTG9x8f9e4Lyz2l4CJ5VClNw7DHXOO4','Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkd3hkdW16aXdmcXZrbHdqbnZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MDA1NDUsImV4cCI6MjA5MDQ3NjU0NX0.5s2boF_P5gH7UTG9x8f9e4Lyz2l4CJ5VClNw7DHXOO4','Content-Type':'application/json','Prefer':'return=minimal'},
+            body: JSON.stringify({weetje})
+          });
+          voortgang.innerHTML += '<br>\u2705 ' + gen.naam + ': ' + weetje.substring(0,80) + '...';
+          voortgang.scrollTop = voortgang.scrollHeight;
+        }
+      } catch(e) { voortgang.innerHTML += '<br>\u274C ' + gen.naam + ': ' + e.message; }
+      await new Promise(r => setTimeout(r, 800));
+    }
+    voortgang.innerHTML += '<br><br>\uD83C\uDF89 Klaar!';
+    aiGeneraties = [];
+  }
+  // ===== EINDE AI WEETJE GENERATOR =====
+
 </script>
 </body>
 </html>
