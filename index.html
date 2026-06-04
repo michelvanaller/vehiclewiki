@@ -1578,7 +1578,7 @@ async function openSpecs(uid) {
   goTo('s-specs');
 
   try {
-    const [uitvArr, proscons, ervaringen, genData] = await Promise.all([
+    const [uitvArr, proscons, genData, ervaringen] = await Promise.all([
       db('uitvoeringen', `id=eq.${uid}&select=*`),
       db('pros_cons', `generatie_id=eq.${huidigGen?.id || 0}&order=type,id`),
       db('generaties', `id=eq.${huidigGen?.id || 0}&select=beschrijving,weetje`),
@@ -1782,8 +1782,7 @@ async function openSpecs(uid) {
         </div>
         <p style="font-size:13px;color:#aaffcc;line-height:1.7;margin:0;">${huidigGen.weetje}</p>
       </div>` : ''}
-      <!-- Beschrijving uitvoering -->
-      ${u.beschrijving ? `<div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px;font-size:13px;color:var(--text2);line-height:1.7;font-style:italic;">${u.beschrijving}</div>` : ''}
+
 
       <!-- Ervaringen -->
       <div style="margin-bottom:8px;">
