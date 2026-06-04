@@ -1578,13 +1578,17 @@ async function openSpecs(uid) {
   goTo('s-specs');
 
   try {
-    const [uitvArr, proscons, ervaringen] = await Promise.all([
+    const [uitvArr, proscons, ervaringen, genData] = await Promise.all([
       db('uitvoeringen', `id=eq.${uid}&select=*`),
       db('pros_cons', `generatie_id=eq.${huidigGen?.id || 0}&order=type,id`),
+      db('generaties', `id=eq.${huidigGen?.id || 0}&select=beschrijving,weetje`),
       db('ervaringen', `uitvoering_id=eq.${uid}&order=stemmen.desc`)
     ]);
 
     const u = uitvArr[0];
+    if (genData?.[0]) {
+      huidigGen = {...(huidigGen||{}), beschrijving: genData[0].beschrijving, weetje: genData[0].weetje};
+    }
 
     if (u.model_id) {
       try {
@@ -1764,8 +1768,22 @@ async function openSpecs(uid) {
         </div>
       </div>` : ''}
 
-      <!-- Beschrijving -->
-      ${u.beschrijving ? `<div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px;font-size:14px;color:var(--text2);line-height:1.7;font-style:italic;">${u.beschrijving}</div>` : ''}
+      <!-- Verhaal + Weetje per generatie -->
+      ${huidigGen?.beschrijving ? `
+      <div style="position:relative;background:linear-gradient(135deg,#0d0d1a,#0a0a12);border:1px solid rgba(100,100,255,0.4);border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 0 20px rgba(80,80,255,0.15),inset 0 1px 0 rgba(150,150,255,0.1);">
+        <div style="font-size:9px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#8888ff;margin-bottom:8px;">Over dit model</div>
+        <p style="font-size:13px;color:#ddddff;line-height:1.8;margin:0;font-style:italic;">${huidigGen.beschrijving}</p>
+      </div>` : ''}
+      ${huidigGen?.weetje ? `
+      <div style="position:relative;background:linear-gradient(135deg,#0d1a0d,#0a120a);border:1px solid rgba(50,200,100,0.4);border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 0 20px rgba(50,200,100,0.15),inset 0 1px 0 rgba(100,255,150,0.1);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <span style="font-size:16px;">💡</span>
+          <div style="font-size:9px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#66dd99;">Weetje</div>
+        </div>
+        <p style="font-size:13px;color:#aaffcc;line-height:1.7;margin:0;">${huidigGen.weetje}</p>
+      </div>` : ''}
+      <!-- Beschrijving uitvoering -->
+      ${u.beschrijving ? `<div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px;font-size:13px;color:var(--text2);line-height:1.7;font-style:italic;">${u.beschrijving}</div>` : ''}
 
       <!-- Ervaringen -->
       <div style="margin-bottom:8px;">
