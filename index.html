@@ -517,6 +517,20 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
       <button onclick="laadEvenementen()" style="background:none;border:1px solid var(--merk-accent,#DAA520);border-radius:8px;padding:7px 16px;font-size:12px;color:var(--merk-accent,#DAA520);cursor:pointer;font-family:'Barlow',sans-serif;margin-bottom:10px;">Laad openstaande evenementen</button>
       <div id="admin-evenementen"></div>
     </div>
+
+    <!-- AI Weetje Generator -->
+    <div style="background:var(--bg2);border:1px solid rgba(100,100,255,0.4);border-radius:var(--radius-lg);padding:14px;margin-bottom:12px;box-shadow:0 0 15px rgba(80,80,255,0.1);">
+      <div style="font-size:12px;font-weight:700;color:#8888ff;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">⚡ AI Weetje Generator</div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:12px;">Genereert automatisch weetjes voor alle generaties zonder weetje. Werkt per merk - kies een merk om te starten.</div>
+      <select id="ai-merk-select" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px;margin-bottom:10px;font-size:13px;">
+        <option value="">-- Kies een merk --</option>
+      </select>
+      <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <button onclick="laadAIMerkGeneraties()" style="flex:1;background:var(--bg3);border:1px solid rgba(100,100,255,0.4);color:#8888ff;border-radius:8px;padding:9px;font-weight:700;cursor:pointer;font-size:12px;">Laad generaties</button>
+        <button onclick="startAIWeetjes()" style="flex:1;background:rgba(100,100,255,0.2);border:1px solid rgba(100,100,255,0.6);color:#aaaaff;border-radius:8px;padding:9px;font-weight:700;cursor:pointer;font-size:12px;">▶ Start genereren</button>
+      </div>
+      <div id="ai-voortgang" style="display:none;background:var(--bg3);border-radius:8px;padding:10px;font-size:12px;color:var(--text2);line-height:1.6;max-height:300px;overflow-y:auto;"></div>
+    </div>
   </div>
   <div id="ht-kenteken" style="display:none;">
     <div style="margin-bottom:16px;">
