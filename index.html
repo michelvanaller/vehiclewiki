@@ -799,7 +799,7 @@ function goTo(id) {
 }
 
 function setHomeTab(tab, el) {
-    if (tab === 'admin') { setTimeout(initAIMerkSelect, 100); }
+    if (tab === 'admin') { setTimeout(() => { if(typeof initAIMerkSelect==='function') initAIMerkSelect(); }, 200); }
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
   document.getElementById('ht-browse').style.display = tab==='browse' ? 'block' : 'none';
