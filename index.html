@@ -666,10 +666,13 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
       <button class="fb active" onclick="filterMerk('all',this)">Alle</button>
       <button class="fb" onclick="filterMerkCategorie('motor');this.classList.add('active')">🏍 Motoren</button>
       <button class="fb" onclick="filterMerkCategorie('auto');this.classList.add('active')">🚗 Auto's</button>
-      <button class="fb" onclick="filterMerk('italiaans',this)">Italiaans</button>
-      <button class="fb" onclick="filterMerk('japans',this)">Japans</button>
-      <button class="fb" onclick="filterMerk('amerikaans',this)">Amerikaans</button>
-      <button class="fb" onclick="filterMerk('duits',this)">Duits</button>
+      <button class="fb" onclick="filterMerkCombo('auto','brits',this)">🇬🇧 Brits</button>
+      <button class="fb" onclick="filterMerkCombo('auto','duits',this)">🇩🇪 Duits</button>
+      <button class="fb" onclick="filterMerkCombo('auto','italiaans',this)">🇮🇹 Italiaans</button>
+      <button class="fb" onclick="filterMerkCombo('auto','japans',this)">🇯🇵 Japans</button>
+      <button class="fb" onclick="filterMerkCombo('auto','amerikaans',this)">🇺🇸 Amerikaans</button>
+      <button class="fb" onclick="filterMerkCombo('auto','koreaans',this)">🇰🇷 Koreaans</button>
+      <button class="fb" onclick="filterMerkCombo('auto','frans',this)">🇫🇷 Frans</button>
       <button class="fb" onclick="filterMerk('brits',this)">Brits</button>
     </div>
     <div class="merk-grid" id="merk-grid"></div>
@@ -785,6 +788,67 @@ const merkenData = [
   {id:21, naam:'Zero', land:'amerikaans', bg:'#1A1A1A', fg:'#00FF00', logo:'ZERO', db:true, categorie:'motor'},
   {id:3, naam:'Ford', land:'amerikaans', bg:'#003478', fg:'#fff', logo:'FORD', db:true, categorie:'auto'},
   {id:4, naam:'Lamborghini', land:'italiaans', bg:'#1a1a1a', fg:'#FFD700', logo:'LAMBORGHINI', db:true, categorie:'auto'},
+  {id:22, naam:'Bugatti', land:'frans', bg:'#1a1a1a', fg:'#ffffff', logo:'BUGATTI', db:true, categorie:'auto'},
+  {id:23, naam:'Koenigsegg', land:'zweeds', bg:'#1a1a1a', fg:'#c0a060', logo:'KOENIGSEGG', db:true, categorie:'auto'},
+  {id:24, naam:'Pagani', land:'italiaans', bg:'#1a1a1a', fg:'#c0a060', logo:'PAGANI', db:true, categorie:'auto'},
+  {id:25, naam:'McLaren', land:'brits', bg:'#ff8000', fg:'#ffffff', logo:'McLAREN', db:true, categorie:'auto'},
+  {id:26, naam:'Ferrari', land:'italiaans', bg:'#cc0000', fg:'#ffffff', logo:'FERRARI', db:true, categorie:'auto'},
+  {id:27, naam:'Aston Martin', land:'brits', bg:'#004225', fg:'#ffffff', logo:'ASTON', db:true, categorie:'auto'},
+  {id:28, naam:'Rolls-Royce', land:'brits', bg:'#1a1a1a', fg:'#c0a060', logo:'RR', db:true, categorie:'auto'},
+  {id:29, naam:'Bentley', land:'brits', bg:'#1a1a1a', fg:'#c0a060', logo:'BENTLEY', db:true, categorie:'auto'},
+  {id:30, naam:'Maserati', land:'italiaans', bg:'#1a1a1a', fg:'#4a90d9', logo:'MASERATI', db:true, categorie:'auto'},
+  {id:31, naam:'Lotus', land:'brits', bg:'#005c2f', fg:'#ffcc00', logo:'LOTUS', db:true, categorie:'auto'},
+  {id:32, naam:'Porsche', land:'duits', bg:'#1a1a1a', fg:'#c0a060', logo:'PORSCHE', db:true, categorie:'auto'},
+  {id:33, naam:'Maybach', land:'duits', bg:'#1a1a1a', fg:'#c0a060', logo:'MAYBACH', db:true, categorie:'auto'},
+  {id:34, naam:'Alpina', land:'duits', bg:'#003087', fg:'#ffffff', logo:'ALPINA', db:true, categorie:'auto'},
+  {id:35, naam:'Wiesmann', land:'duits', bg:'#1a1a1a', fg:'#c0a060', logo:'WIESMANN', db:true, categorie:'auto'},
+  {id:36, naam:'TVR', land:'brits', bg:'#cc0000', fg:'#ffffff', logo:'TVR', db:true, categorie:'auto'},
+  {id:37, naam:'Morgan', land:'brits', bg:'#004225', fg:'#ffffff', logo:'MORGAN', db:true, categorie:'auto'},
+  {id:38, naam:'Corvette', land:'amerikaans', bg:'#cc0000', fg:'#ffffff', logo:'CORVETTE', db:true, categorie:'auto'},
+  {id:39, naam:'Dodge', land:'amerikaans', bg:'#cc0000', fg:'#ffffff', logo:'DODGE', db:true, categorie:'auto'},
+  {id:40, naam:'BMW', land:'duits', bg:'#1a1a1a', fg:'#4a90d9', logo:'BMW', db:true, categorie:'auto'},
+  {id:41, naam:'Mercedes-Benz', land:'duits', bg:'#1a1a1a', fg:'#c0c0c0', logo:'MERCEDES', db:true, categorie:'auto'},
+  {id:42, naam:'Audi', land:'duits', bg:'#1a1a1a', fg:'#c0c0c0', logo:'AUDI', db:true, categorie:'auto'},
+  {id:43, naam:'Jaguar', land:'brits', bg:'#1a1a1a', fg:'#c0a060', logo:'JAGUAR', db:true, categorie:'auto'},
+  {id:44, naam:'Land Rover', land:'brits', bg:'#1a1a1a', fg:'#c0a060', logo:'LANDROVER', db:true, categorie:'auto'},
+  {id:45, naam:'Lexus', land:'japans', bg:'#1a1a1a', fg:'#c0c0c0', logo:'LEXUS', db:true, categorie:'auto'},
+  {id:46, naam:'Tesla', land:'amerikaans', bg:'#cc0000', fg:'#ffffff', logo:'TESLA', db:true, categorie:'auto'},
+  {id:47, naam:'Polestar', land:'zweeds', bg:'#1a1a1a', fg:'#ffffff', logo:'POLESTAR', db:true, categorie:'auto'},
+  {id:48, naam:'Volvo', land:'zweeds', bg:'#1c3f6e', fg:'#ffffff', logo:'VOLVO', db:true, categorie:'auto'},
+  {id:49, naam:'Alfa Romeo', land:'italiaans', bg:'#cc0000', fg:'#ffffff', logo:'ALFA', db:true, categorie:'auto'},
+  {id:50, naam:'MINI', land:'brits', bg:'#1a1a1a', fg:'#c0a060', logo:'MINI', db:true, categorie:'auto'},
+  {id:51, naam:'Volkswagen', land:'duits', bg:'#1a3a6b', fg:'#ffffff', logo:'VW', db:true, categorie:'auto'},
+  {id:52, naam:'Skoda', land:'tsjechisch', bg:'#1a5c2a', fg:'#ffffff', logo:'SKODA', db:true, categorie:'auto'},
+  {id:53, naam:'SEAT', land:'spaans', bg:'#cc0000', fg:'#ffffff', logo:'SEAT', db:true, categorie:'auto'},
+  {id:54, naam:'CUPRA', land:'spaans', bg:'#1a1a1a', fg:'#c0a060', logo:'CUPRA', db:true, categorie:'auto'},
+  {id:55, naam:'Opel', land:'duits', bg:'#cc0000', fg:'#ffffff', logo:'OPEL', db:true, categorie:'auto'},
+  {id:56, naam:'Peugeot', land:'frans', bg:'#1a3a6b', fg:'#ffffff', logo:'PEUGEOT', db:true, categorie:'auto'},
+  {id:57, naam:'Renault', land:'frans', bg:'#ffcc00', fg:'#1a1a1a', logo:'RENAULT', db:true, categorie:'auto'},
+  {id:58, naam:'Citroen', land:'frans', bg:'#cc0000', fg:'#ffffff', logo:'CITROEN', db:true, categorie:'auto'},
+  {id:59, naam:'Fiat', land:'italiaans', bg:'#cc0000', fg:'#ffffff', logo:'FIAT', db:true, categorie:'auto'},
+  {id:60, naam:'Lancia', land:'italiaans', bg:'#1a3a6b', fg:'#ffffff', logo:'LANCIA', db:true, categorie:'auto'},
+  {id:61, naam:'DS Automobiles', land:'frans', bg:'#1a1a1a', fg:'#c0a060', logo:'DS', db:true, categorie:'auto'},
+  {id:62, naam:'Abarth', land:'italiaans', bg:'#cc0000', fg:'#ffffff', logo:'ABARTH', db:true, categorie:'auto'},
+  {id:63, naam:'Toyota', land:'japans', bg:'#cc0000', fg:'#ffffff', logo:'TOYOTA', db:true, categorie:'auto'},
+  {id:64, naam:'Honda', land:'japans', bg:'#cc0000', fg:'#ffffff', logo:'HONDA', db:true, categorie:'auto'},
+  {id:65, naam:'Nissan', land:'japans', bg:'#cc0000', fg:'#ffffff', logo:'NISSAN', db:true, categorie:'auto'},
+  {id:66, naam:'Mazda', land:'japans', bg:'#cc0000', fg:'#ffffff', logo:'MAZDA', db:true, categorie:'auto'},
+  {id:67, naam:'Mitsubishi', land:'japans', bg:'#cc0000', fg:'#ffffff', logo:'MITSUBISHI', db:true, categorie:'auto'},
+  {id:68, naam:'Suzuki', land:'japans', bg:'#1a1a1a', fg:'#cc0000', logo:'SUZUKI', db:true, categorie:'auto'},
+  {id:69, naam:'Subaru', land:'japans', bg:'#1a3a6b', fg:'#ffffff', logo:'SUBARU', db:true, categorie:'auto'},
+  {id:70, naam:'Kia', land:'koreaans', bg:'#cc0000', fg:'#ffffff', logo:'KIA', db:true, categorie:'auto'},
+  {id:71, naam:'Hyundai', land:'koreaans', bg:'#1a3a6b', fg:'#ffffff', logo:'HYUNDAI', db:true, categorie:'auto'},
+  {id:72, naam:'Genesis', land:'koreaans', bg:'#1a1a1a', fg:'#c0a060', logo:'GENESIS', db:true, categorie:'auto'},
+  {id:73, naam:'Dacia', land:'roemeens', bg:'#1a3a6b', fg:'#ffffff', logo:'DACIA', db:true, categorie:'auto'},
+  {id:74, naam:'Saab', land:'zweeds', bg:'#1a3a6b', fg:'#ffffff', logo:'SAAB', db:true, categorie:'auto'},
+  {id:75, naam:'Jeep', land:'amerikaans', bg:'#2a4a1a', fg:'#ffffff', logo:'JEEP', db:true, categorie:'auto'},
+  {id:76, naam:'Chevrolet', land:'amerikaans', bg:'#1a3a6b', fg:'#ffcc00', logo:'CHEVROLET', db:true, categorie:'auto'},
+  {id:77, naam:'Chrysler', land:'amerikaans', bg:'#1a3a6b', fg:'#ffffff', logo:'CHRYSLER', db:true, categorie:'auto'},
+  {id:78, naam:'Cadillac', land:'amerikaans', bg:'#1a1a1a', fg:'#c0a060', logo:'CADILLAC', db:true, categorie:'auto'},
+  {id:79, naam:'MG', land:'brits', bg:'#cc0000', fg:'#ffffff', logo:'MG', db:true, categorie:'auto'},
+  {id:80, naam:'smart', land:'duits', bg:'#1a1a1a', fg:'#ffcc00', logo:'smart', db:true, categorie:'auto'},
+  {id:81, naam:'BYD', land:'chinees', bg:'#1a3a6b', fg:'#ffffff', logo:'BYD', db:true, categorie:'auto'},
+  {id:82, naam:'Alpine', land:'frans', bg:'#1a3a6b', fg:'#ffffff', logo:'ALPINE', db:true, categorie:'auto'},
 ];
 
 let huidigMerk = null;
@@ -814,7 +878,14 @@ function setHomeTab(tab, el) {
   if (tab === 'merken') renderMerken('all');
 }
 
-function filterMerkCategorie(cat) {
+function filterMerkCombo(cat, land, el) {
+    document.querySelectorAll('.fb').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    const gefilterd = merkenData.filter(m => m.categorie === cat && m.land === land);
+    renderMerken(gefilterd);
+  }
+
+  function filterMerkCategorie(cat) {
   const grid = document.getElementById('merk-grid');
   const filtered = merkenData.filter(m => m.categorie === cat);
   grid.innerHTML = filtered.map(m => `
