@@ -2717,9 +2717,21 @@ Schrijf in het Nederlands. Pros en cons zijn kort en specifiek voor dit exacte m
         const data = await resp.json();
         const tekst = data.text?.trim();
         
-        // Parse JSON
-        const jsonMatch = tekst.match(/\{[^}]+\}/s) || [tekst];
-        const parsed = JSON.parse(jsonMatch[0]);
+        // Parse JSON - zoek het JSON object in de response
+        let parsed;
+        try {
+          // Probeer directe parse
+          parsed = JSON.parse(tekst);
+        } catch(e1) {
+          try {
+            // Zoek JSON object tussen accolades
+            const match = tekst.match(/\{[\s\S]*\}/);
+            if (match) parsed = JSON.parse(match[0]);
+          } catch(e2) {
+            console.log('Parse fout voor', m.naam, ':', tekst);
+            throw new Error('JSON parse fout: ' + tekst.substring(0, 100));
+          }
+        }
         
         if (parsed.pros && parsed.cons) {
           // Verwijder oude pros/cons voor deze generatie
