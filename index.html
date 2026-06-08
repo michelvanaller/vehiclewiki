@@ -1651,17 +1651,17 @@ async function openModel(mid, naam, sub) {
       <div class="uitv-row${u.special?' special':''}" onclick="openSpecs(${u.id})">
         <div class="uitv-header">
           <div>
-            <div class="uitv-name">${u.naam}${u.special?'<span class="special-badge">Speciaal</span>':''}</div>
-            <div class="uitv-meta">${u.jaar} · ${u.cilinderinhoud}cc</div>
+            <div class="uitv-name">${u.naam||''}${u.special?'<span class="special-badge">Speciaal</span>':''}</div>
+            <div class="uitv-meta">${u.jaar?u.jaar+' · ':''}${u.cilinderinhoud?u.cilinderinhoud+'cc':''}</div>
           </div>
           <div class="uitv-prijs">${u.prijs||''}</div>
         </div>
         <div class="pill-row">
-          <span class="pill red">${u.pk} pk</span>
-          <span class="pill">${u.nm} Nm</span>
-          <span class="pill">${u.topsnelheid} km/h</span>
-          <span class="pill">${u.gewicht} kg</span>
-          <span class="pill">0-100 in ${u.nul100}s</span>
+          ${u.pk?`<span class="pill red">${u.pk} pk</span>`:''}
+          ${u.nm?`<span class="pill">${u.nm} Nm</span>`:''}
+          ${u.topsnelheid?`<span class="pill">${u.topsnelheid} km/h</span>`:''}
+          ${u.gewicht?`<span class="pill">${u.gewicht} kg</span>`:''}
+          ${u.nul100?`<span class="pill">0-100 in ${u.nul100}s</span>`:''}
           ${u.special?'<span class="pill gold">Speciale editie</span>':''}
         </div>
       </div>`).join('');
