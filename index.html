@@ -2704,7 +2704,7 @@ renderMerken('all');
 
       try {
         // Genereer pros/cons en weetje via Vercel functie
-        const resp = await fetch('https://vehiclewiki-michelvanaller-5192s-projects.vercel.app/api/generate', {
+        const resp = await fetch('/api/generate', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({
