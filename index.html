@@ -2735,7 +2735,7 @@ Schrijf in het Nederlands. Pros en cons zijn kort en specifiek voor dit exacte m
         
         if (parsed.pros && parsed.cons) {
           // Verwijder oude pros/cons voor deze generatie
-          await fetch('https://adwxdumziwfqvklwjnvp.supabase.co/rest/v1/pros_cons?generatie_id=eq.${m.generatie_id}', {
+          await fetch(`https://adwxdumziwfqvklwjnvp.supabase.co/rest/v1/pros_cons?generatie_id=eq.${m.generatie_id}`, {
             method: 'DELETE',
             headers: {'apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkd3hkdW16aXdmcXZrbHdqbnZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MDA1NDUsImV4cCI6MjA5MDQ3NjU0NX0.5s2boF_P5gH7UTG9x8f9e4Lyz2l4CJ5VClNw7DHXOO4','Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkd3hkdW16aXdmcXZrbHdqbnZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MDA1NDUsImV4cCI6MjA5MDQ3NjU0NX0.5s2boF_P5gH7UTG9x8f9e4Lyz2l4CJ5VClNw7DHXOO4'}
           });
@@ -2753,7 +2753,7 @@ Schrijf in het Nederlands. Pros en cons zijn kort en specifiek voor dit exacte m
           
           // Update weetje
           if (parsed.weetje) {
-            await fetch('https://adwxdumziwfqvklwjnvp.supabase.co/rest/v1/generaties?id=eq.${m.generatie_id}', {
+            await fetch(`https://adwxdumziwfqvklwjnvp.supabase.co/rest/v1/generaties?id=eq.${m.generatie_id}`, {
               method: 'PATCH',
               headers: {'apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkd3hkdW16aXdmcXZrbHdqbnZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MDA1NDUsImV4cCI6MjA5MDQ3NjU0NX0.5s2boF_P5gH7UTG9x8f9e4Lyz2l4CJ5VClNw7DHXOO4','Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkd3hkdW16aXdmcXZrbHdqbnZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MDA1NDUsImV4cCI6MjA5MDQ3NjU0NX0.5s2boF_P5gH7UTG9x8f9e4Lyz2l4CJ5VClNw7DHXOO4','Content-Type':'application/json','Prefer':'return=minimal'},
               body: JSON.stringify({weetje: parsed.weetje})
