@@ -891,7 +891,7 @@ function filterMerkCombo(cat, land, el) {
   grid.innerHTML = filtered.map(m => `
     <div class="merk-card" onclick="openMerk(${JSON.stringify(m).replace(/"/g,'&quot;')})">
       <div class="merk-logo-box" style="background:${m.bg};">
-        <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:0.06em;font-size:${m.logo.length > 6 ? '11' : '18'}px;color:${m.fg};">${m.logo}</span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:0.06em;font-size:${m.logo.length > 10 ? '9' : m.logo.length > 6 ? '11' : '18'}px;color:${m.fg};">${m.logo}</span>
       </div>
       <div class="merk-footer">
         <div class="merk-naam">${m.naam}</div>
@@ -1698,14 +1698,30 @@ async function openSpecs(uid) {
   goTo('s-specs');
 
   try {
-    const [uitvArr, proscons, genData, ervaringen] = await Promise.all([
-      db('uitvoeringen', `id=eq.${uid}&select=*`),
-      db('pros_cons', `generatie_id=eq.${huidigGen?.id || 0}&order=type,id`),
-      db('generaties', `id=eq.${huidigGen?.id || 0}&select=beschrijving,weetje`),
+    // Stap 1: haal uitvoering op
+    const uitvArr = await db('uitvoeringen', `id=eq.${uid}&select=*`);
+    const u = uitvArr[0];
+
+    // Stap 2: haal generatie_id op via model
+    let genId = huidigGen?.id || 0;
+    if (u?.model_id) {
+      const modArr = await db('modellen', `id=eq.${u.model_id}&select=generatie_id`);
+      if (modArr?.[0]?.generatie_id) {
+        genId = modArr[0].generatie_id;
+        if (!huidigGen || huidigGen.id !== genId) {
+          const genArr = await db('generaties', `id=eq.${genId}&select=id,naam,huidig,beschrijving,weetje`);
+          if (genArr?.[0]) huidigGen = genArr[0];
+        }
+      }
+    }
+
+    // Stap 3: haal de rest op met correcte generatie_id
+    const [proscons, genData, ervaringen] = await Promise.all([
+      db('pros_cons', `generatie_id=eq.${genId}&order=type,id`),
+      db('generaties', `id=eq.${genId}&select=beschrijving,weetje`),
       db('ervaringen', `uitvoering_id=eq.${uid}&order=stemmen.desc`)
     ]);
 
-    const u = uitvArr[0];
     if (genData?.[0]) {
       huidigGen = {...(huidigGen||{}), beschrijving: genData[0].beschrijving, weetje: genData[0].weetje};
     }
