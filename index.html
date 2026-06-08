@@ -520,14 +520,14 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 
     <!-- AI Weetje Generator -->
     <div style="background:var(--bg2);border:1px solid rgba(100,100,255,0.4);border-radius:var(--radius-lg);padding:14px;margin-bottom:12px;box-shadow:0 0 15px rgba(80,80,255,0.1);">
-      <div style="font-size:12px;font-weight:700;color:#8888ff;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">⚡ AI Weetje Generator</div>
-      <div style="font-size:12px;color:var(--text2);margin-bottom:12px;">Genereert automatisch weetjes voor alle generaties zonder weetje. Werkt per merk - kies een merk om te starten.</div>
+      <div style="font-size:12px;font-weight:700;color:#8888ff;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">⚡ AI Pros/Cons Generator</div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:12px;">Genereert automatisch specifieke pros/cons en weetjes per model. Kies een merk en klik Start.</div>
       <select id="ai-merk-select" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px;margin-bottom:10px;font-size:13px;">
         <option value="">-- Kies een merk --</option>
       </select>
       <div style="display:flex;gap:8px;margin-bottom:10px;">
-        <button onclick="laadAIMerkGeneraties()" style="flex:1;background:var(--bg3);border:1px solid rgba(100,100,255,0.4);color:#8888ff;border-radius:8px;padding:9px;font-weight:700;cursor:pointer;font-size:12px;">Laad generaties</button>
-        <button onclick="startAIWeetjes()" style="flex:1;background:rgba(100,100,255,0.2);border:1px solid rgba(100,100,255,0.6);color:#aaaaff;border-radius:8px;padding:9px;font-weight:700;cursor:pointer;font-size:12px;">▶ Start genereren</button>
+        <button onclick="laadAIModellen()" style="flex:1;background:var(--bg3);border:1px solid rgba(100,100,255,0.4);color:#8888ff;border-radius:8px;padding:9px;font-weight:700;cursor:pointer;font-size:12px;">Laad modellen</button>
+        <button onclick="startAIGenerator()" style="flex:1;background:rgba(100,100,255,0.2);border:1px solid rgba(100,100,255,0.6);color:#aaaaff;border-radius:8px;padding:9px;font-weight:700;cursor:pointer;font-size:12px;">▶ Start genereren</button>
       </div>
       <div id="ai-voortgang" style="display:none;background:var(--bg3);border-radius:8px;padding:10px;font-size:12px;color:var(--text2);line-height:1.6;max-height:300px;overflow-y:auto;"></div>
     </div>
@@ -2651,8 +2651,116 @@ renderMerken('all');
     reader.readAsDataURL(file);
   }
 
-  // ===== AI WEETJE GENERATOR =====
+  // ===== AI MODEL GENERATOR =====
   let aiGeneraties = [];
+  let aiModellen = [];
+  let aiBezig = false;
+
+  async function laadAIModellen() {
+    const merkId = document.getElementById('ai-merk-select').value;
+    if (!merkId) { alert('Kies eerst een merk'); return; }
+    const voortgang = document.getElementById('ai-voortgang');
+    voortgang.style.display = 'block';
+    voortgang.innerHTML = 'Modellen laden...';
+    
+    try {
+      const merkRes = await db('merken', 'select=naam&id=eq.' + merkId);
+      const merkNaam = merkRes?.[0]?.naam || '';
+      
+      // Haal alle modellen op voor dit merk via families -> generaties -> modellen
+      const famRes = await db('families', 'select=id&merk_id=eq.' + merkId);
+      const famIds = famRes ? famRes.map(f => f.id) : [];
+      if (famIds.length === 0) { voortgang.innerHTML = 'Geen families gevonden'; return; }
+      
+      const genRes = await db('generaties', 'select=id&family_id=in.(' + famIds.join(',') + ')');
+      const genIds = genRes ? genRes.map(g => g.id) : [];
+      if (genIds.length === 0) { voortgang.innerHTML = 'Geen generaties gevonden'; return; }
+      
+      // Haal modellen op in batches van 100
+      const modellen = [];
+      for (let i = 0; i < genIds.length; i += 100) {
+        const batch = genIds.slice(i, i+100);
+        const mods = await db('modellen', 'select=id,naam,generatie_id&generatie_id=in.(' + batch.join(',') + ')&order=naam');
+        if (mods) modellen.push(...mods);
+      }
+      
+      aiModellen = modellen.map(m => ({...m, merkNaam}));
+      voortgang.innerHTML = `${modellen.length} modellen gevonden voor ${merkNaam}.<br>Klik Start om pros/cons en weetjes te genereren.`;
+    } catch(e) { voortgang.innerHTML = 'Fout: ' + e.message; }
+  }
+
+  async function startAIGenerator() {
+    if (aiModellen.length === 0) { alert('Laad eerst modellen'); return; }
+    if (aiBezig) { alert('Generator is al bezig'); return; }
+    aiBezig = true;
+    const voortgang = document.getElementById('ai-voortgang');
+    voortgang.style.display = 'block';
+    let succes = 0, fouten = 0;
+
+    for (let i = 0; i < aiModellen.length; i++) {
+      const m = aiModellen[i];
+      voortgang.innerHTML = `⏳ ${i+1}/${aiModellen.length}: ${m.merkNaam} ${m.naam}... (${succes} ok, ${fouten} fouten)`;
+      voortgang.scrollTop = voortgang.scrollHeight;
+
+      try {
+        // Genereer pros/cons en weetje via Vercel functie
+        const resp = await fetch('https://vehiclewiki-michelvanaller-5192s-projects.vercel.app/api/generate', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            prompt: `Geef voor de ${m.merkNaam} ${m.naam} precies dit JSON formaat terug en niets anders:
+{"pros":["pro1","pro2","pro3"],"cons":["con1","con2"],"weetje":"Een interessant weetje in 1-2 zinnen."}
+Schrijf in het Nederlands. Pros en cons zijn kort en specifiek voor dit exacte model.`
+          })
+        });
+
+        const data = await resp.json();
+        const tekst = data.text?.trim();
+        
+        // Parse JSON
+        const jsonMatch = tekst.match(/\{[^}]+\}/s) || [tekst];
+        const parsed = JSON.parse(jsonMatch[0]);
+        
+        if (parsed.pros && parsed.cons) {
+          // Verwijder oude pros/cons voor deze generatie
+          await fetch('https://adwxdumziwfqvklwjnvp.supabase.co/rest/v1/pros_cons?generatie_id=eq.${m.generatie_id}', {
+            method: 'DELETE',
+            headers: {'apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkd3hkdW16aXdmcXZrbHdqbnZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MDA1NDUsImV4cCI6MjA5MDQ3NjU0NX0.5s2boF_P5gH7UTG9x8f9e4Lyz2l4CJ5VClNw7DHXOO4','Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkd3hkdW16aXdmcXZrbHdqbnZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MDA1NDUsImV4cCI6MjA5MDQ3NjU0NX0.5s2boF_P5gH7UTG9x8f9e4Lyz2l4CJ5VClNw7DHXOO4'}
+          });
+          
+          // Voeg nieuwe pros toe
+          const nieuweEntries = [
+            ...parsed.pros.map(t => ({generatie_id: m.generatie_id, type:'pro', tekst:t})),
+            ...parsed.cons.map(t => ({generatie_id: m.generatie_id, type:'con', tekst:t}))
+          ];
+          await fetch('https://adwxdumziwfqvklwjnvp.supabase.co/rest/v1/pros_cons', {
+            method: 'POST',
+            headers: {'apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkd3hkdW16aXdmcXZrbHdqbnZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MDA1NDUsImV4cCI6MjA5MDQ3NjU0NX0.5s2boF_P5gH7UTG9x8f9e4Lyz2l4CJ5VClNw7DHXOO4','Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkd3hkdW16aXdmcXZrbHdqbnZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MDA1NDUsImV4cCI6MjA5MDQ3NjU0NX0.5s2boF_P5gH7UTG9x8f9e4Lyz2l4CJ5VClNw7DHXOO4','Content-Type':'application/json','Prefer':'return=minimal'},
+            body: JSON.stringify(nieuweEntries)
+          });
+          
+          // Update weetje
+          if (parsed.weetje) {
+            await fetch('https://adwxdumziwfqvklwjnvp.supabase.co/rest/v1/generaties?id=eq.${m.generatie_id}', {
+              method: 'PATCH',
+              headers: {'apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkd3hkdW16aXdmcXZrbHdqbnZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MDA1NDUsImV4cCI6MjA5MDQ3NjU0NX0.5s2boF_P5gH7UTG9x8f9e4Lyz2l4CJ5VClNw7DHXOO4','Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkd3hkdW16aXdmcXZrbHdqbnZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MDA1NDUsImV4cCI6MjA5MDQ3NjU0NX0.5s2boF_P5gH7UTG9x8f9e4Lyz2l4CJ5VClNw7DHXOO4','Content-Type':'application/json','Prefer':'return=minimal'},
+              body: JSON.stringify({weetje: parsed.weetje})
+            });
+          }
+          succes++;
+        }
+      } catch(e) {
+        fouten++;
+        voortgang.innerHTML += `<br>❌ ${m.naam}: ${e.message}`;
+      }
+      
+      await new Promise(r => setTimeout(r, 300));
+    }
+    
+    aiBezig = false;
+    voortgang.innerHTML += `<br><br>🎉 Klaar! ${succes} modellen bijgewerkt, ${fouten} fouten.`;
+    aiModellen = [];
+  }
 
   async function initAIMerkSelect() {
     const sel = document.getElementById('ai-merk-select');
