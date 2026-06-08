@@ -1591,7 +1591,7 @@ async function openFamily(fid, naam, intro, emoji, tag, tagKleur) {
         <div class="gen-dot${g.huidig?' current':''}"></div>
         <div class="gen-card${g.huidig?' current':''}" onclick="openGeneratie(${g.id},'${g.naam.replace(/'/g,"\\'")}','${(g.beschrijving||'').replace(/'/g,"\\'").replace(/\n/g,' ')}',${g.huidig})">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:3px;">
-            <div class="gen-periode${g.huidig?' current':''}">${g.periode}</div>
+            <div class="gen-periode${g.huidig?' current':''}">${g.periode||''}</div>
             <span style="font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500;background:${g.huidig?'#27AE6018':'#CC000018'};color:${g.huidig?'#27AE60':'#CC0000'};">${g.huidig?'Huidig':'Historisch'}</span>
           </div>
           <div class="gen-name">${g.naam}</div>
