@@ -2709,8 +2709,8 @@ renderMerken('all');
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({
             prompt: `Geef voor de ${m.merkNaam} ${m.naam} precies dit JSON formaat terug en niets anders:
-{"pros":["pro1","pro2","pro3"],"cons":["con1","con2"],"weetje":"Een interessant weetje in 1-2 zinnen."}
-Schrijf in het Nederlands. Pros en cons zijn kort en specifiek voor dit exacte model.`
+{"pros":["pro1","pro2","pro3"],"cons":["con1","con2"],"weetje":"Een interessant weetje in 1-2 zinnen.","beschrijving":"Supercar · V8 biturbo"}
+Schrijf in het Nederlands. Pros en cons zijn kort en specifiek voor dit exacte model. Beschrijving is maximaal 5 woorden als tagline bijv: Supercar · V10 icoon`
           })
         });
 
