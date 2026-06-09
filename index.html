@@ -681,7 +681,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 
 <!-- MERK FAMILIES -->
 <div id="s-ducati" class="screen">
-  <div class="topnav"><div class="topnav-left"><button class="back-btn" onclick="goTo('s-home');setHomeTab('merken',document.querySelectorAll('.tab')[1])">← merken</button><h2 id="merk-title">Ducati</h2></div></div>
+  <div class="topnav"><div class="topnav-left"><button class="back-btn" onclick="goTo('s-home');setHomeTab('merken',document.querySelectorAll('.tab')[1]);if(huidigMerk&&huidigMerk.categorie==='auto')filterMerkCategorie('auto');">← merken</button><h2 id="merk-title">Ducati</h2></div></div>
   <div id="merk-header"></div>
   <div id="families-list"></div>
 </div>
