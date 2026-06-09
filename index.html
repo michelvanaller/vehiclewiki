@@ -664,8 +664,8 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
   <div id="ht-merken" style="display:none;">
     <div class="filter-bar">
       <button class="fb active" onclick="filterMerk('all',this)">Alle</button>
-      <button class="fb" onclick="filterMerkCategorie('motor');this.classList.add('active')">🏍 Motoren</button>
-      <button class="fb" onclick="filterMerkCategorie('auto');this.classList.add('active')">🚗 Auto's</button>
+      <button class="fb" onclick="filterMerkCategorie('motor')">🏍 Motoren</button>
+      <button class="fb" onclick="filterMerkCategorie('auto')">🚗 Auto's</button>
       <button class="fb" onclick="filterMerkCombo('auto','brits',this)">🇬🇧 Brits</button>
       <button class="fb" onclick="filterMerkCombo('auto','duits',this)">🇩🇪 Duits</button>
       <button class="fb" onclick="filterMerkCombo('auto','italiaans',this)">🇮🇹 Italiaans</button>
@@ -886,6 +886,15 @@ function filterMerkCombo(cat, land, el) {
   }
 
   function filterMerkCategorie(cat) {
+  // Reset alle filter knoppen
+  document.querySelectorAll('.fb').forEach(b => b.classList.remove('active'));
+  // Activeer de juiste knop
+  document.querySelectorAll('.fb').forEach(b => {
+    if ((cat === 'motor' && b.textContent.includes('Motoren')) ||
+        (cat === 'auto' && b.textContent.includes("Auto's") && !b.textContent.includes('🇬🇧'))) {
+      b.classList.add('active');
+    }
+  });
   const grid = document.getElementById('merk-grid');
   const filtered = merkenData.filter(m => m.categorie === cat);
   grid.innerHTML = filtered.map(m => `
