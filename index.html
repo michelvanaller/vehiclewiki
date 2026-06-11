@@ -1727,12 +1727,12 @@ async function openSpecs(uid) {
     // Stap 3: haal de rest op met correcte generatie_id
     const [proscons, genData, ervaringen] = await Promise.all([
       db('pros_cons', `generatie_id=eq.${genId}&order=type,id`),
-      db('generaties', `id=eq.${genId}&select=beschrijving,weetje`),
+      db('generaties', `id=eq.${genId}&select=beschrijving,weetje,verhaal`),
       db('ervaringen', `uitvoering_id=eq.${uid}&order=stemmen.desc`)
     ]);
 
     if (genData?.[0]) {
-      huidigGen = {...(huidigGen||{}), beschrijving: genData[0].beschrijving, weetje: genData[0].weetje};
+      huidigGen = {...(huidigGen||{}), beschrijving: genData[0].beschrijving, weetje: genData[0].weetje, verhaal: genData[0].verhaal};
     }
 
     if (u.model_id) {
@@ -1928,6 +1928,13 @@ async function openSpecs(uid) {
         <p style="font-size:13px;color:#aaffcc;line-height:1.7;margin:0;">${huidigGen.weetje}</p>
       </div>` : ''}
 
+
+      <!-- Verhaal -->
+      ${huidigGen?.verhaal ? `
+      <div style="position:relative;background:linear-gradient(135deg,#0d0d1a,#0a0a12);border:1px solid rgba(100,100,255,0.3);border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 0 15px rgba(80,80,255,0.1);">
+        <div style="font-size:9px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#8888ff;margin-bottom:10px;">📖 Over dit model</div>
+        <div style="font-size:13px;color:#ddddff;line-height:1.8;">${huidigGen.verhaal.replace(/\n\n/g,'</p><p style=\"margin-top:10px;font-size:13px;color:#ddddff;line-height:1.8;\">')}</div>
+      </div>` : ''}
 
       <!-- Ervaringen -->
       <div style="margin-bottom:8px;">
@@ -2718,8 +2725,8 @@ renderMerken('all');
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({
             prompt: `Geef voor de ${m.merkNaam} ${m.naam} precies dit JSON formaat terug en niets anders:
-{"pros":["pro1","pro2","pro3"],"cons":["con1","con2"],"weetje":"Een interessant weetje in 1-2 zinnen.","beschrijving":"Supercar · V8 biturbo"}
-Schrijf in het Nederlands. Pros en cons zijn kort en specifiek voor dit exacte model. Beschrijving is maximaal 5 woorden als tagline bijv: Supercar · V10 icoon`
+{"pros":["pro1","pro2","pro3"],"cons":["con1","con2"],"weetje":"Een interessant weetje in 1-2 zinnen.","beschrijving":"Supercar · V8 biturbo","verhaal":"Een verhaal van 2-3 alineas over dit model. Eerste alinea: wat maakt dit model bijzonder en wat is de context. Tweede alinea: technische highlights en wat het rijden is. Derde alinea: erfgoed of legacy van dit model."}
+Schrijf in het Nederlands. Pros en cons zijn kort en specifiek voor dit exacte model. Beschrijving is maximaal 5 woorden als tagline. Verhaal is 100-150 woorden, eigen stijl, niet van Wikipedia kopieren.`
           })
         });
 
@@ -2764,6 +2771,7 @@ Schrijf in het Nederlands. Pros en cons zijn kort en specifiek voor dit exacte m
           const genUpdate = {};
           if (parsed.weetje) genUpdate.weetje = parsed.weetje;
           if (parsed.beschrijving) genUpdate.beschrijving = parsed.beschrijving;
+          if (parsed.verhaal) genUpdate.verhaal = parsed.verhaal;
           if (Object.keys(genUpdate).length > 0) {
             await fetch(`https://adwxdumziwfqvklwjnvp.supabase.co/rest/v1/generaties?id=eq.${m.generatie_id}`, {
               method: 'PATCH',
