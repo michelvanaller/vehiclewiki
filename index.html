@@ -552,7 +552,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
       <div class="cat-card" onclick="setHomeTab('merken',document.querySelectorAll('.tab')[1]);filterMerkCategorie('auto')">
         <div style="font-size:32px;margin-bottom:8px;">🚗</div>
         <div style="font-size:13px;font-weight:600;">Auto's</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:3px;">2 merken</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:3px;" id="auto-count">0 merken</div>
       </div>
       <div class="cat-card disabled">
         <div style="font-size:32px;margin-bottom:8px;">✈️</div>
@@ -882,7 +882,7 @@ function setHomeTab(tab, el) {
   document.getElementById('ht-garage').style.display = tab==='garage' ? 'block' : 'none';
   if (tab==='garage') laadGarage();
   if (tab === 'zoeken' && !window._vergelijkingActief) doSearch();
-  if (tab === 'merken') renderMerken('all');
+  if (tab === 'merken') { const activeFilter = document.querySelector('.fb.active'); if (!activeFilter) { renderMerken('all'); } else { activeFilter.click(); } }
 }
 
 function filterMerkCombo(cat, land, el) {
@@ -1422,6 +1422,13 @@ async function startVergelijking() {
     velden.map(veld => '<tr><td style="padding:8px;color:var(--text2);border-bottom:1px solid var(--border);">' + veld[0] + '</td>' + uitvoeringen.map(u => '<td style="text-align:center;padding:8px;color:var(--text);border-bottom:1px solid var(--border);">' + veld[1](u) + '</td>').join('') + '</tr>').join('') +
     '</tbody></table></div>';
 }
+
+// Tel auto merken
+  document.addEventListener('DOMContentLoaded', () => {
+    const autoCount = merkenData.filter(m => m.categorie === 'auto').length;
+    const el = document.getElementById('auto-count');
+    if (el) el.textContent = autoCount + ' merken';
+  });
 
 function renderMerken(filter) {
   const filtered = filter === 'all' ? merkenData : merkenData.filter(m => m.land === filter);
