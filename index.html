@@ -431,11 +431,6 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
         <div><label style="font-size:10px;color:var(--text3);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.06em;">Merk</label>
           <select id="f-merk" onchange="doSearch()" style="width:100%;padding:6px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--bg2);color:var(--text);font-size:12px;font-family:'Barlow',sans-serif;">
             <option value="">Alle merken</option>
-            <option value="1">Ducati</option>
-            <option value="2">Kawasaki</option>
-            <option value="3">Ford</option>
-            <option value="4">Lamborghini</option>
-            <option value="5">Yamaha</option>
             <option value="6">Honda</option>
             <option value="7">BMW</option>
             <option value="8">KTM</option>
@@ -881,7 +876,7 @@ function setHomeTab(tab, el) {
   document.getElementById('ht-snelheid').style.display = tab==='snelheid' ? 'block' : 'none';
   document.getElementById('ht-garage').style.display = tab==='garage' ? 'block' : 'none';
   if (tab==='garage') laadGarage();
-  if (tab === 'zoeken' && !window._vergelijkingActief) doSearch();
+  if (tab === 'zoeken') { initZoekMerken(); if (!window._vergelijkingActief) doSearch(); }
   if (tab === 'merken') { const activeFilter = document.querySelector('.fb.active'); if (!activeFilter) { renderMerken('all'); } else { activeFilter.click(); } }
 }
 
@@ -923,7 +918,19 @@ function filterMerk(land, btn) {
 }
 
 let zoekTimeout = null;
-async function doSearch() {
+async function initZoekMerken() {
+  const sel = document.getElementById('f-merk');
+  if (!sel || sel.options.length > 1) return;
+  const sorted = [...merkenData].sort((a,b) => a.naam.localeCompare(b.naam));
+  sorted.forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m.id;
+    opt.textContent = m.naam + (m.categorie === 'auto' ? ' 🚗' : ' 🏍');
+    sel.appendChild(opt);
+  });
+}
+
+function doSearch() {
   window._vergelijkingActief = false;
   clearTimeout(zoekTimeout);
   zoekTimeout = setTimeout(async () => {
