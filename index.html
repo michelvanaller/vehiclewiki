@@ -954,35 +954,59 @@ function doSearch() {
 
     try {
       let toegestaneModIds = null;
+      let merkMapGlobal = {};
+
       if (fCat || fMerk) {
         let merkParams = 'select=id,naam,categorie';
         if (fMerk) merkParams += `&id=eq.${fMerk}`;
         if (fCat) merkParams += `&categorie=eq.${fCat}`;
         const merkFilter = await db('merken', merkParams);
         const merkIds = merkFilter.map(m=>m.id);
-        const merkMap = {}; merkFilter.forEach(m=>merkMap[m.id]=m);
+        merkFilter.forEach(m=>merkMapGlobal[m.id]=m);
 
-        if (merkIds.length > 0) {
-          const fams = await db('families', `merk_id=in.(${merkIds.join(',')})&select=id,merk_id`);
-          const famIds = fams.map(f=>f.id);
-          const famToMerkId = {}; fams.forEach(f=>famToMerkId[f.id]=f.merk_id);
+        if (merkIds.length === 0) {
+          toegestaneModIds = [];
+        } else {
+          // Haal families op in batches
+          const famRes = [];
+          for (let i=0; i<merkIds.length; i+=100) {
+            const batch = merkIds.slice(i,i+100);
+            const r = await db('families', `merk_id=in.(${batch.join(',')})&select=id,merk_id`);
+            if (r) famRes.push(...r);
+          }
+          const famIds = famRes.map(f=>f.id);
+          const famToMerkId = {}; famRes.forEach(f=>famToMerkId[f.id]=f.merk_id);
 
-          if (famIds.length > 0) {
-            const gens = await db('generaties', `family_id=in.(${famIds.join(',')})&select=id,family_id`);
-            const genIds = gens.map(g=>g.id);
-            const genToFam = {}; gens.forEach(g=>genToFam[g.id]=g.family_id);
+          if (famIds.length === 0) {
+            toegestaneModIds = [];
+          } else {
+            // Haal generaties op in batches
+            const genRes = [];
+            for (let i=0; i<famIds.length; i+=200) {
+              const batch = famIds.slice(i,i+200);
+              const r = await db('generaties', `family_id=in.(${batch.join(',')})&select=id,family_id`);
+              if (r) genRes.push(...r);
+            }
+            const genIds = genRes.map(g=>g.id);
+            const genToFam = {}; genRes.forEach(g=>genToFam[g.id]=g.family_id);
 
-            if (genIds.length > 0) {
-              const mods = await db('modellen', `generatie_id=in.(${genIds.join(',')})&select=id,generatie_id`);
-              toegestaneModIds = mods.map(m=>m.id);
-              window._zoekModToGen = {}; mods.forEach(m=>window._zoekModToGen[m.id]=m.generatie_id);
+            if (genIds.length === 0) {
+              toegestaneModIds = [];
+            } else {
+              // Haal modellen op in batches
+              const modRes = [];
+              for (let i=0; i<genIds.length; i+=500) {
+                const batch = genIds.slice(i,i+500);
+                const r = await db('modellen', `generatie_id=in.(${batch.join(',')})&select=id,generatie_id`);
+                if (r) modRes.push(...r);
+              }
+              toegestaneModIds = modRes.map(m=>m.id);
+              window._zoekModToGen = {}; modRes.forEach(m=>window._zoekModToGen[m.id]=m.generatie_id);
               window._zoekGenToFam = genToFam;
               window._zoekFamToMerk = famToMerkId;
-              window._zoekMerkMap = merkMap;
+              window._zoekMerkMap = merkMapGlobal;
             }
           }
-        } else {
-          toegestaneModIds = [];
         }
       }
 
