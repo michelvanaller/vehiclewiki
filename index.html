@@ -422,10 +422,12 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
         <div><label style="font-size:10px;color:var(--text3);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.06em;">Brandstof</label>
           <select id="f-brand" onchange="doSearch()" style="width:100%;padding:6px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--bg2);color:var(--text);font-size:12px;font-family:'Barlow',sans-serif;">
             <option value="">Alle brandstof</option>
-            <option value="benzine">Benzine</option>
-            <option value="elektrisch">Elektrisch</option>
-            <option value="hybride">Hybride</option>
-            <option value="diesel">Diesel</option>
+            <option value="Benzine">Benzine</option>
+            <option value="Elektrisch">Elektrisch</option>
+            <option value="Hybride">Hybride</option>
+            <option value="Plug-in Hybrid">Plug-in Hybrid</option>
+            <option value="Diesel">Diesel</option>
+            <option value="Waterstof">Waterstof</option>
           </select>
         </div>
         <div><label style="font-size:10px;color:var(--text3);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.06em;">Merk</label>
@@ -984,18 +986,28 @@ function doSearch() {
         }
       }
 
-      let params = 'select=id,naam,jaar,pk,nm,nul100,topsnelheid,gewicht,prijs,brandstof,carrosserie,cilinders,cilinderinhoud,special,model_id,stoelen,kofferbak,actieradius,verbruik&limit=500';
+      let params = 'select=id,naam,jaar,pk,nm,nul100,topsnelheid,gewicht,prijs,brandstof,carrosserie,cilinders,cilinderinhoud,special,model_id,stoelen,kofferbak,actieradius,verbruik&limit=5000';
       if (fPk > 0) params += `&pk=gte.${fPk}`;
-      if (fBrand) params += `&brandstof=ilike.*${fBrand}*`;
-      if (toegestaneModIds && toegestaneModIds.length > 0) {
-        params += `&model_id=in.(${toegestaneModIds.join(',')})`;
-      } else if (toegestaneModIds && toegestaneModIds.length === 0) {
+      if (fBrand) params += `&brandstof=ilike.${fBrand}`;
+
+      if (toegestaneModIds && toegestaneModIds.length === 0) {
         document.getElementById('res-count').textContent = '0 resultaten';
         document.getElementById('res-list').innerHTML = '<div style="text-align:center;padding:30px;font-size:14px;color:var(--text3);">Geen resultaten — pas de filters aan</div>';
         return;
       }
+      // Als er niet te veel IDs zijn stuur ze mee in de URL anders filter achteraf
+      if (toegestaneModIds && toegestaneModIds.length > 0 && toegestaneModIds.length <= 400) {
+        params += `&model_id=in.(${toegestaneModIds.join(',')})`;
+      }
 
       let uitvoeringen = await db('uitvoeringen', params);
+
+      // Filter achteraf als lijst te groot was
+      if (toegestaneModIds && toegestaneModIds.length > 400) {
+        const modSet = new Set(toegestaneModIds);
+        uitvoeringen = uitvoeringen.filter(u => modSet.has(u.model_id));
+      }
+
       if (q) uitvoeringen = uitvoeringen.filter(u => u.naam.toLowerCase().includes(q));
       if (fPrijs) uitvoeringen = uitvoeringen.filter(u => {
         const p = parseInt(u.prijs);
