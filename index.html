@@ -1852,6 +1852,9 @@ async function openSpecs(uid) {
         <div class="comment-box">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
             <div style="font-size:12px;font-weight:600;color:var(--text2);">${e.auteur}</div>
+            <div style="display:flex;align-items:center;gap:2px;">
+              ${e.rating ? [1,2,3,4,5].map(v => `<span style="color:${v <= e.rating ? 'oklch(0.62 0.21 25)' : 'var(--text3)'}"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>`).join('') : ''}
+            </div>
             <div style="display:flex;align-items:center;gap:6px;">
               <button class="vote-btn" onclick="stemOp(${e.id},this)">${e.gestemd?'✓ Nuttig':'Nuttig'}</button>
               <span style="font-size:12px;font-weight:600;color:var(--text2);" id="vc-${e.id}">${e.stemmen}</span>
@@ -2039,14 +2042,64 @@ async function openSpecs(uid) {
         </div>
         ${ervaringHtml}
         <div style="margin-top:12px;">
+          <!-- Sterren beoordeling -->
+          <div style="display:flex;align-items:center;gap:4px;margin-bottom:10px;" id="star-row-${uid}">
+            ${[1,2,3,4,5].map(v => `
+              <button type="button"
+                onclick="setRating(${uid}, ${v})"
+                onmouseenter="hoverRating(${uid}, ${v})"
+                onmouseleave="resetHover(${uid})"
+                style="background:none;border:none;cursor:pointer;padding:2px;color:var(--text3);transition:transform 0.1s;"
+                data-star="${v}"
+                class="star-btn-${uid}"
+              ><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
+            `).join('')}
+          </div>
           <input id="erv-naam" placeholder="Jouw naam" style="width:100%;background:var(--bg2);border:1px solid rgba(255,255,255,0.1);color:var(--text);border-radius:8px;padding:9px 11px;font-size:13px;margin-bottom:8px;box-sizing:border-box;font-family:'Geist','Barlow',sans-serif;" />
-          <textarea id="erv-tekst" placeholder="Deel je ervaring..." rows="3" style="width:100%;background:var(--bg2);border:1px solid rgba(255,255,255,0.1);color:var(--text);border-radius:8px;padding:9px 11px;font-size:13px;resize:none;box-sizing:border-box;font-family:'Geist','Barlow',sans-serif;"></textarea>
-          <button class="submit-btn" onclick="voegErvaringToe(${uid})">Toevoegen</button>
+          <textarea id="erv-tekst" placeholder="Deel je ervaring..." rows="3" style="width:100%;background:var(--bg2);border:1px solid rgba(255,255,255,0.1);color:var(--text);border-radius:8px;padding:9px 11px;font-size:13px;resize:none;box-sizing:border-box;font-family:'Geist','Barlow',sans-serif;margin-bottom:8px;"></textarea>
+          <button class="submit-btn" onclick="voegErvaringToe(${uid})" style="display:inline-flex;align-items:center;gap:6px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg> Toevoegen</button>
         </div>
       </div>
 `;
 
   } catch(e) { document.getElementById('spec-content').innerHTML = error(e); }
+}
+
+// Sterren rating systeem
+window._ratings = {};
+window._hoverRatings = {};
+
+function setRating(uid, value) {
+  window._ratings[uid] = value;
+  updateStars(uid, value);
+}
+
+function hoverRating(uid, value) {
+  window._hoverRatings[uid] = value;
+  updateStars(uid, value);
+}
+
+function resetHover(uid) {
+  delete window._hoverRatings[uid];
+  updateStars(uid, window._ratings[uid] || 0);
+}
+
+function updateStars(uid, value) {
+  const btns = document.querySelectorAll(`.star-btn-${uid}`);
+  btns.forEach((btn, i) => {
+    const star = btn.querySelector('svg');
+    if (star) {
+      if (i < value) {
+        star.style.fill = 'oklch(0.62 0.21 25)';
+        star.style.stroke = 'oklch(0.62 0.21 25)';
+        btn.style.transform = 'scale(1.1)';
+      } else {
+        star.style.fill = 'none';
+        star.style.stroke = 'var(--text3)';
+        btn.style.transform = 'scale(1)';
+      }
+    }
+  });
 }
 
 async function stemOp(eid, btn) {
@@ -2062,21 +2115,27 @@ async function stemOp(eid, btn) {
 }
 
 async function voegErvaringToe(uid) {
-  const naam = document.getElementById('c-naam').value.trim();
-  const tekst = document.getElementById('c-tekst').value.trim();
+  const naam = (document.getElementById('erv-naam') || document.getElementById('c-naam'))?.value.trim();
+  const tekst = (document.getElementById('erv-tekst') || document.getElementById('c-tekst'))?.value.trim();
+  const rating = window._ratings[uid] || 0;
   if (!naam || !tekst) return;
-  const ok = await dbPost('ervaringen', {uitvoering_id: uid, auteur: naam, tekst, stemmen: 0});
+  const ok = await dbPost('ervaringen', {uitvoering_id: uid, auteur: naam, tekst, stemmen: 0, rating});
   if (ok) {
+    const starsHtml = rating ? [1,2,3,4,5].map(v => `<span style="color:${v <= rating ? 'oklch(0.62 0.21 25)' : 'var(--text3)}"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>`).join('') : '';
     document.getElementById('erv-list').innerHTML += `
       <div class="comment-box">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
           <div style="font-size:12px;font-weight:600;color:var(--text2);">${naam}</div>
-          <div style="display:flex;align-items:center;gap:6px;"><button class="vote-btn">Nuttig</button><span style="font-size:12px;font-weight:600;color:var(--text2);">0</span></div>
+          <div style="display:flex;align-items:center;gap:4px;">${starsHtml}</div>
         </div>
-        <div style="font-size:13px;">${tekst}</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.6;">${tekst}</div>
       </div>`;
-    document.getElementById('c-naam').value = '';
-    document.getElementById('c-tekst').value = '';
+    const naamEl = document.getElementById('erv-naam') || document.getElementById('c-naam');
+    const tekstEl = document.getElementById('erv-tekst') || document.getElementById('c-tekst');
+    if (naamEl) naamEl.value = '';
+    if (tekstEl) tekstEl.value = '';
+    window._ratings[uid] = 0;
+    updateStars(uid, 0);
   }
 }
 
