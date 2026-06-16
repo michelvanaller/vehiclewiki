@@ -1964,34 +1964,34 @@ async function openSpecs(uid) {
       </div>
 
       <!-- Specs grid -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
-        ${u.cilinderinhoud ? `<div class="stat-blok stat-goud">
-          <div class="stat-label" style="color:#DAA520;">Cilinderinhoud</div>
-          <div class="stat-waarde" style="font-size:20px;">${u.cilinderinhoud} <span style="font-size:11px;color:var(--text3);">cc</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+        ${u.cilinderinhoud ? `<div class="spec-card spec-amber accent-bar accent-border glow-soft">
+          <div class="spec-label accent-text">🔩 Cilinderinhoud</div>
+          <div class="spec-value accent-text">${u.cilinderinhoud}<span style="font-size:11px;opacity:0.7;margin-left:2px;">cc</span></div>
         </div>` : ''}
-        ${u.cilinders ? `<div class="stat-blok stat-goud">
-          <div class="stat-label" style="color:#DAA520;">Cilinders</div>
-          <div class="stat-waarde" style="font-size:20px;">${u.cilinders === 1 ? '1' : u.cilinders === 2 ? 'V2 / Twin' : u.cilinders === 3 ? 'Triple' : u.cilinders === 4 ? 'V4 / Inline-4' : u.cilinders === 6 ? 'Inline-6' : u.cilinders}</div>
+        ${u.cilinders ? `<div class="spec-card spec-amber accent-bar accent-border glow-soft">
+          <div class="spec-label accent-text">⚙ Cilinders</div>
+          <div class="spec-value accent-text">${u.cilinders === 1 ? '1' : u.cilinders === 2 ? 'V2 / Twin' : u.cilinders === 3 ? 'Triple' : u.cilinders === 4 ? 'V4 / Inline-4' : u.cilinders === 6 ? 'Inline-6' : u.cilinders}</div>
         </div>` : ''}
-        ${u.gewicht ? `<div class="stat-blok stat-goud">
-          <div class="stat-label" style="color:#DAA520;">Gewicht</div>
-          <div class="stat-waarde" style="font-size:20px;">${u.gewicht} <span style="font-size:11px;color:var(--text3);">kg</span></div>
+        ${u.gewicht ? `<div class="spec-card spec-blue accent-bar accent-border glow-soft">
+          <div class="spec-label accent-text">⚖ Gewicht</div>
+          <div class="spec-value accent-text">${u.gewicht}<span style="font-size:11px;opacity:0.7;margin-left:2px;">kg</span></div>
         </div>` : ''}
-        ${u.brandstof ? `<div class="stat-blok stat-goud">
-          <div class="stat-label" style="color:#DAA520;">Brandstof</div>
-          <div style="font-size:16px;font-weight:800;">${u.brandstof}</div>
+        ${u.brandstof ? `<div class="spec-card spec-green accent-bar accent-border glow-soft">
+          <div class="spec-label accent-text">⛽ Brandstof</div>
+          <div class="spec-value accent-text" style="font-size:14px;">${u.brandstof}</div>
         </div>` : ''}
       </div>
 
       <!-- Verbruik + Wegenbelasting -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
-        ${u.verbruik ? `<div class="stat-blok stat-groen">
-          <div class="stat-label" style="color:#66dd99;">Verbruik</div>
-          <div class="stat-waarde" style="font-size:20px;color:#66dd99;">${u.verbruik} <span style="font-size:11px;color:var(--text3);">L/100km</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+        ${u.verbruik ? `<div class="spec-card spec-green accent-bar accent-border glow-soft">
+          <div class="spec-label accent-text">💧 Verbruik</div>
+          <div class="spec-value accent-text">${u.verbruik}<span style="font-size:11px;opacity:0.7;margin-left:2px;">L/100km</span></div>
         </div>` : ''}
-        <div class="stat-blok stat-groen">
-          <div class="stat-label" style="color:#66dd99;">Wegenbelasting</div>
-          <div class="stat-waarde" style="font-size:18px;color:#66dd99;">€${wbLaag} – €${wbHoog} <span style="font-size:10px;color:var(--text3);">/ kwartaal</span></div>
+        <div class="spec-card spec-green accent-bar accent-border glow-soft">
+          <div class="spec-label accent-text">🚗 Wegenbelasting</div>
+          <div class="spec-value accent-text" style="font-size:15px;">€${wbLaag} – €${wbHoog}<span style="font-size:10px;opacity:0.7;margin-left:3px;">/ kwartaal</span></div>
         </div>
       </div>
 
