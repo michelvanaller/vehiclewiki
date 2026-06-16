@@ -1847,7 +1847,7 @@ async function openSpecs(uid) {
     const heroBg = huidigGen?.huidig ? '#27AE60' : '#CC0000';
 
     const ervaringHtml = ervaringen.length === 0
-      ? '<p style="font-size:13px;color:var(--text3);padding:8px 0;">Nog geen ervaringen - wees de eerste!</p>'
+      ? '<p style="font-size:13px;color:var(--text);padding:8px 0;">Nog geen ervaringen — wees de eerste!</p>'
       : ervaringen.map(e => `
         <div class="comment-box">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
@@ -1935,12 +1935,12 @@ async function openSpecs(uid) {
           ${huidigGen?.huidig ? '<span style="background:#1a3a1a;color:#66dd99;font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;border:1px solid #66dd99;letter-spacing:0.06em;display:inline-flex;align-items:center;gap:4px;"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg> HUIDIG MODEL</span>' : '<span style="background:#3a1a1a;color:#dd6666;font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;border:1px solid #dd6666;letter-spacing:0.06em;">OUDER MODEL</span>'}
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">
-          <span style="font-size:13px;color:var(--text3);">${u.jaar ? u.jaar + (huidigGen?.huidig ? '-heden' : '') : ''}</span>
-          ${u.prijs ? `<span style="font-size:13px;color:var(--text3);">· Vanaf € ${u.prijs.toLocaleString('nl-NL')}</span>` : ''}
+          <span style="font-size:13px;color:var(--text);">${u.jaar ? u.jaar + (huidigGen?.huidig ? '-heden' : '') : ''}</span>
+          ${u.prijs ? `<span style="font-size:13px;color:var(--text);">· Vanaf € ${u.prijs.toLocaleString('nl-NL')}</span>` : ''}
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button onclick="vergelijkToevoegen()" style="background:var(--bg3);border:1px solid var(--border);color:var(--text2);padding:7px 16px;border-radius:20px;cursor:pointer;font-size:12px;font-weight:600;">+ Vergelijk</button>
-          <button onclick="meldFout(${u.id})" style="background:var(--bg3);border:1px solid var(--border);color:var(--text2);padding:7px 16px;border-radius:20px;cursor:pointer;font-size:12px;">Fout melden</button>
+          <button onclick="vergelijkToevoegen()" style="background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:7px 16px;border-radius:20px;cursor:pointer;font-size:12px;font-weight:600;">+ Vergelijk</button>
+          <button onclick="meldFout(${u.id})" style="background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:7px 16px;border-radius:20px;cursor:pointer;font-size:12px;">Fout melden</button>
         </div>
       </div>
 
@@ -2047,7 +2047,7 @@ async function openSpecs(uid) {
           </div>
           <input id="erv-naam" placeholder="Jouw naam" style="width:100%;background:var(--bg2);border:1px solid rgba(255,255,255,0.1);color:var(--text);border-radius:8px;padding:9px 11px;font-size:13px;margin-bottom:8px;box-sizing:border-box;font-family:'Geist','Barlow',sans-serif;" />
           <textarea id="erv-tekst" placeholder="Deel je ervaring..." rows="3" style="width:100%;background:var(--bg2);border:1px solid rgba(255,255,255,0.1);color:var(--text);border-radius:8px;padding:9px 11px;font-size:13px;resize:none;box-sizing:border-box;font-family:'Geist','Barlow',sans-serif;margin-bottom:8px;"></textarea>
-          <button class="submit-btn" onclick="voegErvaringToe(${uid})" style="display:inline-flex;align-items:center;gap:6px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg> Toevoegen</button>
+          <button class="submit-btn" onclick="voegErvaringToe(${uid})" style="display:inline-flex;align-items:center;gap:6px;background:var(--bg3);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:7px 16px;font-size:13px;cursor:pointer;font-family:'Geist','Barlow',sans-serif;font-weight:500;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg> Toevoegen</button>
         </div>
       </div>
 `;
