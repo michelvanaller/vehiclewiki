@@ -1852,8 +1852,7 @@ async function openSpecs(uid) {
         <div class="comment-box">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
             <div style="font-size:12px;font-weight:600;color:var(--text2);">${e.auteur}</div>
-            <div style="display:flex;align-items:center;gap:2px;">
-              ${e.rating ? [1,2,3,4,5].map(v => `<span style="color:${v <= e.rating ? 'oklch(0.62 0.21 25)' : 'var(--text3)'}"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>`).join('') : ''}
+            <div style="display:flex;align-items:center;gap:2px;"${e.rating ? renderStars(e.rating) : ''}: ''}
             </div>
             <div style="display:flex;align-items:center;gap:6px;">
               <button class="vote-btn" onclick="stemOp(${e.id},this)">${e.gestemd?'✓ Nuttig':'Nuttig'}</button>
@@ -2044,16 +2043,7 @@ async function openSpecs(uid) {
         <div style="margin-top:12px;">
           <!-- Sterren beoordeling -->
           <div style="display:flex;align-items:center;gap:4px;margin-bottom:10px;" id="star-row-${uid}">
-            ${[1,2,3,4,5].map(v => `
-              <button type="button"
-                onclick="setRating(${uid}, ${v})"
-                onmouseenter="hoverRating(${uid}, ${v})"
-                onmouseleave="resetHover(${uid})"
-                style="background:none;border:none;cursor:pointer;padding:2px;color:var(--text3);transition:transform 0.1s;"
-                data-star="${v}"
-                class="star-btn-${uid}"
-              ><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
-            `).join('')}
+            ${renderStarButtons(uid)}
           </div>
           <input id="erv-naam" placeholder="Jouw naam" style="width:100%;background:var(--bg2);border:1px solid rgba(255,255,255,0.1);color:var(--text);border-radius:8px;padding:9px 11px;font-size:13px;margin-bottom:8px;box-sizing:border-box;font-family:'Geist','Barlow',sans-serif;" />
           <textarea id="erv-tekst" placeholder="Deel je ervaring..." rows="3" style="width:100%;background:var(--bg2);border:1px solid rgba(255,255,255,0.1);color:var(--text);border-radius:8px;padding:9px 11px;font-size:13px;resize:none;box-sizing:border-box;font-family:'Geist','Barlow',sans-serif;margin-bottom:8px;"></textarea>
@@ -2067,6 +2057,30 @@ async function openSpecs(uid) {
 
 // Sterren rating systeem
 window._ratings = {};
+
+function renderStarButtons(uid) {
+  return [1,2,3,4,5].map(v => 
+    '<button type="button"' +
+    ' onclick="setRating(' + uid + ',' + v + ')"' +
+    ' onmouseenter="hoverRating(' + uid + ',' + v + ')"' +
+    ' onmouseleave="resetHover(' + uid + ')"' +
+    ' style="background:none;border:none;cursor:pointer;padding:2px;color:var(--text3);transition:transform 0.1s;"' +
+    ' data-star="' + v + '"' +
+    ' class="star-btn-' + uid + '">' +
+    '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>' +
+    '</button>'
+  ).join('');
+}
+
+function renderStars(rating, size=12) {
+  const filled = 'oklch(0.62 0.21 25)';
+  const empty = 'var(--text3)';
+  return [1,2,3,4,5].map(v => 
+    '<span style="color:' + (v <= rating ? filled : empty) + '">' +
+    '<svg xmlns="http://www.w3.org/2000/svg" width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>' +
+    '</span>'
+  ).join('');
+}
 window._hoverRatings = {};
 
 function setRating(uid, value) {
@@ -2121,15 +2135,15 @@ async function voegErvaringToe(uid) {
   if (!naam || !tekst) return;
   const ok = await dbPost('ervaringen', {uitvoering_id: uid, auteur: naam, tekst, stemmen: 0, rating});
   if (ok) {
-    const starsHtml = rating ? [1,2,3,4,5].map(v => `<span style="color:${v <= rating ? 'oklch(0.62 0.21 25)' : 'var(--text3)}"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>`).join('') : '';
-    document.getElementById('erv-list').innerHTML += `
+    const starsHtml = rating ? renderStars(rating) : '';
+    document.getElementById('erv-list')?.insertAdjacentHTML('beforeend', `
       <div class="comment-box">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
           <div style="font-size:12px;font-weight:600;color:var(--text2);">${naam}</div>
           <div style="display:flex;align-items:center;gap:4px;">${starsHtml}</div>
         </div>
         <div style="font-size:13px;color:var(--text2);line-height:1.6;">${tekst}</div>
-      </div>`;
+      </div>`);
     const naamEl = document.getElementById('erv-naam') || document.getElementById('c-naam');
     const tekstEl = document.getElementById('erv-tekst') || document.getElementById('c-tekst');
     if (naamEl) naamEl.value = '';
@@ -2137,24 +2151,6 @@ async function voegErvaringToe(uid) {
     window._ratings[uid] = 0;
     updateStars(uid, 0);
   }
-}
-
-async function stuurFoutmelding(uid) {
-  const type = document.getElementById('r-type').value;
-  const tekst = document.getElementById('r-tekst').value.trim();
-  if (!tekst) return;
-  await dbPost('foutmeldingen', {uitvoering_id: uid, type, beschrijving: tekst});
-  alert('Bedankt! Je melding is ontvangen.');
-  document.getElementById('r-tekst').value = '';
-  document.getElementById('rf').classList.remove('open');
-}
-
-function bc(items) {
-  const filtered = items.filter(Boolean);
-  return filtered.map((item,i) => i < filtered.length-1
-    ? `<span style="color:var(--text3);font-size:12px;">${item}</span><span style="color:var(--text3);opacity:0.5;display:inline-flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>`
-    : `<span style="color:oklch(0.62 0.21 25);font-weight:600;font-size:12px;">${item}</span>`
-  ).join('');
 }
 
 function loading() { return `<div class="loading"><div class="spinner"></div>Laden...</div>`; }
