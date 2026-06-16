@@ -2032,12 +2032,15 @@ async function openSpecs(uid) {
       </div>` : ''}
 
       <!-- Ervaringen -->
-      <div style="margin-bottom:8px;">
-        <div style="font-size:11px;font-weight:800;letter-spacing:0.10em;text-transform:uppercase;color:var(--text3);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);">Ervaringen</div>
+      <div class="spec-red accent-bar accent-border glow-soft" style="border-radius:12px;padding:16px;margin-bottom:8px;position:relative;overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.08);">
+          <span style="color:oklch(0.62 0.21 25);display:flex;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;color:oklch(0.62 0.21 25);">Ervaringen</div>
+        </div>
         ${ervaringHtml}
         <div style="margin-top:12px;">
-          <input id="erv-naam" placeholder="Jouw naam" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:9px 11px;font-size:13px;margin-bottom:8px;box-sizing:border-box;" />
-          <textarea id="erv-tekst" placeholder="Deel je ervaring..." rows="3" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:9px 11px;font-size:13px;resize:none;box-sizing:border-box;"></textarea>
+          <input id="erv-naam" placeholder="Jouw naam" style="width:100%;background:var(--bg2);border:1px solid rgba(255,255,255,0.1);color:var(--text);border-radius:8px;padding:9px 11px;font-size:13px;margin-bottom:8px;box-sizing:border-box;font-family:'Geist','Barlow',sans-serif;" />
+          <textarea id="erv-tekst" placeholder="Deel je ervaring..." rows="3" style="width:100%;background:var(--bg2);border:1px solid rgba(255,255,255,0.1);color:var(--text);border-radius:8px;padding:9px 11px;font-size:13px;resize:none;box-sizing:border-box;font-family:'Geist','Barlow',sans-serif;"></textarea>
           <button class="submit-btn" onclick="voegErvaringToe(${uid})">Toevoegen</button>
         </div>
       </div>
