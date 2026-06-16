@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VehicleWiki</title>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&family=Geist:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0f0f0f;--bg2:#1a1a1a;--bg3:#242424;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.15);--text:#f0f0f0;--text2:#888;--text3:#555;--accent:#e8383d;--green:#2ecc71;--blue:#3498db;--gold:#DAA520;--radius:10px;--radius-lg:16px;}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font-size:15px;min-height:100vh;}
+body{background:var(--bg);color:var(--text);font-family:'Geist','Barlow',sans-serif;font-size:15px;min-height:100vh;}
 .screen{display:none;max-width:680px;margin:0 auto;padding:16px 16px 60px;}
 .screen.active{display:block;}
 .topnav{display:flex;align-items:center;justify-content:space-between;padding:12px 0 16px;border-bottom:1px solid var(--border);margin-bottom:18px;}
@@ -88,7 +88,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 .hero-band{border-radius:var(--radius-lg);padding:16px;margin-bottom:14px;display:flex;gap:14px;align-items:center;}
 .spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
 .spec-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;position:relative;overflow:hidden;transition:box-shadow 0.2s;}
-.spec-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;display:flex;align-items:center;gap:5px;}
+.spec-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;display:flex;align-items:center;gap:5px;line-height:1;font-family:'Geist','Barlow',sans-serif;font-weight:500;}
 .spec-value{font-size:20px;font-weight:600;font-family:'Barlow Condensed',sans-serif;}
 
 /* Categorie accentkleuren */
@@ -118,7 +118,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
   content:"";position:absolute;left:0;right:0;top:0;height:2px;
   background:linear-gradient(to right,transparent,var(--accent-clr,#888),transparent);
 }
-.sec{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin:14px 0 7px;}
+.sec{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin:14px 0 7px;display:flex;align-items:center;gap:6px;}
 .pro-con{display:flex;gap:8px;margin-bottom:6px;font-size:13px;align-items:flex-start;}
 .pro-dot{width:16px;height:16px;border-radius:50%;margin-top:1px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;}
 
@@ -1232,12 +1232,12 @@ async function zoekKenteken() {
       <div style="background:var(--bg2);border:2px solid #DAA520;border-radius:var(--radius-lg);padding:14px;margin-bottom:14px;">
         <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">Kenteken ${input}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-          ${cil ? `<div class="spec-card spec-amber accent-bar accent-border glow-soft"><div class="spec-label accent-text">⚙ Cilinders</div><div class="spec-value accent-text">${cil}</div></div>` : ''}
-          ${cc ? `<div class="spec-card spec-amber accent-bar accent-border glow-soft"><div class="spec-label accent-text">🔩 Cilinderinhoud</div><div class="spec-value accent-text">${cc}<span style="font-size:11px;opacity:0.7;margin-left:2px;">cc</span></div></div>` : ''}
-          ${gewicht ? `<div class="spec-card spec-blue accent-bar accent-border glow-soft"><div class="spec-label accent-text">⚖ Gewicht</div><div class="spec-value accent-text">${gewicht}<span style="font-size:11px;opacity:0.7;margin-left:2px;">kg</span></div></div>` : ''}
-          ${topsnelheid ? `<div class="spec-card spec-red accent-bar accent-border glow-soft"><div class="spec-label accent-text">💨 Topsnelheid</div><div class="spec-value accent-text">${topsnelheid}<span style="font-size:11px;opacity:0.7;margin-left:2px;">km/h</span></div></div>` : ''}
-          ${kw ? `<div class="spec-card spec-amber accent-bar accent-border glow-soft"><div class="spec-label accent-text">⚡ Vermogen (kW)</div><div class="spec-value accent-text">${kw}</div></div>` : ''}
-          ${brandstof ? `<div class="spec-card spec-green accent-bar accent-border glow-soft"><div class="spec-label accent-text">⛽ Brandstof</div><div class="spec-value accent-text" style="font-size:14px;">${brandstof}</div></div>` : ''}
+          ${cil ? `<div class="spec-card spec-amber accent-bar accent-border glow-soft"><div class="spec-label accent-text"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/><path d="M12 2v2"/><path d="M12 22v-2"/><path d="m17 20.66-1-1.73"/><path d="m7 3.34 1 1.73"/><path d="m20.66 17-1.73-1"/><path d="m3.34 7 1.73 1"/><path d="M14 12h8"/><path d="M2 12h2"/></svg> Cilinders</div><div class="spec-value accent-text">${cil}</div></div>` : ''}
+          ${cc ? `<div class="spec-card spec-amber accent-bar accent-border glow-soft"><div class="spec-label accent-text"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/></svg> Cilinderinhoud</div><div class="spec-value accent-text">${cc}<span style="font-size:11px;opacity:0.7;margin-left:2px;">cc</span></div></div>` : ''}
+          ${gewicht ? `<div class="spec-card spec-blue accent-bar accent-border glow-soft"><div class="spec-label accent-text"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg> Gewicht</div><div class="spec-value accent-text">${gewicht}<span style="font-size:11px;opacity:0.7;margin-left:2px;">kg</span></div></div>` : ''}
+          ${topsnelheid ? `<div class="spec-card spec-red accent-bar accent-border glow-soft"><div class="spec-label accent-text"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></svg> Topsnelheid</div><div class="spec-value accent-text">${topsnelheid}<span style="font-size:11px;opacity:0.7;margin-left:2px;">km/h</span></div></div>` : ''}
+          ${kw ? `<div class="spec-card spec-amber accent-bar accent-border glow-soft"><div class="spec-label accent-text"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg> Vermogen (kW)</div><div class="spec-value accent-text">${kw}</div></div>` : ''}
+          ${brandstof ? `<div class="spec-card spec-green accent-bar accent-border glow-soft"><div class="spec-label accent-text"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" x2="15" y1="22" y2="22"/><line x1="4" x2="14" y1="9" y2="9"/><path d="M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18"/><path d="M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 2 2a2 2 0 0 0 2-2V9.83a2 2 0 0 0-.59-1.42L18 5"/></svg> Brandstof</div><div class="spec-value accent-text" style="font-size:14px;">${brandstof}</div></div>` : ''}
           <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Catalogusprijs</div><div style="font-size:16px;font-weight:600;">${catalogus}</div></div>
           <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">APK vervaldatum</div><div style="font-size:16px;font-weight:600;">${apk}</div></div>
           <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;grid-column:1/-1;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Wegenbelasting (per kwartaal)</div><div style="font-size:16px;font-weight:600;">€${wbLaag} – €${wbHoog}</div></div>
@@ -1930,7 +1930,7 @@ async function openSpecs(uid) {
       <div style="margin-bottom:18px;">
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;">
           <h2 style="font-size:28px;font-weight:900;margin:0;letter-spacing:-0.5px;font-family:'Barlow Condensed',sans-serif;">${u.naam}</h2>
-          ${huidigGen?.huidig ? '<span style="background:#1a3a1a;color:#66dd99;font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;border:1px solid #66dd99;letter-spacing:0.06em;">HUIDIG MODEL</span>' : '<span style="background:#3a1a1a;color:#dd6666;font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;border:1px solid #dd6666;letter-spacing:0.06em;">OUDER MODEL</span>'}
+          ${huidigGen?.huidig ? '<span style="background:#1a3a1a;color:#66dd99;font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;border:1px solid #66dd99;letter-spacing:0.06em;display:inline-flex;align-items:center;gap:4px;"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg> HUIDIG MODEL</span>' : '<span style="background:#3a1a1a;color:#dd6666;font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;border:1px solid #dd6666;letter-spacing:0.06em;">OUDER MODEL</span>'}
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">
           <span style="font-size:13px;color:var(--text3);">${u.jaar ? u.jaar + (huidigGen?.huidig ? '-heden' : '') : ''}</span>
@@ -1945,20 +1945,20 @@ async function openSpecs(uid) {
       <!-- 4 grote stat blokken -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
         <div class="stat-blok stat-rood spec-red accent-bar accent-border glow-soft">
-          <div class="stat-label accent-text">⚡ Vermogen</div>
+          <div class="stat-label accent-text"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg> Vermogen</div>
           <div class="stat-waarde accent-text">${u.pk || '—'} <span class="stat-eenheid">pk</span></div>
           <div class="stat-sub">${u.pk ? Math.round(u.pk * 0.7355) + ' kW' : ''}</div>
         </div>
         <div class="stat-blok stat-oranje spec-red accent-bar accent-border glow-soft">
-          <div class="stat-label accent-text">🔧 Koppel</div>
+          <div class="stat-label accent-text"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> Koppel</div>
           <div class="stat-waarde accent-text">${u.nm || '—'} <span class="stat-eenheid">Nm</span></div>
         </div>
         <div class="stat-blok stat-blauw spec-amber accent-bar accent-border glow-soft">
-          <div class="stat-label accent-text">💨 Topsnelheid</div>
+          <div class="stat-label accent-text"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></svg> Topsnelheid</div>
           <div class="stat-waarde accent-text">${u.topsnelheid || '—'} <span class="stat-eenheid">km/h</span></div>
         </div>
         <div class="stat-blok stat-groen spec-green accent-bar accent-border glow-soft">
-          <div class="stat-label accent-text">⏱ 0-100 km/u</div>
+          <div class="stat-label accent-text"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg> 0-100 km/u</div>
           <div class="stat-waarde accent-text">${u.nul100 || '—'} <span class="stat-eenheid">s</span></div>
         </div>
       </div>
@@ -1966,19 +1966,19 @@ async function openSpecs(uid) {
       <!-- Specs grid -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
         ${u.cilinderinhoud ? `<div class="spec-card spec-amber accent-bar accent-border glow-soft">
-          <div class="spec-label accent-text">🔩 Cilinderinhoud</div>
+          <div class="spec-label accent-text"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/></svg> Cilinderinhoud</div>
           <div class="spec-value accent-text">${u.cilinderinhoud}<span style="font-size:11px;opacity:0.7;margin-left:2px;">cc</span></div>
         </div>` : ''}
         ${u.cilinders ? `<div class="spec-card spec-amber accent-bar accent-border glow-soft">
-          <div class="spec-label accent-text">⚙ Cilinders</div>
+          <div class="spec-label accent-text"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/><path d="M12 2v2"/><path d="M12 22v-2"/><path d="m17 20.66-1-1.73"/><path d="m7 3.34 1 1.73"/><path d="m20.66 17-1.73-1"/><path d="m3.34 7 1.73 1"/><path d="M14 12h8"/><path d="M2 12h2"/></svg> Cilinders</div>
           <div class="spec-value accent-text">${u.cilinders === 1 ? '1' : u.cilinders === 2 ? 'V2 / Twin' : u.cilinders === 3 ? 'Triple' : u.cilinders === 4 ? 'V4 / Inline-4' : u.cilinders === 6 ? 'Inline-6' : u.cilinders}</div>
         </div>` : ''}
         ${u.gewicht ? `<div class="spec-card spec-blue accent-bar accent-border glow-soft">
-          <div class="spec-label accent-text">⚖ Gewicht</div>
+          <div class="spec-label accent-text"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg> Gewicht</div>
           <div class="spec-value accent-text">${u.gewicht}<span style="font-size:11px;opacity:0.7;margin-left:2px;">kg</span></div>
         </div>` : ''}
         ${u.brandstof ? `<div class="spec-card spec-green accent-bar accent-border glow-soft">
-          <div class="spec-label accent-text">⛽ Brandstof</div>
+          <div class="spec-label accent-text"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" x2="15" y1="22" y2="22"/><line x1="4" x2="14" y1="9" y2="9"/><path d="M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18"/><path d="M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 2 2a2 2 0 0 0 2-2V9.83a2 2 0 0 0-.59-1.42L18 5"/></svg> Brandstof</div>
           <div class="spec-value accent-text" style="font-size:14px;">${u.brandstof}</div>
         </div>` : ''}
       </div>
@@ -1986,11 +1986,11 @@ async function openSpecs(uid) {
       <!-- Verbruik + Wegenbelasting -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
         ${u.verbruik ? `<div class="spec-card spec-green accent-bar accent-border glow-soft">
-          <div class="spec-label accent-text">💧 Verbruik</div>
+          <div class="spec-label accent-text"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg> Verbruik</div>
           <div class="spec-value accent-text">${u.verbruik}<span style="font-size:11px;opacity:0.7;margin-left:2px;">L/100km</span></div>
         </div>` : ''}
         <div class="spec-card spec-green accent-bar accent-border glow-soft">
-          <div class="spec-label accent-text">🚗 Wegenbelasting</div>
+          <div class="spec-label accent-text"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></svg> Wegenbelasting</div>
           <div class="spec-value accent-text" style="font-size:15px;">€${wbLaag} – €${wbHoog}<span style="font-size:10px;opacity:0.7;margin-left:3px;">/ kwartaal</span></div>
         </div>
       </div>
@@ -2000,11 +2000,11 @@ async function openSpecs(uid) {
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
         <div class="pros-sectie">
           <div class="pros-titel">✓ Voordelen</div>
-          ${pros.map(p => `<div style="display:flex;gap:8px;margin-bottom:7px;align-items:flex-start;"><span style="color:oklch(0.72 0.17 150);font-size:14px;flex-shrink:0;margin-top:1px;">✓</span><span style="font-size:12px;line-height:1.5;color:var(--text2);">${p.tekst}</span></div>`).join('')}
+          ${pros.map(p => `<div style="display:flex;gap:8px;margin-bottom:7px;align-items:flex-start;"><span style="color:oklch(0.72 0.17 150);flex-shrink:0;display:flex;align-items:center;margin-top:2px;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span style="font-size:12px;line-height:1.5;color:var(--text2);">${p.tekst}</span></div>`).join('')}
         </div>
         <div class="cons-sectie">
           <div class="cons-titel">✗ Nadelen</div>
-          ${cons.map(c => `<div style="display:flex;gap:8px;margin-bottom:7px;align-items:flex-start;"><span style="color:oklch(0.64 0.21 25);font-size:14px;flex-shrink:0;margin-top:1px;">✗</span><span style="font-size:12px;line-height:1.5;color:var(--text2);">${c.tekst}</span></div>`).join('')}
+          ${cons.map(c => `<div style="display:flex;gap:8px;margin-bottom:7px;align-items:flex-start;"><span style="color:oklch(0.64 0.21 25);flex-shrink:0;display:flex;align-items:center;margin-top:2px;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span><span style="font-size:12px;line-height:1.5;color:var(--text2);">${c.tekst}</span></div>`).join('')}
         </div>
       </div>` : ''}
 
@@ -2017,7 +2017,7 @@ async function openSpecs(uid) {
       ${huidigGen?.weetje ? `
       <div style="position:relative;background:linear-gradient(135deg,#0d1a0d,#0a120a);border:1px solid rgba(50,200,100,0.4);border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 0 20px rgba(50,200,100,0.15),inset 0 1px 0 rgba(100,255,150,0.1);">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-          <span style="font-size:16px;">💡</span>
+          <span style="color:oklch(0.72 0.17 150);display:flex;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></span>
           <div style="font-size:9px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#66dd99;">Weetje</div>
         </div>
         <p style="font-size:13px;color:#aaffcc;line-height:1.7;margin:0;">${huidigGen.weetje}</p>
@@ -2088,9 +2088,10 @@ async function stuurFoutmelding(uid) {
 }
 
 function bc(items) {
-  return items.map((item,i) => i < items.length-1
-    ? `<span>${item}</span><span style="color:var(--text3);">›</span>`
-    : `<span style="color:var(--text);font-weight:500;">${item}</span>`
+  const filtered = items.filter(Boolean);
+  return filtered.map((item,i) => i < filtered.length-1
+    ? `<span style="color:var(--text3);font-size:12px;">${item}</span><span style="color:var(--text3);opacity:0.5;display:inline-flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>`
+    : `<span style="color:oklch(0.62 0.21 25);font-weight:600;font-size:12px;">${item}</span>`
   ).join('');
 }
 
