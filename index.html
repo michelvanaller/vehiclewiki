@@ -86,13 +86,49 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 .pill.gold{background:rgba(218,165,32,0.15);color:#B8860B;}
 .special-badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(39,174,96,0.15);color:#27AE60;border:0.5px solid rgba(39,174,96,0.3);margin-left:6px;vertical-align:middle;}
 .hero-band{border-radius:var(--radius-lg);padding:16px;margin-bottom:14px;display:flex;gap:14px;align-items:center;}
-.spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
-.spec-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;}
-.spec-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;}
-.spec-value{font-size:18px;font-weight:600;font-family:'Barlow Condensed',sans-serif;}
+.spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.spec-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;position:relative;overflow:hidden;transition:box-shadow 0.2s;}
+.spec-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;display:flex;align-items:center;gap:5px;}
+.spec-value{font-size:20px;font-weight:600;font-family:'Barlow Condensed',sans-serif;}
+
+/* Categorie accentkleuren */
+.spec-red{--accent-clr:oklch(0.64 0.21 25);}
+.spec-amber{--accent-clr:oklch(0.78 0.16 75);}
+.spec-green{--accent-clr:oklch(0.72 0.17 150);}
+.spec-blue{--accent-clr:oklch(0.7 0.14 235);}
+
+/* Rand in accentkleur */
+.accent-border{border-color:color-mix(in oklch,var(--accent-clr,#888) 45%,transparent)!important;}
+
+/* Tekst in accentkleur */
+.accent-text{color:var(--accent-clr,#888);}
+
+/* Subtiele gloed */
+.glow-soft{
+  box-shadow:0 0 0 1px color-mix(in oklch,var(--accent-clr,#888) 20%,transparent),
+  0 8px 24px -12px color-mix(in oklch,var(--accent-clr,#888) 55%,transparent);
+}
+.glow-soft:hover{
+  box-shadow:0 0 0 1px color-mix(in oklch,var(--accent-clr,#888) 40%,transparent),
+  0 10px 30px -10px color-mix(in oklch,var(--accent-clr,#888) 65%,transparent);
+}
+
+/* Dunne lijn bovenaan */
+.accent-bar::before{
+  content:"";position:absolute;left:0;right:0;top:0;height:2px;
+  background:linear-gradient(to right,transparent,var(--accent-clr,#888),transparent);
+}
 .sec{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin:14px 0 7px;}
-.pro-con{display:flex;gap:8px;margin-bottom:5px;font-size:13px;align-items:flex-start;}
-.pro-dot{width:6px;height:6px;border-radius:50%;margin-top:5px;flex-shrink:0;}
+.pro-con{display:flex;gap:8px;margin-bottom:6px;font-size:13px;align-items:flex-start;}
+.pro-dot{width:16px;height:16px;border-radius:50%;margin-top:1px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;}
+
+/* Pros/Cons secties */
+.pros-sectie{background:rgba(39,174,96,0.06);border:1px solid rgba(39,174,96,0.25);border-radius:12px;padding:14px;position:relative;overflow:hidden;}
+.pros-sectie::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(to right,transparent,oklch(0.72 0.17 150),transparent);}
+.cons-sectie{background:rgba(220,50,50,0.06);border:1px solid rgba(220,50,50,0.25);border-radius:12px;padding:14px;position:relative;overflow:hidden;}
+.cons-sectie::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(to right,transparent,oklch(0.64 0.21 25),transparent);}
+.pros-titel{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:oklch(0.72 0.17 150);margin-bottom:10px;}
+.cons-titel{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:oklch(0.64 0.21 25);margin-bottom:10px;}
 .beschrijving{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:14px;}
 .spec-badge{display:inline-block;font-size:11px;padding:3px 10px;border-radius:20px;background:rgba(204,0,0,0.15);color:#CC0000;border:0.5px solid rgba(204,0,0,0.3);margin-bottom:12px;margin-right:6px;}
 .comment-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:11px 13px;margin-bottom:7px;}
@@ -1195,13 +1231,13 @@ async function zoekKenteken() {
       </div>
       <div style="background:var(--bg2);border:2px solid #DAA520;border-radius:var(--radius-lg);padding:14px;margin-bottom:14px;">
         <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">Kenteken ${input}</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Cilinders</div><div style="font-size:16px;font-weight:600;">${cil}</div></div>
-          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Cilinderinhoud</div><div style="font-size:16px;font-weight:600;">${cc}cc</div></div>
-          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Gewicht</div><div style="font-size:16px;font-weight:600;">${gewicht} kg</div></div>
-          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Topsnelheid</div><div style="font-size:16px;font-weight:600;">${topsnelheid} km/h</div></div>
-          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Vermogen</div><div style="font-size:16px;font-weight:600;">${kw}</div></div>
-          <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Brandstof</div><div style="font-size:16px;font-weight:600;">${brandstof}</div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          ${cil ? `<div class="spec-card spec-amber accent-bar accent-border glow-soft"><div class="spec-label accent-text">⚙ Cilinders</div><div class="spec-value accent-text">${cil}</div></div>` : ''}
+          ${cc ? `<div class="spec-card spec-amber accent-bar accent-border glow-soft"><div class="spec-label accent-text">🔩 Cilinderinhoud</div><div class="spec-value accent-text">${cc}<span style="font-size:11px;opacity:0.7;margin-left:2px;">cc</span></div></div>` : ''}
+          ${gewicht ? `<div class="spec-card spec-blue accent-bar accent-border glow-soft"><div class="spec-label accent-text">⚖ Gewicht</div><div class="spec-value accent-text">${gewicht}<span style="font-size:11px;opacity:0.7;margin-left:2px;">kg</span></div></div>` : ''}
+          ${topsnelheid ? `<div class="spec-card spec-red accent-bar accent-border glow-soft"><div class="spec-label accent-text">💨 Topsnelheid</div><div class="spec-value accent-text">${topsnelheid}<span style="font-size:11px;opacity:0.7;margin-left:2px;">km/h</span></div></div>` : ''}
+          ${kw ? `<div class="spec-card spec-amber accent-bar accent-border glow-soft"><div class="spec-label accent-text">⚡ Vermogen (kW)</div><div class="spec-value accent-text">${kw}</div></div>` : ''}
+          ${brandstof ? `<div class="spec-card spec-green accent-bar accent-border glow-soft"><div class="spec-label accent-text">⛽ Brandstof</div><div class="spec-value accent-text" style="font-size:14px;">${brandstof}</div></div>` : ''}
           <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Catalogusprijs</div><div style="font-size:16px;font-weight:600;">${catalogus}</div></div>
           <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">APK vervaldatum</div><div style="font-size:16px;font-weight:600;">${apk}</div></div>
           <div style="background:var(--bg3);border-radius:var(--radius);padding:9px 11px;grid-column:1/-1;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Wegenbelasting (per kwartaal)</div><div style="font-size:16px;font-weight:600;">€${wbLaag} – €${wbHoog}</div></div>
@@ -1853,16 +1889,16 @@ async function openSpecs(uid) {
       }
     }
 
-    const specCardColored = (label, value, unit='', bg='rgba(218,165,32,0.1)', kleur='#B8860B') =>
+    const specCard = (label, value, unit='', cat='amber', icon='') =>
       value !== null && value !== undefined && value !== '' && value !== 0
-      ? `<div style="background:${bg};border-radius:10px;padding:10px 12px;">
-          <div style="font-size:10px;color:${kleur};text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">${label}</div>
-          <div><span style="font-size:${String(value).length > 8 ? '15' : '20'}px;font-weight:500;color:${kleur};">${value}</span>${unit ? `<span style="font-size:11px;color:${kleur};margin-left:3px;">${unit}</span>` : ''}</div>
+      ? `<div class="spec-card spec-${cat} accent-bar accent-border glow-soft">
+          <div class="spec-label accent-text">${icon ? `<span style="font-size:13px;">${icon}</span>` : ''}<span>${label}</span></div>
+          <div><span class="spec-value accent-text" style="font-size:${String(value).length > 8 ? '15' : '20'}px;">${value}</span>${unit ? `<span style="font-size:11px;opacity:0.7;margin-left:3px;">${unit}</span>` : ''}</div>
         </div>` : '';
-    const prestCard = (label, value, unit='') => specCardColored(label, value, unit, 'rgba(232,56,61,0.1)', '#e8383d');
-    const motorCard = (label, value, unit='') => specCardColored(label, value, unit, 'rgba(218,165,32,0.1)', '#B8860B');
-    const afmCard = (label, value, unit='') => specCardColored(label, value, unit, 'rgba(52,152,219,0.1)', '#2980b9');
-    const milieuCard = (label, value, unit='') => specCardColored(label, value, unit, 'rgba(39,174,96,0.1)', '#27AE60');
+    const prestCard = (label, value, unit='', icon='') => specCard(label, value, unit, 'red', icon);
+    const motorCard = (label, value, unit='', icon='') => specCard(label, value, unit, 'amber', icon);
+    const afmCard = (label, value, unit='', icon='') => specCard(label, value, unit, 'blue', icon);
+    const milieuCard = (label, value, unit='', icon='') => specCard(label, value, unit, 'green', icon);
     const isElektrisch = u.brandstof && u.brandstof.includes('elektrisch');
 
     document.getElementById('spec-content').innerHTML = `
@@ -1908,22 +1944,22 @@ async function openSpecs(uid) {
 
       <!-- 4 grote stat blokken -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
-        <div class="stat-blok stat-rood">
-          <div class="stat-label" style="color:#ff6b6b;">Vermogen</div>
-          <div class="stat-waarde" style="color:#ff6b6b;">${u.pk || '—'} <span class="stat-eenheid">pk</span></div>
+        <div class="stat-blok stat-rood spec-red accent-bar accent-border glow-soft">
+          <div class="stat-label accent-text">⚡ Vermogen</div>
+          <div class="stat-waarde accent-text">${u.pk || '—'} <span class="stat-eenheid">pk</span></div>
           <div class="stat-sub">${u.pk ? Math.round(u.pk * 0.7355) + ' kW' : ''}</div>
         </div>
-        <div class="stat-blok stat-oranje">
-          <div class="stat-label" style="color:#ffb347;">Koppel</div>
-          <div class="stat-waarde" style="color:#ffb347;">${u.nm || '—'} <span class="stat-eenheid">Nm</span></div>
+        <div class="stat-blok stat-oranje spec-red accent-bar accent-border glow-soft">
+          <div class="stat-label accent-text">🔧 Koppel</div>
+          <div class="stat-waarde accent-text">${u.nm || '—'} <span class="stat-eenheid">Nm</span></div>
         </div>
-        <div class="stat-blok stat-blauw">
-          <div class="stat-label" style="color:#66aaff;">Topsnelheid</div>
-          <div class="stat-waarde" style="color:#66aaff;">${u.topsnelheid || '—'} <span class="stat-eenheid">km/h</span></div>
+        <div class="stat-blok stat-blauw spec-amber accent-bar accent-border glow-soft">
+          <div class="stat-label accent-text">💨 Topsnelheid</div>
+          <div class="stat-waarde accent-text">${u.topsnelheid || '—'} <span class="stat-eenheid">km/h</span></div>
         </div>
-        <div class="stat-blok stat-groen">
-          <div class="stat-label" style="color:#66dd99;">0-100 km/u</div>
-          <div class="stat-waarde" style="color:#66dd99;">${u.nul100 || '—'} <span class="stat-eenheid">s</span></div>
+        <div class="stat-blok stat-groen spec-green accent-bar accent-border glow-soft">
+          <div class="stat-label accent-text">⏱ 0-100 km/u</div>
+          <div class="stat-waarde accent-text">${u.nul100 || '—'} <span class="stat-eenheid">s</span></div>
         </div>
       </div>
 
@@ -1961,14 +1997,14 @@ async function openSpecs(uid) {
 
       <!-- Pros / Cons -->
       ${pros.length || cons.length ? `
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
-        <div class="pros-box">
-          <div class="stat-label" style="color:#66dd99;margin-bottom:8px;">Voordelen</div>
-          ${pros.map(p => `<div style="display:flex;gap:6px;margin-bottom:5px;"><span style="color:#55c080;font-size:13px;flex-shrink:0;">✓</span><span style="font-size:12px;font-weight:600;">${p.tekst}</span></div>`).join('')}
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+        <div class="pros-sectie">
+          <div class="pros-titel">✓ Voordelen</div>
+          ${pros.map(p => `<div style="display:flex;gap:8px;margin-bottom:7px;align-items:flex-start;"><span style="color:oklch(0.72 0.17 150);font-size:14px;flex-shrink:0;margin-top:1px;">✓</span><span style="font-size:12px;line-height:1.5;color:var(--text2);">${p.tekst}</span></div>`).join('')}
         </div>
-        <div class="cons-box">
-          <div class="stat-label" style="color:#ff6b6b;margin-bottom:8px;">Nadelen</div>
-          ${cons.map(c => `<div style="display:flex;gap:6px;margin-bottom:5px;"><span style="color:#e05555;font-size:13px;flex-shrink:0;">⚠</span><span style="font-size:12px;font-weight:600;">${c.tekst}</span></div>`).join('')}
+        <div class="cons-sectie">
+          <div class="cons-titel">✗ Nadelen</div>
+          ${cons.map(c => `<div style="display:flex;gap:8px;margin-bottom:7px;align-items:flex-start;"><span style="color:oklch(0.64 0.21 25);font-size:14px;flex-shrink:0;margin-top:1px;">✗</span><span style="font-size:12px;line-height:1.5;color:var(--text2);">${c.tekst}</span></div>`).join('')}
         </div>
       </div>` : ''}
 
