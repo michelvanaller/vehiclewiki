@@ -449,7 +449,7 @@ body{background:var(--bg);color:var(--text);font-family:'Geist','Barlow',sans-se
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:13px;margin-bottom:12px;">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
         <div><label style="font-size:10px;color:var(--text3);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.06em;">Categorie</label>
-          <select id="f-cat" onchange="doSearch()" style="width:100%;padding:6px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--bg2);color:var(--text);font-size:12px;font-family:'Barlow',sans-serif;">
+          <select id="f-cat" onchange="initZoekMerken();doSearch()" style="width:100%;padding:6px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--bg2);color:var(--text);font-size:12px;font-family:'Barlow',sans-serif;">
             <option value="">Alle voertuigen</option>
             <option value="motor">Motoren</option>
             <option value="auto">Auto's</option>
@@ -959,9 +959,11 @@ let zoekTimeout = null;
 async function initZoekMerken() {
   const sel = document.getElementById('f-merk');
   if (!sel) return;
-  // Altijd opnieuw vullen zodat alle merken zichtbaar zijn
+  const fCat = document.getElementById('f-cat').value;
   sel.innerHTML = '<option value="">Alle merken</option>';
-  const sorted = [...merkenData].sort((a,b) => a.naam.localeCompare(b.naam));
+  const sorted = [...merkenData]
+    .filter(m => !fCat || m.categorie === fCat)
+    .sort((a,b) => a.naam.localeCompare(b.naam));
   sorted.forEach(m => {
     const opt = document.createElement('option');
     opt.value = m.id;
