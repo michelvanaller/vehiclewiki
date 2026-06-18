@@ -1048,7 +1048,7 @@ function doSearch() {
         }
       }
 
-      let params = 'select=id,naam,jaar,pk,nm,nul100,topsnelheid,gewicht,prijs,brandstof,carrosserie,cilinders,cilinderinhoud,special,model_id,stoelen,kofferbak,actieradius,verbruik&limit=5000';
+      let params = 'select=id,naam,jaar,pk,nm,nul100,topsnelheid,gewicht,prijs,brandstof,carrosserie,cilinders,cilinderinhoud,special,model_id,stoelen,kofferbak,actieradius,verbruik&limit=2000';
       if (fPk > 0) params += `&pk=gte.${fPk}`;
       if (fBrand) params += `&brandstof=ilike.${fBrand}`; // exact maar case insensitive
 
@@ -1062,12 +1062,19 @@ function doSearch() {
         params += `&model_id=in.(${toegestaneModIds.join(',')})`;
       }
 
-      let uitvoeringen = await db('uitvoeringen', params);
-
-      // Filter achteraf als lijst te groot was
+      // Haal uitvoeringen op in meerdere batches als er veel modellen zijn
+      let uitvoeringen = [];
       if (toegestaneModIds && toegestaneModIds.length > 400) {
-        const modSet = new Set(toegestaneModIds);
-        uitvoeringen = uitvoeringen.filter(u => modSet.has(u.model_id));
+        // Batch ophalen per 1000 model IDs
+        const modIds = toegestaneModIds;
+        for (let i = 0; i < modIds.length; i += 1000) {
+          const batch = modIds.slice(i, i + 1000);
+          const batchParams = params + `&model_id=in.(${batch.join(',')})`;
+          const batchResult = await db('uitvoeringen', batchParams);
+          if (batchResult) uitvoeringen.push(...batchResult);
+        }
+      } else {
+        uitvoeringen = await db('uitvoeringen', params) || [];
       }
 
       if (q) uitvoeringen = uitvoeringen.filter(u => u.naam.toLowerCase().includes(q));
