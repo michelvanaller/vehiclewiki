@@ -1095,7 +1095,13 @@ function doSearch() {
       });
 
       const sort = document.getElementById('f-sort').value;
-      if (sort === 'pk') uitvoeringen.sort((a,b) => b.pk - a.pk);
+      if (sort === 'naam') uitvoeringen.sort((a,b) => {
+        const merkA = (a.merkNaam || '').toLowerCase();
+        const merkB = (b.merkNaam || '').toLowerCase();
+        if (merkA !== merkB) return merkA.localeCompare(merkB);
+        return (a.naam || '').toLowerCase().localeCompare((b.naam || '').toLowerCase());
+      });
+      else if (sort === 'pk') uitvoeringen.sort((a,b) => b.pk - a.pk);
       else if (sort === 'nm') uitvoeringen.sort((a,b) => b.nm - a.nm);
       else if (sort === 'topsnelheid') uitvoeringen.sort((a,b) => b.topsnelheid - a.topsnelheid);
       else if (sort === 'nul100') uitvoeringen.sort((a,b) => a.nul100 - b.nul100);
@@ -1106,7 +1112,7 @@ function doSearch() {
       else if (sort === 'verbruik_laag') uitvoeringen.sort((a,b) => a.verbruik - b.verbruik);
       else if (sort === 'prijs') uitvoeringen.sort((a,b) => parseInt(a.prijs||999999) - parseInt(b.prijs||999999));
       else if (sort === 'prijs_hoog') uitvoeringen.sort((a,b) => parseInt(b.prijs||0) - parseInt(a.prijs||0));
-      else uitvoeringen.sort((a,b) => a.naam.localeCompare(b.naam));
+      else uitvoeringen.sort((a,b) => { const ma = (a.merkNaam||'') + ' ' + a.naam; const mb = (b.merkNaam||'') + ' ' + b.naam; return ma.localeCompare(mb); });
 
       document.getElementById('res-count').textContent = `${uitvoeringen.length} resultaat${uitvoeringen.length !== 1 ? 'en' : ''}`;
 
