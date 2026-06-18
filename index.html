@@ -1105,7 +1105,12 @@ function doSearch() {
       else if (sort === 'nm') uitvoeringen.sort((a,b) => b.nm - a.nm);
       else if (sort === 'topsnelheid') uitvoeringen.sort((a,b) => b.topsnelheid - a.topsnelheid);
       else if (sort === 'nul100') uitvoeringen.sort((a,b) => a.nul100 - b.nul100);
-      else if (sort === 'cilinders') uitvoeringen.sort((a,b) => b.cilinders - a.cilinders);
+      else if (sort === 'cilinders') uitvoeringen.sort((a,b) => {
+        const ca = parseInt(a.cilinders) || 0;
+        const cb = parseInt(b.cilinders) || 0;
+        if (cb !== ca) return cb - ca;
+        return (a.merkNaam||'').localeCompare(b.merkNaam||'');
+      });
       else if (sort === 'stoelen') uitvoeringen.sort((a,b) => b.stoelen - a.stoelen);
       else if (sort === 'kofferbak') uitvoeringen.sort((a,b) => b.kofferbak - a.kofferbak);
       else if (sort === 'actieradius') uitvoeringen.sort((a,b) => b.actieradius - a.actieradius);
