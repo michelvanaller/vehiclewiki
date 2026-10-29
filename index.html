@@ -551,18 +551,31 @@ body{background:var(--bg);color:var(--text);font-family:'Geist','Barlow',sans-se
       <div id="admin-evenementen"></div>
     </div>
 
-    <!-- AI Weetje Generator -->
+    <!-- AI Generator v2 -->
     <div style="background:var(--bg2);border:1px solid rgba(100,100,255,0.4);border-radius:var(--radius-lg);padding:14px;margin-bottom:12px;box-shadow:0 0 15px rgba(80,80,255,0.1);">
-      <div style="font-size:12px;font-weight:700;color:#8888ff;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">⚡ AI Pros/Cons Generator</div>
-      <div style="font-size:12px;color:var(--text2);margin-bottom:12px;">Genereert automatisch specifieke pros/cons en weetjes per model. Kies een merk en klik Start.</div>
-      <select id="ai-merk-select" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px;margin-bottom:10px;font-size:13px;">
+      <div style="font-size:12px;font-weight:700;color:#8888ff;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">⚡ AI Database Generator v2</div>
+      <div style="font-size:11px;color:var(--text2);margin-bottom:12px;line-height:1.5;">
+        <b style="color:#ffaa44;">Fase 1:</b> Bouwt volledige geschiedenis (generaties→modellen→uitvoeringen) per familie.<br>
+        <b style="color:#44ffaa;">Fase 2:</b> Genereert pros/cons per uitvoering + weetje/verhaal per generatie.
+      </div>
+
+      <select id="ai-merk-select" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px;margin-bottom:8px;font-size:13px;">
         <option value="">-- Kies een merk --</option>
       </select>
-      <div style="display:flex;gap:8px;margin-bottom:10px;">
-        <button onclick="laadAIModellen()" style="flex:1;background:var(--bg3);border:1px solid rgba(100,100,255,0.4);color:#8888ff;border-radius:8px;padding:9px;font-weight:700;cursor:pointer;font-size:12px;">Laad modellen</button>
-        <button onclick="startAIGenerator()" style="flex:1;background:rgba(100,100,255,0.2);border:1px solid rgba(100,100,255,0.6);color:#aaaaff;border-radius:8px;padding:9px;font-weight:700;cursor:pointer;font-size:12px;">▶ Start genereren</button>
+      <select id="ai-familie-select" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px;margin-bottom:10px;font-size:13px;">
+        <option value="">-- Alle families of kies één --</option>
+      </select>
+
+      <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;">
+        <button onclick="laadAIFamilies()" style="flex:1;min-width:120px;background:var(--bg3);border:1px solid rgba(100,100,255,0.4);color:#8888ff;border-radius:8px;padding:8px;font-weight:700;cursor:pointer;font-size:11px;">📋 Laad families</button>
+        <button onclick="startFase1()" style="flex:1;min-width:120px;background:rgba(255,150,50,0.15);border:1px solid rgba(255,150,50,0.5);color:#ffaa44;border-radius:8px;padding:8px;font-weight:700;cursor:pointer;font-size:11px;">🏗️ Fase 1: Opbouwen</button>
+        <button onclick="startFase2()" style="flex:1;min-width:120px;background:rgba(50,200,100,0.15);border:1px solid rgba(50,200,100,0.5);color:#44ffaa;border-radius:8px;padding:8px;font-weight:700;cursor:pointer;font-size:11px;">✍️ Fase 2: Content</button>
       </div>
-      <div id="ai-voortgang" style="display:none;background:var(--bg3);border-radius:8px;padding:10px;font-size:12px;color:var(--text2);line-height:1.6;max-height:300px;overflow-y:auto;"></div>
+      <div style="display:flex;gap:6px;margin-bottom:10px;">
+        <button onclick="stopAIGenerator()" style="flex:1;background:rgba(255,50,50,0.15);border:1px solid rgba(255,50,50,0.4);color:#ff6666;border-radius:8px;padding:7px;font-weight:700;cursor:pointer;font-size:11px;">⏹ Stop</button>
+        <button onclick="document.getElementById('ai-voortgang').innerHTML=''" style="flex:1;background:var(--bg3);border:1px solid var(--border);color:var(--text2);border-radius:8px;padding:7px;cursor:pointer;font-size:11px;">🗑 Wis log</button>
+      </div>
+      <div id="ai-voortgang" style="display:block;background:var(--bg3);border-radius:8px;padding:10px;font-size:11px;color:var(--text2);line-height:1.7;max-height:350px;overflow-y:auto;"></div>
     </div>
   </div>
   <div id="ht-kenteken" style="display:none;">
