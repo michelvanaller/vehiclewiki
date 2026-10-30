@@ -3013,8 +3013,14 @@ renderMerken('all');
 
         // STAP 1: Vraag lijst van generaties op
         const voertuigType = merk.categorie === 'motor' ? 'motorfiets' : 'auto';
-        const genListPrompt = `Geef een lijst van ALLE generaties van de ${merk.naam} ${familie.naam} ${voertuigType} als JSON array. Alleen namen en periodes, geen modellen. Gebruik dit formaat:
-{"generaties":[{"naam":"Eerste generatie","periode":"1992-1999"},{"naam":"Tweede generatie","periode":"2000-2008"}]}
+        const genListPrompt = `Geef een lijst van ALLE technische generaties van de ${merk.naam} ${familie.naam} ${voertuigType} als JSON array.
+
+LET OP: een "generatie" is een tijdperk met een nieuw platform/chassis/motor — NIET een modelnaam of uitvoering.
+Gebruik altijd namen zoals "Eerste generatie", "Tweede generatie" etc. of "Gen 1", "Gen 2" — nooit modelnamen zoals "Panigale V4" of "1199" als generatienaam.
+
+Voorbeeld voor Ducati Panigale:
+{"generaties":[{"naam":"Eerste generatie","periode":"2012-2014"},{"naam":"Tweede generatie","periode":"2015-2017"},{"naam":"Derde generatie","periode":"2018-2021"},{"naam":"Vierde generatie","periode":"2022-heden"}]}
+
 Geef ALLEEN de JSON, geen tekst eromheen.`;
         const genListTekst = await aiVraagClaude(genListPrompt, 800);
         const genListParsed = parseJSON(genListTekst);
@@ -3070,10 +3076,11 @@ Geef ALLEEN de JSON, geen tekst eromheen.`;
 }
 
 REGELS:
-- Alleen modellen voor generatie "${genInfo.naam}" (${genInfo.periode})
-- Per model: standaard versie, S/sport versie, speciale versies indien van toepassing
+- De generatienaam in het JSON moet altijd "${genInfo.naam}" zijn — verander deze NIET naar een modelnaam
+- Alleen modellen uit de periode ${genInfo.periode}
+- "modellen" = de verschillende motorvarianten (bijv. "1199 Panigale", "1199 Panigale S", "1199 Panigale R")
+- "uitvoeringen" = versies van dat model per jaar (bijv. "1199 Panigale 2012", "1199 Panigale 2013")
 - Specs op basis van jouw kennis, null als onbekend
-- Schrijf namen in het Nederlands
 - Geef ALLEEN de JSON, geen tekst eromheen`;
 
           const tekst = await aiVraagClaude(prompt, 3000);
