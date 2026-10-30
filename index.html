@@ -3004,9 +3004,25 @@ renderMerken('all');
         await sbDelete('generaties', `family_id=eq.${familie.id}`);
         aiLog(`  🗑️ Oude data verwijderd`, '#888888');
 
-        // Vraag Claude om volledige geschiedenis
+        // STAP 1: Vraag lijst van generaties op
         const voertuigType = merk.categorie === 'motor' ? 'motorfiets' : 'auto';
-        const prompt = `Geef de VOLLEDIGE geschiedenis van de ${merk.naam} ${familie.naam} ${voertuigType} in dit exacte JSON formaat. Gebruik ALLEEN dit formaat, geen tekst eromheen:
+        const genListPrompt = `Geef een lijst van ALLE generaties van de ${merk.naam} ${familie.naam} ${voertuigType} als JSON array. Alleen namen en periodes, geen modellen. Gebruik dit formaat:
+{"generaties":[{"naam":"Eerste generatie","periode":"1992-1999"},{"naam":"Tweede generatie","periode":"2000-2008"}]}
+Geef ALLEEN de JSON, geen tekst eromheen.`;
+        const genListTekst = await aiVraagClaude(genListPrompt, 800);
+        const genListParsed = parseJSON(genListTekst);
+        if (!genListParsed?.generaties) {
+          aiLog(`  ❌ Kon generatielijst niet ophalen: ${genListTekst.substring(0,80)}`, '#ff6666');
+          continue;
+        }
+        aiLog(`  📋 ${genListParsed.generaties.length} generaties gevonden`, '#aaaaaa');
+
+        // STAP 2: Per generatie apart modellen + uitvoeringen ophalen
+        for (const genInfo of genListParsed.generaties) {
+          if (aiStopGevraagd) break;
+          aiLog(`  🔄 ${genInfo.naam} (${genInfo.periode})...`, '#ffdd88');
+
+          const prompt = `Geef de modellen en uitvoeringen van de ${merk.naam} ${familie.naam} generatie "${genInfo.naam}" (${genInfo.periode}) als JSON. Gebruik dit exacte formaat:
 
 {
   "generaties": [
@@ -3034,9 +3050,10 @@ renderMerken('all');
               "carrosserie": "Sedan",
               "deuren": 4,
               "stoelen": 5,
-              "prijs": "€12.000",
-              "verbruik": 9.5,
-              "aandrijving": "RWD"
+              "prijs": null,
+              "verbruik": null,
+              "aandrijving": null,
+              "special": false
             }
           ]
         }
@@ -3046,37 +3063,40 @@ renderMerken('all');
 }
 
 REGELS:
-- Geef ALLE generaties van begin tot nu, chronologisch
-- Per generatie: de belangrijkste modellen (niet elk trim level, maar de hoofdvarianten)
-- Per model: de meest relevante uitvoeringen (standaard, S/sport versie, topversie)
-- Gebruik realistische specs op basis van jouw kennis
-- Velden die je niet weet: gebruik null
-- Schrijf in het Nederlands
-- Merk: ${merk.naam}, Familie: ${familie.naam}`;
+- Alleen modellen voor generatie "${genInfo.naam}" (${genInfo.periode})
+- Per model: standaard versie, S/sport versie, speciale versies indien van toepassing
+- Specs op basis van jouw kennis, null als onbekend
+- Schrijf namen in het Nederlands
+- Geef ALLEEN de JSON, geen tekst eromheen`;
 
-        const tekst = await aiVraagClaude(prompt, 4000);
-        const parsed = parseJSON(tekst);
+          const tekst = await aiVraagClaude(prompt, 3000);
+          const parsed = parseJSON(tekst);
 
-        if (!parsed?.generaties || !Array.isArray(parsed.generaties)) {
-          aiLog(`  ❌ JSON parse fout — response: ${tekst.substring(0,100)}`, '#ff6666');
-          continue;
-        }
+          if (!parsed?.generaties?.[0]) {
+            aiLog(`    ❌ Parse fout: ${tekst.substring(0,80)}`, '#ff6666');
+            // Sla generatie toch op zonder modellen
+            await sbPost('generaties', {
+              family_id: familie.id,
+              naam: genInfo.naam,
+              periode: genInfo.periode || null,
+              huidig: genInfo.periode ? genInfo.periode.toLowerCase().includes('heden') : false
+            });
+            continue;
+          }
 
-        aiLog(`  ✅ ${parsed.generaties.length} generaties ontvangen`, '#44ffaa');
+          const gen = parsed.generaties[0];
 
-        // Sla alles op in Supabase
-        for (const gen of parsed.generaties) {
           // Maak generatie aan
           const genResult = await sbPostReturn('generaties', {
             family_id: familie.id,
-            naam: gen.naam,
-            periode: gen.periode || null,
+            naam: genInfo.naam,
+            periode: genInfo.periode || null,
             weetje: gen.weetje || null,
             verhaal: gen.verhaal || null,
-            huidig: gen.periode ? gen.periode.includes('heden') : false
+            huidig: genInfo.periode ? genInfo.periode.toLowerCase().includes('heden') : false
           });
           const genId = genResult?.[0]?.id;
-          if (!genId) { aiLog(`  ⚠️ Generatie ${gen.naam} niet aangemaakt`, '#ffaa44'); continue; }
+          if (!genId) { aiLog(`    ⚠️ Generatie niet aangemaakt`, '#ffaa44'); continue; }
 
           // Maak modellen aan
           for (const mod of (gen.modellen || [])) {
@@ -3112,14 +3132,15 @@ REGELS:
               });
             }
           }
-          aiLog(`  ✅ ${gen.naam} (${gen.periode||'?'}) — ${gen.modellen?.length||0} modellen`, '#88ff88');
-        }
+          aiLog(`    ✅ ${genInfo.naam} — ${gen.modellen?.length||0} modellen opgeslagen`, '#88ff88');
+          await new Promise(r => setTimeout(r, 600));
+        } // einde for genInfo
 
       } catch(e) {
         aiLog(`  ❌ Fout: ${e.message}`, '#ff6666');
       }
 
-      await new Promise(r => setTimeout(r, 1000));
+      await new Promise(r => setTimeout(r, 500));
     }
 
     aiBezig = false;
