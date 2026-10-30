@@ -2930,6 +2930,7 @@ renderMerken('all');
   }
 
   function parseJSON(tekst) {
+       tekst = tekst.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
     // Verwijder markdown code blocks
     tekst = tekst.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
     try { return JSON.parse(tekst); } catch(e) {}
