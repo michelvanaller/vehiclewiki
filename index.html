@@ -3083,11 +3083,19 @@ REGELS:
 - Specs op basis van jouw kennis, null als onbekend
 - Geef ALLEEN de JSON, geen tekst eromheen`;
 
-          const tekst = await aiVraagClaude(prompt, 3000);
-          const parsed = parseJSON(tekst);
+          let tekst = await aiVraagClaude(prompt, 4000);
+          let parsed = parseJSON(tekst);
+
+          // Retry bij parse fout
+          if (!parsed?.generaties?.[0]) {
+            aiLog(`    ⚠️ Parse fout, opnieuw proberen...`, '#ffaa44');
+            await new Promise(r => setTimeout(r, 1500));
+            tekst = await aiVraagClaude(prompt, 4000);
+            parsed = parseJSON(tekst);
+          }
 
           if (!parsed?.generaties?.[0]) {
-            aiLog(`    ❌ Parse fout: ${tekst.substring(0,80)}`, '#ff6666');
+            aiLog(`    ❌ Parse fout na retry: ${tekst.substring(0,80)}`, '#ff6666');
             // Sla generatie toch op zonder modellen
             await sbPost('generaties', {
               family_id: familie.id,
