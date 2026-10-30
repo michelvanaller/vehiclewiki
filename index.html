@@ -2866,6 +2866,367 @@ renderMerken('all');
   let aiGeneraties = [];
   let aiModellen = [];
   let aiBezig = false;
+  let aiStopGevraagd = false;
+  const SB_URL = 'https://adwxdumziwfqvklwjnvp.supabase.co';
+  const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkd3hkdW16aXdmcXZrbHdqbnZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MDA1NDUsImV4cCI6MjA5MDQ3NjU0NX0.5s2boF_P5gH7UTG9x8f9e4Lyz2l4CJ5VClNw7DHXOO4';
+  const SB_HEADERS = {'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'};
+
+  function aiLog(msg, kleur) {
+    const v = document.getElementById('ai-voortgang');
+    if (!v) return;
+    const kleurStyle = kleur ? `color:${kleur}` : '';
+    v.innerHTML += `<span style="${kleurStyle}">${msg}</span><br>`;
+    v.scrollTop = v.scrollHeight;
+  }
+
+  function stopAIGenerator() { aiStopGevraagd = true; aiLog('⏹ Stop gevraagd...','#ff6666'); }
+
+  async function sbGet(table, params) {
+    const r = await fetch(`${SB_URL}/rest/v1/${table}?${params}`, {
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+    });
+    return r.ok ? r.json() : [];
+  }
+
+  async function sbPost(table, data) {
+    const r = await fetch(`${SB_URL}/rest/v1/${table}`, {
+      method:'POST', headers:SB_HEADERS, body:JSON.stringify(data)
+    });
+    return r.ok;
+  }
+
+  async function sbPostReturn(table, data) {
+    const r = await fetch(`${SB_URL}/rest/v1/${table}`, {
+      method:'POST',
+      headers:{...SB_HEADERS,'Prefer':'return=representation'},
+      body:JSON.stringify(data)
+    });
+    return r.ok ? r.json() : null;
+  }
+
+  async function sbPatch(table, filter, data) {
+    const r = await fetch(`${SB_URL}/rest/v1/${table}?${filter}`, {
+      method:'PATCH', headers:SB_HEADERS, body:JSON.stringify(data)
+    });
+    return r.ok;
+  }
+
+  async function sbDelete(table, filter) {
+    const r = await fetch(`${SB_URL}/rest/v1/${table}?${filter}`, {
+      method:'DELETE', headers:SB_HEADERS
+    });
+    return r.ok;
+  }
+
+  async function aiVraagClaude(prompt, maxTokens) {
+    const resp = await fetch('/api/generate', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({prompt, max_tokens: maxTokens || 1500})
+    });
+    if (!resp.ok) throw new Error('API fout: ' + resp.status);
+    const data = await resp.json();
+    return data.text?.trim() || '';
+  }
+
+  function parseJSON(tekst) {
+    try { return JSON.parse(tekst); } catch(e) {}
+    try {
+      const m = tekst.match(/\{[\s\S]*\}/);
+      if (m) return JSON.parse(m[0]);
+    } catch(e) {}
+    try {
+      const m = tekst.match(/\[[\s\S]*\]/);
+      if (m) return JSON.parse(m[0]);
+    } catch(e) {}
+    return null;
+  }
+
+  async function laadAIFamilies() {
+    const merkId = document.getElementById('ai-merk-select').value;
+    if (!merkId) { alert('Kies eerst een merk'); return; }
+    const famSel = document.getElementById('ai-familie-select');
+    famSel.innerHTML = '<option value="">-- Alle families --</option>';
+    const families = await sbGet('families', `select=id,naam&merk_id=eq.${merkId}&order=naam`);
+    families.forEach(f => {
+      const opt = document.createElement('option');
+      opt.value = f.id;
+      opt.textContent = f.naam;
+      famSel.appendChild(opt);
+    });
+    aiLog(`📋 ${families.length} families geladen`, '#8888ff');
+  }
+
+  // ===== FASE 1: DATABASE OPBOUWEN =====
+  // Per familie: vraag Claude om volledige geschiedenis, maak generaties/modellen/uitvoeringen aan
+
+  async function startFase1() {
+    if (aiBezig) { alert('Generator is al bezig'); return; }
+    const merkId = document.getElementById('ai-merk-select').value;
+    if (!merkId) { alert('Kies eerst een merk'); return; }
+    aiBezig = true;
+    aiStopGevraagd = false;
+
+    const merkRes = await sbGet('merken', `select=naam,categorie&id=eq.${merkId}`);
+    const merk = merkRes?.[0];
+    if (!merk) { aiBezig = false; return; }
+    aiLog(`🏗️ Start Fase 1 voor ${merk.naam} (${merk.categorie})`, '#ffaa44');
+
+    const familieSel = document.getElementById('ai-familie-select').value;
+    let families;
+    if (familieSel) {
+      families = await sbGet('families', `select=id,naam&id=eq.${familieSel}`);
+    } else {
+      families = await sbGet('families', `select=id,naam&merk_id=eq.${merkId}&order=naam`);
+    }
+    aiLog(`📋 ${families.length} families te verwerken`, '#aaaaaa');
+
+    for (let fi = 0; fi < families.length; fi++) {
+      if (aiStopGevraagd) break;
+      const familie = families[fi];
+      aiLog(`<br>🔄 [${fi+1}/${families.length}] ${merk.naam} ${familie.naam}...`, '#ffdd88');
+
+      try {
+        // Verwijder bestaande data voor deze familie
+        const genRes = await sbGet('generaties', `select=id&family_id=eq.${familie.id}`);
+        for (const gen of (genRes || [])) {
+          const modRes = await sbGet('modellen', `select=id&generatie_id=eq.${gen.id}`);
+          for (const mod of (modRes || [])) {
+            const uitvRes = await sbGet('uitvoeringen', `select=id&model_id=eq.${mod.id}`);
+            for (const u of (uitvRes || [])) {
+              await sbDelete('pros_cons', `uitvoering_id=eq.${u.id}`);
+            }
+            await sbDelete('uitvoeringen', `model_id=eq.${mod.id}`);
+          }
+          await sbDelete('pros_cons', `generatie_id=eq.${gen.id}`);
+          await sbDelete('modellen', `generatie_id=eq.${gen.id}`);
+        }
+        await sbDelete('generaties', `family_id=eq.${familie.id}`);
+        aiLog(`  🗑️ Oude data verwijderd`, '#888888');
+
+        // Vraag Claude om volledige geschiedenis
+        const voertuigType = merk.categorie === 'motor' ? 'motorfiets' : 'auto';
+        const prompt = `Geef de VOLLEDIGE geschiedenis van de ${merk.naam} ${familie.naam} ${voertuigType} in dit exacte JSON formaat. Gebruik ALLEEN dit formaat, geen tekst eromheen:
+
+{
+  "generaties": [
+    {
+      "naam": "Eerste generatie",
+      "periode": "1975-1983",
+      "weetje": "Interessant weetje over deze generatie in 1-2 zinnen.",
+      "verhaal": "Verhaal van 80-120 woorden over deze generatie. Wat maakt hem bijzonder, technische context, erfgoed.",
+      "modellen": [
+        {
+          "naam": "316",
+          "uitvoeringen": [
+            {
+              "naam": "316 Standaard",
+              "jaar": "1975",
+              "pk": 90,
+              "nm": 140,
+              "gewicht": 1080,
+              "nul100": 12.5,
+              "topsnelheid": 170,
+              "cilinderinhoud": 1573,
+              "cilinders": "4",
+              "brandstof": "Benzine",
+              "transmissie": "Handgeschakeld",
+              "carrosserie": "Sedan",
+              "deuren": 4,
+              "stoelen": 5,
+              "prijs": "€12.000",
+              "verbruik": 9.5,
+              "aandrijving": "RWD"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+REGELS:
+- Geef ALLE generaties van begin tot nu, chronologisch
+- Per generatie: de belangrijkste modellen (niet elk trim level, maar de hoofdvarianten)
+- Per model: de meest relevante uitvoeringen (standaard, S/sport versie, topversie)
+- Gebruik realistische specs op basis van jouw kennis
+- Velden die je niet weet: gebruik null
+- Schrijf in het Nederlands
+- Merk: ${merk.naam}, Familie: ${familie.naam}`;
+
+        const tekst = await aiVraagClaude(prompt, 4000);
+        const parsed = parseJSON(tekst);
+
+        if (!parsed?.generaties || !Array.isArray(parsed.generaties)) {
+          aiLog(`  ❌ JSON parse fout — response: ${tekst.substring(0,100)}`, '#ff6666');
+          continue;
+        }
+
+        aiLog(`  ✅ ${parsed.generaties.length} generaties ontvangen`, '#44ffaa');
+
+        // Sla alles op in Supabase
+        for (const gen of parsed.generaties) {
+          // Maak generatie aan
+          const genResult = await sbPostReturn('generaties', {
+            family_id: familie.id,
+            naam: gen.naam,
+            periode: gen.periode || null,
+            weetje: gen.weetje || null,
+            verhaal: gen.verhaal || null,
+            huidig: gen.periode ? gen.periode.includes('heden') : false
+          });
+          const genId = genResult?.[0]?.id;
+          if (!genId) { aiLog(`  ⚠️ Generatie ${gen.naam} niet aangemaakt`, '#ffaa44'); continue; }
+
+          // Maak modellen aan
+          for (const mod of (gen.modellen || [])) {
+            const modResult = await sbPostReturn('modellen', {
+              generatie_id: genId,
+              naam: mod.naam
+            });
+            const modId = modResult?.[0]?.id;
+            if (!modId) continue;
+
+            // Maak uitvoeringen aan
+            for (const uitv of (mod.uitvoeringen || [])) {
+              await sbPost('uitvoeringen', {
+                model_id: modId,
+                naam: uitv.naam,
+                jaar: uitv.jaar || null,
+                pk: uitv.pk || null,
+                nm: uitv.nm || null,
+                gewicht: uitv.gewicht || null,
+                nul100: uitv.nul100 || null,
+                topsnelheid: uitv.topsnelheid || null,
+                cilinderinhoud: uitv.cilinderinhoud || null,
+                cilinders: uitv.cilinders || null,
+                brandstof: uitv.brandstof || null,
+                transmissie: uitv.transmissie || null,
+                carrosserie: uitv.carrosserie || null,
+                deuren: uitv.deuren || null,
+                stoelen: uitv.stoelen || null,
+                prijs: uitv.prijs || null,
+                verbruik: uitv.verbruik || null,
+                aandrijving: uitv.aandrijving || null,
+                special: uitv.special || false
+              });
+            }
+          }
+          aiLog(`  ✅ ${gen.naam} (${gen.periode||'?'}) — ${gen.modellen?.length||0} modellen`, '#88ff88');
+        }
+
+      } catch(e) {
+        aiLog(`  ❌ Fout: ${e.message}`, '#ff6666');
+      }
+
+      await new Promise(r => setTimeout(r, 1000));
+    }
+
+    aiBezig = false;
+    aiLog(`<br>🎉 Fase 1 klaar!`, '#ffaa44');
+  }
+
+  // ===== FASE 2: CONTENT GENEREREN =====
+  // Per uitvoering: genereer pros/cons specifiek voor díe versie
+
+  async function startFase2() {
+    if (aiBezig) { alert('Generator is al bezig'); return; }
+    const merkId = document.getElementById('ai-merk-select').value;
+    if (!merkId) { alert('Kies eerst een merk'); return; }
+    aiBezig = true;
+    aiStopGevraagd = false;
+
+    const merkRes = await sbGet('merken', `select=naam,categorie&id=eq.${merkId}`);
+    const merk = merkRes?.[0];
+    if (!merk) { aiBezig = false; return; }
+    aiLog(`✍️ Start Fase 2 voor ${merk.naam}`, '#44ffaa');
+
+    const familieSel = document.getElementById('ai-familie-select').value;
+    let families;
+    if (familieSel) {
+      families = await sbGet('families', `select=id,naam&id=eq.${familieSel}`);
+    } else {
+      families = await sbGet('families', `select=id,naam&merk_id=eq.${merkId}&order=naam`);
+    }
+
+    let totaalUitvoeringen = 0, succes = 0, fouten = 0;
+
+    for (const familie of families) {
+      if (aiStopGevraagd) break;
+      aiLog(`<br>📂 ${familie.naam}`, '#ffdd88');
+
+      const genRes = await sbGet('generaties', `select=id,naam,periode&family_id=eq.${familie.id}`);
+      for (const gen of (genRes || [])) {
+        if (aiStopGevraagd) break;
+
+        const modRes = await sbGet('modellen', `select=id,naam&generatie_id=eq.${gen.id}`);
+        for (const mod of (modRes || [])) {
+          if (aiStopGevraagd) break;
+
+          const uitvRes = await sbGet('uitvoeringen', `select=id,naam,pk,jaar,brandstof,carrosserie&model_id=eq.${mod.id}`);
+          for (const uitv of (uitvRes || [])) {
+            if (aiStopGevraagd) break;
+            totaalUitvoeringen++;
+
+            // Check of pros/cons al bestaan
+            const bestaand = await sbGet('pros_cons', `select=id&uitvoering_id=eq.${uitv.id}&limit=1`);
+            if (bestaand?.length > 0) {
+              aiLog(`  ⏭️ ${uitv.naam} — al content`, '#666666');
+              continue;
+            }
+
+            aiLog(`  ⏳ ${gen.naam} → ${mod.naam} → ${uitv.naam}...`, '#aaaaaa');
+
+            try {
+              const context = [
+                merk.naam, familie.naam, gen.naam,
+                uitv.jaar ? `(${uitv.jaar})` : '',
+                mod.naam !== familie.naam ? mod.naam : '',
+                uitv.naam,
+                uitv.pk ? `${uitv.pk}pk` : '',
+                uitv.brandstof || '',
+                uitv.carrosserie || ''
+              ].filter(Boolean).join(' ');
+
+              const prompt = `Geef voor de ${context} precies dit JSON formaat, niets anders:
+{"pros":["pro1","pro2","pro3"],"cons":["con1","con2","con3"]}
+
+Regels:
+- Pros en cons zijn SPECIFIEK voor deze exacte uitvoering/versie
+- Noem concrete zaken: vermogen, rijgedrag, comfort, betrouwbaarheid, verbruik, prijs/waarde
+- Maximaal 10 woorden per pro/con
+- Schrijf in het Nederlands
+- 3 pros en 3 cons`;
+
+              const tekst = await aiVraagClaude(prompt, 400);
+              const parsed = parseJSON(tekst);
+
+              if (parsed?.pros && parsed?.cons) {
+                const entries = [
+                  ...parsed.pros.map(t => ({uitvoering_id: uitv.id, type:'pro', tekst:t})),
+                  ...parsed.cons.map(t => ({uitvoering_id: uitv.id, type:'con', tekst:t}))
+                ];
+                await sbPost('pros_cons', entries);
+                succes++;
+                aiLog(`  ✅ ${uitv.naam}`, '#44ffaa');
+              } else {
+                fouten++;
+                aiLog(`  ❌ ${uitv.naam}: parse fout`, '#ff6666');
+              }
+            } catch(e) {
+              fouten++;
+              aiLog(`  ❌ ${uitv.naam}: ${e.message}`, '#ff6666');
+            }
+
+            await new Promise(r => setTimeout(r, 400));
+          }
+        }
+      }
+    }
+
+    aiBezig = false;
+    aiLog(`<br>🎉 Fase 2 klaar! ${succes} uitvoeringen bijgewerkt, ${fouten} fouten.`, '#44ffaa');
+  }
 
   async function laadAIModellen() {
     const merkId = document.getElementById('ai-merk-select').value;
@@ -3000,6 +3361,10 @@ Schrijf in het Nederlands. Pros en cons zijn kort en specifiek voor dit exacte m
         opt.value = m.id;
         opt.textContent = m.naam + (m.categorie === 'auto' ? ' 🚗' : ' 🏍');
         sel.appendChild(opt);
+      });
+      sel.addEventListener('change', () => {
+        const famSel = document.getElementById('ai-familie-select');
+        if (famSel) famSel.innerHTML = '<option value="">-- Alle families --</option>';
       });
     } catch(e) { console.log('Merken fout:', e); }
   }
