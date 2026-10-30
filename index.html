@@ -2901,7 +2901,12 @@ renderMerken('all');
       headers:{...SB_HEADERS,'Prefer':'return=representation'},
       body:JSON.stringify(data)
     });
-    return r.ok ? r.json() : null;
+    if (!r.ok) {
+      const err = await r.text();
+      aiLog(`    🔴 DB fout ${r.status} op ${table}: ${err.substring(0,120)}`, '#ff4444');
+      return null;
+    }
+    return r.json();
   }
 
   async function sbPatch(table, filter, data) {
@@ -2930,7 +2935,6 @@ renderMerken('all');
   }
 
   function parseJSON(tekst) {
-       tekst = tekst.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
     // Verwijder markdown code blocks
     tekst = tekst.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
     try { return JSON.parse(tekst); } catch(e) {}
@@ -3099,7 +3103,7 @@ REGELS:
             huidig: genInfo.periode ? genInfo.periode.toLowerCase().includes('heden') : false
           });
           const genId = genResult?.[0]?.id;
-          if (!genId) { aiLog(`    ⚠️ Generatie niet aangemaakt`, '#ffaa44'); continue; }
+          if (!genId) { aiLog(`    ⚠️ Generatie niet aangemaakt — response: ${JSON.stringify(genResult).substring(0,150)}`, '#ffaa44'); continue; }
 
           // Maak modellen aan
           for (const mod of (gen.modellen || [])) {
