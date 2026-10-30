@@ -3035,55 +3035,11 @@ Geef ALLEEN de JSON, geen tekst eromheen.`;
           if (aiStopGevraagd) break;
           aiLog(`  🔄 ${genInfo.naam} (${genInfo.periode})...`, '#ffdd88');
 
-          const prompt = `Geef de modellen en uitvoeringen van de ${merk.naam} ${familie.naam} generatie "${genInfo.naam}" (${genInfo.periode}) als JSON. Gebruik dit exacte formaat:
+          const prompt = `${merk.naam} ${familie.naam} ${genInfo.naam} (${genInfo.periode}). Geef JSON. MAX 4 modellen, MAX 2 uitvoeringen per model:
+{"generaties":[{"naam":"${genInfo.naam}","periode":"${genInfo.periode}","weetje":"1 zin","verhaal":"2 zinnen","modellen":[{"naam":"X","uitvoeringen":[{"naam":"X","jaar":"Y","pk":0,"nm":0,"gewicht":0,"nul100":null,"topsnelheid":0,"cilinderinhoud":0,"cilinders":"2","brandstof":"Benzine","transmissie":"Handgeschakeld","carrosserie":null,"deuren":null,"stoelen":1,"prijs":null,"verbruik":null,"aandrijving":null,"special":false}]}]}]}
+Alleen pure JSON, geen markdown.`;
 
-{
-  "generaties": [
-    {
-      "naam": "Eerste generatie",
-      "periode": "1975-1983",
-      "weetje": "Interessant weetje over deze generatie in 1-2 zinnen.",
-      "verhaal": "Verhaal van 80-120 woorden over deze generatie. Wat maakt hem bijzonder, technische context, erfgoed.",
-      "modellen": [
-        {
-          "naam": "316",
-          "uitvoeringen": [
-            {
-              "naam": "316 Standaard",
-              "jaar": "1975",
-              "pk": 90,
-              "nm": 140,
-              "gewicht": 1080,
-              "nul100": 12.5,
-              "topsnelheid": 170,
-              "cilinderinhoud": 1573,
-              "cilinders": "4",
-              "brandstof": "Benzine",
-              "transmissie": "Handgeschakeld",
-              "carrosserie": "Sedan",
-              "deuren": 4,
-              "stoelen": 5,
-              "prijs": null,
-              "verbruik": null,
-              "aandrijving": null,
-              "special": false
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}
-
-REGELS:
-- De generatienaam in het JSON moet altijd "${genInfo.naam}" zijn — verander deze NIET naar een modelnaam
-- Alleen modellen uit de periode ${genInfo.periode}
-- "modellen" = de verschillende motorvarianten (bijv. "1199 Panigale", "1199 Panigale S", "1199 Panigale R")
-- "uitvoeringen" = versies van dat model per jaar (bijv. "1199 Panigale 2012", "1199 Panigale 2013")
-- Specs op basis van jouw kennis, null als onbekend
-- Geef ALLEEN de JSON, geen tekst eromheen`;
-
-          let tekst = await aiVraagClaude(prompt, 4000);
+          let tekst = await aiVraagClaude(prompt, 6000);
           let parsed = parseJSON(tekst);
 
           // Retry bij parse fout
