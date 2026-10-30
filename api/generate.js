@@ -7,7 +7,7 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
   try {
-    const { prompt } = req.body;
+    const { prompt, max_tokens } = req.body;
     
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -18,7 +18,8 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1500,
+        max_tokens: max_tokens || 1500,
+        system: 'Geef ALTIJD alleen pure JSON terug. Geen markdown, geen ```json```, geen uitleg. Alleen de JSON zelf.',
         messages: [{ role: 'user', content: prompt }]
       })
     });
