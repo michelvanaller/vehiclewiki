@@ -3339,6 +3339,37 @@ renderMerken('all');
         return;
       }
       _vehoraAdminJWT = data.session.access_token;
+
+      // Stap 1B-correctie: server-side beheerderscheck via /api/admin-write.
+      // Toegang uitsluitend verlenen bij HTTP 200 én ok:true.
+      // Bij iedere andere uitkomst (403, 401, 500, netwerkfout): weigeren.
+      try {
+        const checkRes = await fetch('/api/admin-write', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _vehoraAdminJWT },
+        });
+        let checkOk = false;
+        if (checkRes.ok) {
+          try {
+            const checkData = await checkRes.json();
+            checkOk = checkData?.ok === true;
+          } catch(e) { /* JSON-parsefout → geen toegang */ }
+        }
+        if (!checkOk) {
+          // Geldig Supabase-account maar geen beheerder (of serverfout).
+          _vehoraAdminJWT = null;
+          try { await _vehoraSupabaseAuth.auth.signOut(); } catch(e) {}
+          _toonAdminFout('Geen beheerdersrechten.');
+          return;
+        }
+      } catch(e) {
+        // Netwerkfout bij beheerderscheck → nooit toegang verlenen.
+        _vehoraAdminJWT = null;
+        try { await _vehoraSupabaseAuth.auth.signOut(); } catch(e) {}
+        _toonAdminFout('Beheerderscheck mislukt. Probeer opnieuw.');
+        return;
+      }
+
       document.getElementById('vehora-login-blok').style.display = 'none';
       document.getElementById('vehora-admin-interface').style.display = 'block';
       aiLog('✅ Beheerder aangemeld.', '#52b788');
