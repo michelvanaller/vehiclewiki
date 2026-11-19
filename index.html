@@ -855,31 +855,72 @@ body{background:var(--bg);color:var(--text);font-family:'Geist','Barlow',sans-se
       <div id="admin-evenementen"></div>
     </div>
 
-    <!-- AI Generator v2 -->
-    <div style="background:var(--bg2);border:1px solid rgba(100,100,255,0.4);border-radius:var(--radius-lg);padding:14px;margin-bottom:12px;box-shadow:0 0 15px rgba(80,80,255,0.1);">
-      <div style="font-size:12px;font-weight:700;color:#8888ff;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">⚡ AI Database Generator v2</div>
-      <div style="font-size:11px;color:var(--text2);margin-bottom:12px;line-height:1.5;">
-        <b style="color:#ffaa44;">Fase 1:</b> Bouwt volledige geschiedenis (generaties→modellen→uitvoeringen) per familie.<br>
-        <b style="color:#44ffaa;">Fase 2:</b> Genereert pros/cons per uitvoering + weetje/verhaal per generatie.
-      </div>
+    <!-- VEHORA BEHEERDER INLOGBLOK — zichtbaar zolang niet ingelogd -->
+    <div id="vehora-login-blok" style="background:var(--bg2);border:1px solid rgba(100,100,255,0.4);border-radius:var(--radius-lg);padding:20px;margin-bottom:12px;">
+      <div style="font-size:13px;font-weight:700;color:#8888ff;margin-bottom:4px;">🔒 Beheerder aanmelden</div>
+      <div style="font-size:11px;color:var(--text2);margin-bottom:14px;">Generatorfuncties zijn uitsluitend toegankelijk na verificatie.</div>
+      <input id="vehora-login-email" type="email" placeholder="E-mailadres" autocomplete="username"
+        style="width:100%;padding:9px 12px;border:1px solid var(--border2);border-radius:8px;background:var(--bg3);color:var(--text);font-size:13px;font-family:'Geist','Barlow',sans-serif;margin-bottom:8px;">
+      <input id="vehora-login-ww" type="password" placeholder="Wachtwoord" autocomplete="current-password"
+        style="width:100%;padding:9px 12px;border:1px solid var(--border2);border-radius:8px;background:var(--bg3);color:var(--text);font-size:13px;font-family:'Geist','Barlow',sans-serif;margin-bottom:10px;"
+        onkeydown="if(event.key==='Enter')vehoraAdminLogin()">
+      <button id="vehora-login-btn" onclick="vehoraAdminLogin()"
+        style="width:100%;padding:10px;background:rgba(100,100,255,0.2);border:1px solid rgba(100,100,255,0.5);color:#8888ff;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Geist','Barlow',sans-serif;">
+        Aanmelden
+      </button>
+      <div id="vehora-login-fout" style="margin-top:8px;font-size:12px;color:#ff6666;min-height:16px;"></div>
+    </div>
 
-      <select id="ai-merk-select" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px;margin-bottom:8px;font-size:13px;">
-        <option value="">-- Kies een merk --</option>
-      </select>
-      <select id="ai-familie-select" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px;margin-bottom:10px;font-size:13px;">
-        <option value="">-- Alle families of kies één --</option>
-      </select>
+    <!-- VEHORA BEHEERDER INTERFACE — verborgen tot inloggen gelukt is -->
+    <div id="vehora-admin-interface" style="display:none;">
+      <div style="background:var(--bg2);border:1px solid rgba(100,100,255,0.4);border-radius:var(--radius-lg);padding:14px;margin-bottom:12px;box-shadow:0 0 15px rgba(80,80,255,0.1);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div style="font-size:12px;font-weight:700;color:#8888ff;text-transform:uppercase;letter-spacing:0.08em;">⚡ AI Database Generator</div>
+          <button onclick="vehoraAdminLogout()"
+            style="background:none;border:1px solid rgba(255,80,80,0.4);color:#ff6666;border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;font-family:'Geist','Barlow',sans-serif;">
+            Uitloggen
+          </button>
+        </div>
+        <div style="font-size:11px;color:#52b788;margin-bottom:12px;">✅ Beheerder aangemeld</div>
 
-      <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;">
-        <button onclick="laadAIFamilies()" style="flex:1;min-width:120px;background:var(--bg3);border:1px solid rgba(100,100,255,0.4);color:#8888ff;border-radius:8px;padding:8px;font-weight:700;cursor:pointer;font-size:11px;">📋 Laad families</button>
-        <button onclick="startFase1()" style="flex:1;min-width:120px;background:rgba(255,150,50,0.15);border:1px solid rgba(255,150,50,0.5);color:#ffaa44;border-radius:8px;padding:8px;font-weight:700;cursor:pointer;font-size:11px;">🏗️ Fase 1: Opbouwen</button>
-        <button onclick="startFase2()" style="flex:1;min-width:120px;background:rgba(50,200,100,0.15);border:1px solid rgba(50,200,100,0.5);color:#44ffaa;border-radius:8px;padding:8px;font-weight:700;cursor:pointer;font-size:11px;">✍️ Fase 2: Content</button>
+        <!-- Merk- en familieselectie — hergebruikt van oude generator -->
+        <select id="ai-merk-select" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px;margin-bottom:8px;font-size:13px;">
+          <option value="">-- Kies een merk --</option>
+        </select>
+        <select id="ai-familie-select" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px;margin-bottom:10px;font-size:13px;">
+          <option value="">-- Alle families of kies één --</option>
+        </select>
+
+        <!-- Laad families (read-only, veilig) -->
+        <div style="margin-bottom:10px;">
+          <button onclick="laadAIFamilies()"
+            style="width:100%;background:var(--bg3);border:1px solid rgba(100,100,255,0.4);color:#8888ff;border-radius:8px;padding:8px;font-weight:700;cursor:pointer;font-size:11px;">
+            📋 Laad families
+          </button>
+        </div>
+
+        <!-- Fase 1 en Fase 2 knoppen — UITGESCHAKELD, tonen melding -->
+        <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;">
+          <button onclick="alert('Fase 1 is uitgeschakeld. Nieuwe versie volgt in bouwstap 4.')"
+            style="flex:1;min-width:120px;background:rgba(80,80,80,0.15);border:1px dashed rgba(255,150,50,0.3);color:rgba(255,170,68,0.4);border-radius:8px;padding:8px;font-weight:700;cursor:not-allowed;font-size:11px;" disabled>
+            🚫 Fase 1 (uitgeschakeld)
+          </button>
+          <button onclick="alert('Fase 2 is uitgeschakeld. Nieuwe versie volgt in bouwstap 6.')"
+            style="flex:1;min-width:120px;background:rgba(80,80,80,0.15);border:1px dashed rgba(50,200,100,0.3);color:rgba(68,255,170,0.4);border-radius:8px;padding:8px;font-weight:700;cursor:not-allowed;font-size:11px;" disabled>
+            🚫 Fase 2 (uitgeschakeld)
+          </button>
+        </div>
+        <div style="font-size:11px;color:var(--text2);margin-bottom:10px;padding:8px;background:var(--bg3);border-radius:6px;border-left:3px solid rgba(255,150,50,0.4);">
+          De generatorfuncties worden opnieuw gebouwd in volgende bouwstappen. Geen databasewijzigingen mogelijk via deze knoppen.
+        </div>
+
+        <!-- Log -->
+        <div style="display:flex;gap:6px;margin-bottom:8px;">
+          <button onclick="document.getElementById('ai-voortgang').innerHTML=''"
+            style="flex:1;background:var(--bg3);border:1px solid var(--border);color:var(--text2);border-radius:8px;padding:7px;cursor:pointer;font-size:11px;">🗑 Wis log</button>
+        </div>
+        <div id="ai-voortgang" style="display:block;background:var(--bg3);border-radius:8px;padding:10px;font-size:11px;color:var(--text2);line-height:1.7;max-height:350px;overflow-y:auto;"></div>
       </div>
-      <div style="display:flex;gap:6px;margin-bottom:10px;">
-        <button onclick="stopAIGenerator()" style="flex:1;background:rgba(255,50,50,0.15);border:1px solid rgba(255,50,50,0.4);color:#ff6666;border-radius:8px;padding:7px;font-weight:700;cursor:pointer;font-size:11px;">⏹ Stop</button>
-        <button onclick="document.getElementById('ai-voortgang').innerHTML=''" style="flex:1;background:var(--bg3);border:1px solid var(--border);color:var(--text2);border-radius:8px;padding:7px;cursor:pointer;font-size:11px;">🗑 Wis log</button>
-      </div>
-      <div id="ai-voortgang" style="display:block;background:var(--bg3);border-radius:8px;padding:10px;font-size:11px;color:var(--text2);line-height:1.7;max-height:350px;overflow-y:auto;"></div>
     </div>
   </div>
   <div id="ht-kenteken" style="display:none;">
@@ -1067,6 +1108,8 @@ body{background:var(--bg);color:var(--text);font-family:'Geist','Barlow',sans-se
   <div id="spec-content"></div>
 </div>
 
+<!-- Supabase Auth JS — vastgepinde versie 2.49.4, uitsluitend voor beheerdersauthenticatie -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
 <script>
 const SUPABASE_URL = 'https://adwxdumziwfqvklwjnvp.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkd3hkdW16aXdmcXZrbHdqbnZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MDA1NDUsImV4cCI6MjA5MDQ3NjU0NX0.5s2boF_P5gH7UTG9x8f9e4Lyz2l4CJ5VClNw7DHXOO4';
@@ -3254,6 +3297,106 @@ renderMerken('all');
   let aiModellen = [];
   let aiBezig = false;
   let aiStopGevraagd = false;
+
+  // ===== VEHORA BEHEERDER AUTH =====
+  // JWT wordt uitsluitend in geheugen bewaard — nooit in localStorage of cookies.
+  let _vehoraAdminJWT = null;
+  let _vehoraSupabaseAuth = null;
+
+  function _initSupabaseAuth() {
+    if (_vehoraSupabaseAuth) return;
+    if (typeof supabase === 'undefined' || !supabase.createClient) {
+      console.error('VEHORA: Supabase JS-library niet geladen');
+      return;
+    }
+    _vehoraSupabaseAuth = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+      auth: {
+        persistSession: false,   // uitsluitend geheugen
+        autoRefreshToken: false,
+        detectSessionInUrl: false
+      }
+    });
+  }
+
+  async function vehoraAdminLogin() {
+    _initSupabaseAuth();
+    if (!_vehoraSupabaseAuth) {
+      _toonAdminFout('Auth-bibliotheek niet beschikbaar.');
+      return;
+    }
+    const email = document.getElementById('vehora-login-email')?.value?.trim();
+    const ww    = document.getElementById('vehora-login-ww')?.value;
+    if (!email || !ww) { _toonAdminFout('Vul e-mail en wachtwoord in.'); return; }
+
+    const loginBtn = document.getElementById('vehora-login-btn');
+    if (loginBtn) loginBtn.disabled = true;
+    _toonAdminFout('');
+
+    try {
+      const { data, error } = await _vehoraSupabaseAuth.auth.signInWithPassword({ email, password: ww });
+      if (error || !data?.session?.access_token) {
+        _toonAdminFout('Aanmelden mislukt. Controleer e-mail en wachtwoord.');
+        return;
+      }
+      _vehoraAdminJWT = data.session.access_token;
+
+      // Stap 1B-correctie: server-side beheerderscheck via /api/admin-write.
+      // Toegang uitsluitend verlenen bij HTTP 200 én ok:true.
+      // Bij iedere andere uitkomst (403, 401, 500, netwerkfout): weigeren.
+      try {
+        const checkRes = await fetch('/api/admin-write', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _vehoraAdminJWT },
+        });
+        let checkOk = false;
+        if (checkRes.ok) {
+          try {
+            const checkData = await checkRes.json();
+            checkOk = checkData?.ok === true;
+          } catch(e) { /* JSON-parsefout → geen toegang */ }
+        }
+        if (!checkOk) {
+          // Geldig Supabase-account maar geen beheerder (of serverfout).
+          _vehoraAdminJWT = null;
+          try { await _vehoraSupabaseAuth.auth.signOut(); } catch(e) {}
+          _toonAdminFout('Geen beheerdersrechten.');
+          return;
+        }
+      } catch(e) {
+        // Netwerkfout bij beheerderscheck → nooit toegang verlenen.
+        _vehoraAdminJWT = null;
+        try { await _vehoraSupabaseAuth.auth.signOut(); } catch(e) {}
+        _toonAdminFout('Beheerderscheck mislukt. Probeer opnieuw.');
+        return;
+      }
+
+      document.getElementById('vehora-login-blok').style.display = 'none';
+      document.getElementById('vehora-admin-interface').style.display = 'block';
+      aiLog('✅ Beheerder aangemeld.', '#52b788');
+    } catch (e) {
+      _toonAdminFout('Fout bij aanmelden.');
+    } finally {
+      if (loginBtn) loginBtn.disabled = false;
+    }
+  }
+
+  async function vehoraAdminLogout() {
+    if (_vehoraSupabaseAuth) {
+      try { await _vehoraSupabaseAuth.auth.signOut(); } catch(e) {}
+    }
+    _vehoraAdminJWT = null;
+    document.getElementById('vehora-login-blok').style.display = 'block';
+    document.getElementById('vehora-admin-interface').style.display = 'none';
+    document.getElementById('vehora-login-email').value = '';
+    document.getElementById('vehora-login-ww').value = '';
+    aiLog('', '');
+  }
+
+  function _toonAdminFout(tekst) {
+    const el = document.getElementById('vehora-login-fout');
+    if (el) el.textContent = tekst;
+  }
+  // ===== EINDE AUTH =====
   const SB_URL = 'https://adwxdumziwfqvklwjnvp.supabase.co';
   const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkd3hkdW16aXdmcXZrbHdqbnZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MDA1NDUsImV4cCI6MjA5MDQ3NjU0NX0.5s2boF_P5gH7UTG9x8f9e4Lyz2l4CJ5VClNw7DHXOO4';
   const SB_HEADERS = {'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'};
@@ -3355,6 +3498,12 @@ renderMerken('all');
   // Per familie: vraag Claude om volledige geschiedenis, maak generaties/modellen/uitvoeringen aan
 
   async function startFase1() {
+    // UITGESCHAKELD — onvoorwaardelijk, ook voor ingelogde beheerder.
+    // Deze functie bevat een cascade-DELETE en mag nooit meer worden uitgevoerd.
+    // Vervanger wordt gebouwd in bouwstap 4 (nieuwe additive Fase 1).
+    console.warn('VEHORA: startFase1() is permanent uitgeschakeld.');
+    return;
+    // === ORIGINELE CODE BEWAARD ALS REFERENTIE (NOOIT UITVOEREN) ===
     if (aiBezig) { alert('Generator is al bezig'); return; }
     const merkId = document.getElementById('ai-merk-select').value;
     if (!merkId) { alert('Kies eerst een merk'); return; }
@@ -3516,6 +3665,11 @@ Alleen pure JSON, geen markdown.`;
   // Per uitvoering: genereer pros/cons specifiek voor díe versie
 
   async function startFase2() {
+    // UITGESCHAKELD — onvoorwaardelijk, ook voor ingelogde beheerder.
+    // Vervanger wordt gebouwd in bouwstap 6 (nieuwe Fase 2 via serverless).
+    console.warn('VEHORA: startFase2() is uitgeschakeld.');
+    return;
+    // === ORIGINELE CODE BEWAARD ALS REFERENTIE (NOOIT UITVOEREN) ===
     if (aiBezig) { alert('Generator is al bezig'); return; }
     const merkId = document.getElementById('ai-merk-select').value;
     if (!merkId) { alert('Kies eerst een merk'); return; }
@@ -3648,6 +3802,11 @@ Regels:
   }
 
   async function startAIGenerator() {
+    // UITGESCHAKELD — onvoorwaardelijk, ook voor ingelogde beheerder.
+    // Schrijft met hardcoded anon-key en gebruikt generatie_id (KR-01-schending).
+    console.warn('VEHORA: startAIGenerator() is uitgeschakeld.');
+    return;
+    // === ORIGINELE CODE BEWAARD ALS REFERENTIE (NOOIT UITVOEREN) ===
     if (aiModellen.length === 0) { alert('Laad eerst modellen'); return; }
     if (aiBezig) { alert('Generator is al bezig'); return; }
     aiBezig = true;
@@ -3774,6 +3933,12 @@ Schrijf in het Nederlands. Pros en cons zijn kort en specifiek voor dit exacte m
   }
 
   async function startAIWeetjes() {
+    // UITGESCHAKELD — onvoorwaardelijk, ook voor ingelogde beheerder.
+    // Roept api.anthropic.com direct aan vanuit browser (zonder API-sleutel) en
+    // schrijft met hardcoded anon-key. Altijd al kapot geweest (HTTP 401).
+    console.warn('VEHORA: startAIWeetjes() is uitgeschakeld.');
+    return;
+    // === ORIGINELE CODE BEWAARD ALS REFERENTIE (NOOIT UITVOEREN) ===
     if (aiGeneraties.length === 0) { alert('Laad eerst generaties'); return; }
     const voortgang = document.getElementById('ai-voortgang');
     for (let i = 0; i < aiGeneraties.length; i++) {
