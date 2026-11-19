@@ -3454,9 +3454,11 @@ renderMerken('all');
   }
 
   async function aiVraagClaude(prompt, maxTokens) {
+    // Stap 1C: beheerders-JWT meesturen — route weigert zonder geldig token.
+    if (!_vehoraAdminJWT) throw new Error('Geen beheerdersessie actief.');
     const resp = await fetch('/api/generate', {
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers:{'Content-Type':'application/json', 'Authorization':'Bearer ' + _vehoraAdminJWT},
       body:JSON.stringify({prompt, max_tokens: maxTokens || 1500})
     });
     if (!resp.ok) throw new Error('API fout: ' + resp.status);
