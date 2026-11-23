@@ -3374,6 +3374,8 @@ renderMerken('all');
       document.getElementById('vehora-admin-interface').style.display = 'block';
       aiLog('✅ Beheerder aangemeld.', '#52b788');
     } catch (e) {
+      _vehoraAdminJWT = null;
+      try { await _vehoraSupabaseAuth.auth.signOut(); } catch(e) {}
       _toonAdminFout('Fout bij aanmelden.');
     } finally {
       if (loginBtn) loginBtn.disabled = false;
